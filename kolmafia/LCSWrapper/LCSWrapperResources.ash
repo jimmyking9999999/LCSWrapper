@@ -1,4 +1,3 @@
-// Shamelessly stolen and edited from c2t_hccs LMAO
 boolean get_effect(effect effe){
 
 	if (have_effect(effe).to_boolean()){
@@ -169,20 +168,20 @@ boolean no_more_buffs = false;
 /* Effects go here, numbered by priority */
 
 string [int] powerlevel_effects = {
-  1:"Glittering Eyelashes",
-  2:"Inscrutable Gaze",
-  3:"Ode to Booze",
-  4:"Saucemastery",
-  5:"Big",
-  6:"Carol of the Thrills",
-  7:"Spirit of Cayenne",
-  8:"Ur-Kel's Aria of Annoyance",
-  9:"Shanty of Superiority",
-  10:"Leash of Linguini",
-  11:"Empathy",
-  12:"Pride of the Puffin",
+	1:"Glittering Eyelashes",
+	2:"Inscrutable Gaze",
+	3:"Ode to Booze",
+	4:"Saucemastery",
+	5:"Big",
+	6:"Carol of the Thrills",
+	7:"Spirit of Cayenne",
+	8:"Ur-Kel's Aria of Annoyance",
+	9:"Shanty of Superiority",
+	10:"Leash of Linguini",
+	11:"Empathy",
+	12:"Pride of the Puffin",
 	13:"Feeling Nervous",
-  14:"Feeling Excited",
+	14:"Feeling Excited",
 	15:"Feeling Peaceful",
 	16:"Blood Bubble",
 	17:"Song of Bravado",
@@ -193,101 +192,101 @@ string [int] powerlevel_effects = {
 }; 
 
 string [int] mys_effects = {
-  1:"Glittering Eyelashes",
-  2:"Big",
-  3:"Quiet Judgement",
-  4:"Shanty of Superiority",
+	1:"Glittering Eyelashes",
+	2:"Big",
+	3:"Quiet Judgement",
+	4:"Shanty of Superiority",
 	5:"END",
 }; 
 
 string [int] mox_effects = {
-  1:"Expert Oiliness",
-  2:"Song of bravado",
-  3:"Blubbered up",
-  4:"Disco state of mind",
-  5:"Mariachi mood",
-  6:"Butt-rock hair",
+	1:"Expert Oiliness",
+	2:"Song of bravado",
+	3:"Blubbered up",
+	4:"Disco state of mind",
+	5:"Mariachi mood",
+	6:"Butt-rock hair",
 	7:"Unrunnable face",
-  8:"Feeling Excited",
+	8:"Feeling Excited",
 	9:"END",
 }; 
 
 string [int] mus_effects = {
-  1:"Expert Oiliness",
-  2:"Go get 'em, tiger!",
-  3:"Seal clubbing frenzy",
-  4:"Rage of the reindeer",
-  5:"Patience of the tortoise",
-  6:"Disdain of the war snapper",
+	1:"Expert Oiliness",
+	2:"Go get 'em, tiger!",
+	3:"Seal clubbing frenzy",
+	4:"Rage of the reindeer",
+	5:"Patience of the tortoise",
+	6:"Disdain of the war snapper",
 	7:"Song of bravado",
-  8:"Quiet determination",
+	8:"Quiet determination",
 	9:"Feeling excited",
 	10:"END",
 }; 
 
 string [int] hp_effects = {
-  1:"Song of starch",
-  2:"Reptilian fortitude",
+	1:"Song of starch",
+	2:"Reptilian fortitude",
 	3:"END",
 }; 
 
 string [int] item_effects = {
-  1:"Ode to Booze",
-  2:"Nearly All-Natural",
-  3:"Steely-Eyed Squint",
-  4:"Fat Leon's Phat Loot Lyric",
-  5:"Singer's Faithful Ocelot",
-  6:"Crunching Leaves",
-  7:"El Aroma de Salsa",
+	1:"Ode to Booze",
+	2:"Nearly All-Natural",
+	3:"Steely-Eyed Squint",
+	4:"Fat Leon's Phat Loot Lyric",
+	5:"Singer's Faithful Ocelot",
+	6:"Crunching Leaves",
+	7:"El Aroma de Salsa",
 	8:"Spice haze",
-  9:"Lantern-Charged",
+	9:"Lantern-Charged",
 	10:"Wizard Sight",
 	11:"Feeling Lost",
 	12:"END",
 }; 
 
 string [int] hot_res_effects = {
-  1:"Elemental Saucesphere",
-  2:"Astral Shell",
-  3:"Leash of Linguini",
-  4:"Empathy",
-  5:"Amazing",
-  6:"Feeling Peaceful",
+	1:"Elemental Saucesphere",
+	2:"Astral Shell",
+	3:"Leash of Linguini",
+	4:"Empathy",
+	5:"Amazing",
+	6:"Feeling Peaceful",
 	7:"Hot-headed",
 	8:"END",
 }; 
 
 string [int] fam_weight_effects = {
-  1:"Ode to Booze",
-  2:"Empathy",
-  3:"Leash of Linguini",
-  4:"Blood Bond",
-  5:"Billiards Belligerence",
+	1:"Ode to Booze",
+	2:"Empathy",
+	3:"Leash of Linguini",
+	4:"Blood Bond",
+	5:"Billiards Belligerence",
 	6:"END",
 }; 
 
 string [int] non_combat_effects = {
-  1:"Smooth Movements",
-  2:"The Sonata of Sneakiness",
-  3:"A Rose by any Other Material",
-  4:"Leash of Linguini",
-  5:"Empathy",
-  6:"Feeling Lonely",
+	1:"Smooth Movements",
+	2:"The Sonata of Sneakiness",
+	3:"A Rose by any Other Material",
+	4:"Leash of Linguini",
+	5:"Empathy",
+	6:"Feeling Lonely",
 	7:"Feeling Sneaky",
-  8:"Throwing Some Shade",
+	8:"Throwing Some Shade",
 	9:"Silent Running",
 	10:"END",
 }; 
 
 string [int] weapon_damage_effects = {
-  1:"Cowrruption",
+	1:"Cowrruption",
 	2:"Billiards Belligerence",
-  3:"Scowl of the auk",
-  4:"Tenacity of the snapper",
-  5:"Frenzied, bloody",
-  6:"Disdain of the war snapper",
+	3:"Scowl of the auk",
+	4:"Tenacity of the snapper",
+	5:"Frenzied, bloody",
+	6:"Disdain of the war snapper",
 	7:"Lack of body-building",
-  8:"Carol of the Bulls",
+	8:"Carol of the Bulls",
 	9:"Song of the North",
 	10:"Rage of the Reindeer",
 	11:"Song of the North",
@@ -299,18 +298,18 @@ string [int] weapon_damage_effects = {
 }; 
 
 string [int] spell_damage_effects = {
-  1:"We're all made of starfish",
-  2:"Jackasses' symphony of destruction",
-  3:"Cowrruption",
-  4:"Arched eyebrow of the archmage",
-  5:"AA-Charged",
-  6:"Carol of the Hells",
-  7:"Spirit of Peppermint",
-  8:"Song of Sauce",
+	1:"We're all made of starfish",
+	2:"Jackasses' symphony of destruction",
+	3:"Cowrruption",
+	4:"Arched eyebrow of the archmage",
+	5:"AA-Charged",
+	6:"Carol of the Hells",
+	7:"Spirit of Peppermint",
+	8:"Song of Sauce",
 	9:"Mental A-cue-ity",
-  5:"AAA-Charged",
-  5:"D-Charged",
-	10:"END",
+	10:"AAA-Charged",
+	11:"D-Charged",
+	12:"END",
 }; 
 
 
