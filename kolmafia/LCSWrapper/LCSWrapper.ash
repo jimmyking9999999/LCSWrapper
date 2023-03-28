@@ -228,7 +228,7 @@ if((get_property("_juneCleaverFightsLeft") == 0) && have_equipped($item[June Cle
 }
 
 if((have_familiar($familiar[Pair of Stomping Boots])) || (test)){
-  if(user_confirm("Do you want to stop for +8 turns saved? (Freerun in the shadow rift until you hit the mainstat train, and reconfigure and get to level 5. Then rerun! It'll eat the calzone and be up a pull ^^)")){
+  if(user_confirm("Do you want to stop for +8 turns saved? (Freerun in the shadow rift until you hit the mainstat train, reconfigure to coal -> mainstat -> meat and get to level 5. Pull a calzone after. Then rerun! It'll eat the calzone and be up a pull ^^)")){
     //adv1
     
   } // TODO: Automate this
@@ -443,6 +443,10 @@ if (get_property("daycareOpen").to_boolean() && !get_property("_daycareSpa").to_
 
 print("Using a ten-percent bonus! (And bastille!)", "teal");
 
+if(get_property("getawayCampsiteUnlocked").to_boolean()){
+  visit_url("place.php?whichplace=campaway&action=campaway_sky");
+}
+
 if(available_amount($item[A ten-percent bonus]).to_boolean()){
   use(1, $item[A ten-percent bonus]);
 }
@@ -541,6 +545,20 @@ if(available_amount($item[January's Garbage Tote]).to_boolean()){
   equip($item[Makeshift Garbage Shirt]);
 }
 
+if(have_familiar($familiar[Melodramedary])){
+  use_familiar($familiar[Melodramedary]);
+}
+
+if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
+  equip($slot[Familiar], $item[Tiny Stillsuit]);
+}
+
+if(get_property("ownsSpeakeasy").to_boolean()){
+  while(get_property("_speakeasyFreeFights") < 3){
+    adv1($location[An Unusually Quiet Barroom Brawl]);
+    // TODO: Add map support
+  }
+}
 
 if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobster])){ 
   use_familiar($familiar[God lobster]);
@@ -559,12 +577,8 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
   }
 }
 
-if(have_familiar($familiar[Melodramedary])){
-  use_familiar($familiar[Melodramedary]);
-}
-
-if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
-  equip($slot[Familiar], $item[Tiny Stillsuit]);
+if(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
+  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser;")
 }
 
 string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hascombatitem very small red dress; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; use very small red dress; endif; endif; skill saucegeyser; skill saucegeyser;";
