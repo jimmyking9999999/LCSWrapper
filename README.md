@@ -34,12 +34,17 @@ Note that these are the script's hard requirements. If you only have said seven 
 
 ## Other requirements:
 Your locket should have the following monsters in it: 
+
 [Red Skeleton](https://kol.coldfront.net/thekolwiki/index.php/Red_skeleton) - 100% weapon damage drop
+
 [Witchess Bishop](https://kol.coldfront.net/thekolwiki/index.php/Witchess_Bishop) - 50% item EPIC booze, gives extra turngen when needed
+
 [Ungulith](https://kol.coldfront.net/thekolwiki/index.php/Ungulith) - 200% weapon and spell damage. 
+
 
 A fully suited out VIP clan - You can set this clan by typing `lcswrapper help` in the GCLI.
 If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/thekolwiki/index.php/Fourth_of_May_Cosplay_Saber) and an [Industrial Fire Extinguisher](https://kol.coldfront.net/thekolwiki/index.php/Packaged_industrial_fire_extinguisher), you'll need a Faxbot whitelisted into your clan, for a [Factory Worker](https://kol.coldfront.net/thekolwiki/index.php/Factory_worker_\(female\)) fax.
+
 
 [Saucegeyser](https://kol.coldfront.net/thekolwiki/index.php/Saucegeyser), [Curse of Weaksauce](https://kol.coldfront.net/thekolwiki/index.php/Curse_of_Weaksauce), and [Itchy Curse Finger](https://kol.coldfront.net/thekolwiki/index.php/Itchy_Curse_Finger) - This trivializes most combat encounters we'll be facing, the latter two helping to regulate surviability and MP usage.
 
