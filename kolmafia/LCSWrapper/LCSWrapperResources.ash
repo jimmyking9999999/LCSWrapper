@@ -121,7 +121,7 @@ int test_turns(int test){
 		case 4:
 			return 60 - (my_buffedstat($stat[Moxie]) - my_basestat($stat[Moxie])) / 30;
 		case 5:
-			return 60 - floor(familiar_weight(my_familiar()) + round(numeric_modifier("familiar weight")) / 5);
+			return 60 - floor((familiar_weight(my_familiar()) + round(numeric_modifier("familiar weight"))) / 5);
 		case 6:
 			float modifier_1 = numeric_modifier("Weapon Damage");
 			float modifier_2 = numeric_modifier("Weapon Damage Percent");
@@ -188,7 +188,7 @@ string [int] powerlevel_effects = {
 	17:"Song of Bravado",
 	18:"Disdain of she-who-was",
 	19:"Blood Bond",
-	20:"Bendin' Hell"
+	20:"Bendin' Hell",
 	21:"END",
 }; 
 
@@ -293,7 +293,9 @@ string [int] weapon_damage_effects = {
 	11:"Song of the North",
 	12:"Feeling punchy",
 	13:"Engorged weapon",
-	14:"END",
+	14:"Pronounced Potency",
+	15:"Ham-fisted",
+	16:"END",
 }; 
 
 string [int] spell_damage_effects = {
