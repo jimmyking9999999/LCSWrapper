@@ -578,7 +578,7 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
 }
 
 if(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
-  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser;")
+  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser;");
 }
 
 string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hascombatitem very small red dress; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; use very small red dress; endif; endif; skill saucegeyser; skill saucegeyser;";
@@ -1123,7 +1123,7 @@ while(test_turns(6) > get_property("lcs_turn_threshold_weapon_damage").to_int())
   buff_up(6);
 }
 
-if(test_turns(6) > 8){
+if(test_turns(6) >= 4){ // Threshold that pulling yeg wpdmg is better then spell dmg 
   if((pulls_remaining() > 0) && (!have_effect($effect[Rictus of Yeg]).to_boolean())){
     print("Pulling a Yeg's Motel Toothbrush...", "teal");
 
