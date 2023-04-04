@@ -91,7 +91,7 @@ if((available_amount($item[S.I.T. Course Completion Certificate]).to_boolean()) 
   set_property("choiceAdventure1494", "");
 }
 
-maximize("0.2 mp, 0.2 hp, 0.1 item, 5 mysticality exp, 10 mysticality experience percent, mys percent, 0.1 mys, 0.001 DA, 690 bonus tiny stillsuit, 3000 bonus designer sweatpants, 1000 bonus latte lovers member's mug, 200 bonus jurassic parka, 200 bonus june cleaver, -equip broken champagne bottle, -equip Kramco Sausage-o-Matic -equip makeshift garbage shirt -equip i voted -tie", false);
+maximize("0.2 mp, 0.2 hp, 0.1 item, 3 familiar weight, 5 mysticality exp, 10 mysticality experience percent, mys percent, 0.1 mys, 0.001 DA, 690 bonus tiny stillsuit, 3000 bonus designer sweatpants, 1000 bonus latte lovers member's mug, 200 bonus jurassic parka, 200 bonus june cleaver, -equip broken champagne bottle, -equip Kramco Sausage-o-Matic -equip makeshift garbage shirt -equip i voted -tie", false);
 
 if(get_property("autumnatonUpgrades") == ""){
 cli_execute("Autumnaton send sleazy back alley");
@@ -150,14 +150,16 @@ if (have_effect($effect[Inscrutable Gaze]) == 0){
     use_skill(1, to_skill($effect[Inscrutable Gaze]));
 }
 
-
-// TODO
 if ((get_property("voteAlways").to_boolean()) && !(get_property("_voteToday").to_boolean())){
   visit_url('place.php?whichplace=town_right&action=townright_vote');
   waitq(1);
-  visit_url('choice.php?pwd&option=1&whichchoice=1331&g='+(random(2) + 1)+'&local[]=1&local[]=3',true,false);
+  if(my_class() == $class[Sauceror]){
+    visit_url('choice.php?pwd&option=1&whichchoice=1331&g='+(random(2) + 1)+'&local[]=1&local[]=1',true,false);
+  } else {
+    visit_url('choice.php?pwd&option=1&whichchoice=1331&g='+(random(2) + 1)+'&local[]=2&local[]=2',true,false);
+  }
   set_property("_voteToday", "true");
-}
+} 
 
 if (get_property('questM23Meatsmith') == 'unstarted') {
 	visit_url('shop.php?whichshop=meatsmith&action=talk');
@@ -228,10 +230,50 @@ if((get_property("_juneCleaverFightsLeft") == 0) && have_equipped($item[June Cle
 }
 
 if((have_familiar($familiar[Pair of Stomping Boots])) || (test)){
-  if(user_confirm("Do you want to stop for +8 turns saved? (Freerun in the shadow rift until you hit the mainstat train, reconfigure to coal -> mainstat -> meat and get to level 5. Pull a calzone after. Then rerun! It'll eat the calzone and be up a pull ^^)")){
-    //adv1
+  print("Do you want to stop for +8 turns saved? (Freerun in the shadow rift until you hit the mainstat train, reconfigure to coal -> mainstat -> meat and get to level 5. Pull a calzone after. Then rerun! It'll eat the calzone and be up a pull ^^)", "teal");
+  if(user_confirm("Test feature time! Press YES to continue")){
+    string shadow_freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
     
-  } // TODO: Automate this
+    if(have_familiar($familiar[Pair of Stomping Boots])){
+      get_effect($effect[Empathy]);
+      use_familiar($familiar[Pair of Stomping Boots]);
+      shadow_freerun = "runaway; abort";
+    } 
+    
+    
+    if(get_property("trainsetPosition").to_int() > 3 && my_level() < 3){
+      abort("Trainset went over myst, yet we're lower then level 3...");
+    }
+
+    while(get_property("trainsetPosition").to_int() < 3){
+      adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_freerun);
+    }
+
+
+    if(40 + get_property("lastTrainsetConfiguration").to_int() - get_property("trainsetPosition").to_int() >= 0){
+      print("Resetting train position to hit coal -> myst again!", "teal");
+      visit_url("campground.php?action=workshed");
+      visit_url("choice.php?pwd&whichchoice=1485&option=1&slot[0]=14&slot[1]=4&slot[2]=7&slot[3]=8&slot[4]=16&slot[5]=1&slot[6]=3&slot[7]=2",true,true);
+    }
+
+    while(get_property("trainsetPosition").to_int() < 5){
+      adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_freerun);
+      
+      if((get_property("_banderRunaways").to_int() * 5) >= numeric_modifier("Familiar Weight")){
+        abort("Uh-oh. Something went really wrong.");
+      }
+    }
+
+    if(my_level() < 5){
+      abort("Didn't reach the target goal of level 5!");
+    }
+
+    if(storage_amount($item[Calzone of Legend]).to_boolean()){
+      take_storage(1,$item[calzone of legend]);
+    } else {
+      print("We don't have a calzone of legend...", "red");
+    }
+  } 
 } else if((my_level() < 5) || (!item_amount($item[Calzone of Legend]).to_boolean())){
 
 if(!get_property("_borrowedTimeUsed").to_boolean()){
@@ -493,7 +535,7 @@ if(available_amount($item[beach comb]).to_boolean()) {
 	get_effect($effect[Do I know you from somewhere?]);
 }
 
-foreach eff in $effects[Glittering Eyelashes, Feeling Excited, Feeling Peaceful, Feeling Nervous, Pride of the Puffin, Ur-Kel's Aria of Annoyance, Ode to Booze, Inscrutable Gaze, Big, Saucemastery, Carol of the Thrills, Spirit of Cayenne, Blood Bubble, Bendin' Hell]{
+foreach eff in $effects[Glittering Eyelashes, Feeling Excited, Feeling Peaceful, Feeling Nervous, Pride of the Puffin, Ur-Kel's Aria of Annoyance, Ode to Booze, Inscrutable Gaze, Big, Saucemastery, Carol of the Thrills, Spirit of Cayenne, Blood Bubble, Bendin' Hell, Confidence of the Votive, Drescher's Annoying Noise]{
   get_effect(eff);
 }
 
@@ -518,7 +560,7 @@ if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (ava
   cli_execute("MCD 10");
 }
 
-if((my_sign() == "Blender") && (!have_effect($effect[Baconstoned]).to_boolean())){
+if((my_sign() == "Blender") && (!have_effect($effect[Baconstoned]).to_boolean() && (item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()))){
   retrieve_item(1, $item[vial of baconstone juice]);
   use(1, $item[vial of baconstone juice]); 
 }
@@ -583,7 +625,7 @@ if(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_bo
 
 string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hascombatitem very small red dress; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; use very small red dress; endif; endif; skill saucegeyser; skill saucegeyser;";
 string nep_freerun_sideways = "skill bowl sideways; endif; if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
-string nep_powerlevel_freekills = "if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
+string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
 set_property("choiceAdventure1324", 5);
 
 while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
@@ -631,17 +673,17 @@ while(freekills > 0){
 
   if(get_property("cosmicBowlingBallReturnCombats") == 0){
     adv1($location[The Neverending Party], -1, nep_freerun_sideways);
-  } else {
-    adv1($location[The Neverending Party], -1, nep_powerlevel_freekills);
   }
+  
+  adv1($location[The Neverending Party], -1, nep_powerlevel_freekills);
 
-freekills--;
-print(""+freekills+" freekill(s) left!","teal");
+  freekills--;
+  print(""+freekills+" freekill(s) left!","teal");
 }
 
 
 
-string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser";
+string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill sing along; skill sing along; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser";
 equip($item[Kramco Sausage-o-Matic&trade;]);
 
 if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
@@ -780,21 +822,22 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && availa
   equip($slot[Familiar], $item[Tiny Stillsuit]);
 }
 
-if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") == "Total Eclipse of Your Meat"){
-	cli_execute("Boombox fists");
-}
-
-
 
 if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
-  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407; skill 7407; endif; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
+  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
 
   if(get_property("questRufus") == "unstarted"){
+
+    set_property("choiceAdventure1497", "2");
     use(1, $item[closed-circuit pay phone]);
-    run_choice(2); // Artifact, as boss is a bit annoying to kill. TODO
+    // Artifact, as boss is a bit annoying to kill. TODO
   }
 
   while(have_effect($effect[Shadow Affinity]) > 0){
+
+    if((get_property("camelSpit") == "100" || get_property("camelSpit") == "0") && have_familiar($familiar[Cookbookbat])){
+      use_familiar($familiar[Cookbookbat]);
+    }
     adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
 
     if(handling_choice()){
@@ -1048,7 +1091,7 @@ if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of t
 	get_effect($effect[Elemental saucesphere]);
 	get_effect($effect[Astral shell]);
 	maximize("1000 spooky res, hp, mp", false);
-	restore_hp(800);
+  cli_execute("hottub");
   use_skill(1, $skill[Deep Dark Visions]);
 }
 
@@ -1097,30 +1140,24 @@ if((available_amount($item[genie bottle]).to_boolean()) && (!have_effect($effect
 
 if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (available_amount($item[Hewn moon-rune spoon]).to_boolean()) && (my_meat() > 2000)){
   retrieve_item(1, $item[Bitchin' Meatcar]);
+  foreach sl in $slots[acc1, acc2, acc3]{
+    if(equipped_item(sl) == $item[Hewn moon-rune spoon]){
+      equip(sl, $item[none]);
+    }
+  }
 	visit_url("inv_use.php?whichitem=10254&doit=96&whichsign=8");
 
   refresh();
 }
 
-if(my_sign() == "Blender"){
+if(my_sign() == "Blender" && !have_effect($effect[Engorged Weapon]).to_boolean() && ((item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()))){
   retrieve_item(1, $item[Meleegra&trade; pills]);
   use(1, $item[Meleegra&trade; pills]);
-
-  // TODO: 
 }
 
 if(my_inebriety() <= 13){
   use_skill(1, $skill[The Ode to Booze]);
   cli_execute("drink 1 Sockdollager");
-}
-
-
-if(!have_effect($effect[Bow-legged Swagger]).to_boolean()){
-  use_skill(1, $skill[Bow-Legged Swagger]);
-}
-
-while(test_turns(6) > get_property("lcs_turn_threshold_weapon_damage").to_int()){
-  buff_up(6);
 }
 
 if(test_turns(6) >= 4){ // Threshold that pulling yeg wpdmg is better then spell dmg 
@@ -1140,6 +1177,12 @@ if(test_turns(6) >= 4){ // Threshold that pulling yeg wpdmg is better then spell
     use(1, $item[Yeg's Motel Toothbrush]);
   }
 }
+
+while(test_turns(6) > get_property("lcs_turn_threshold_weapon_damage").to_int()){
+  buff_up(6);
+}
+
+
 
 print("Expected test turns: "+test_turns(6)+ " turns", "lime");
 cli_execute("Modtrace weapon damage");
@@ -1228,7 +1271,6 @@ if(test_turns(7) <= get_property("lcs_turn_threshold_spell_damage").to_int()){
 }
 }
 
-
 void donate_body_to_science(){
   visit_url("choice.php?whichchoice=1089&option=30&pwd");
   cli_execute("refresh all");
@@ -1238,7 +1280,7 @@ void donate_body_to_science(){
   refresh();
   cli_execute("make calzone of legend");
 
-  if((!item_amount($item[Bitchin' Meatcar]).to_boolean()) || (!item_amount($item[Desert Bus Pass]).to_boolean())){
+  if((!item_amount($item[Bitchin' Meatcar]).to_boolean()) && (!item_amount($item[Desert Bus Pass]).to_boolean())){
     cli_execute("make bitchin' meatcar");
   }
 
@@ -1246,11 +1288,19 @@ void donate_body_to_science(){
     cli_execute("cast 3 sweat out some booze");
   }
 
+  if(have_skill($skill[Lock Picking]).to_boolean()){
+    use_skill($skill[Lock Picking]); 
+    run_choice(1);
+  }
+
   cli_execute("breakfast");
 
   if(get_property("autumnatonUpgrades") == ""){
     cli_execute("autumnaton upgrade");
   }
+
+  // coal_hopper,meat_mine,ore_hopper,candy_factory,tower_fizzy,brain_silo,prawn_silo,trackside_diner
+  // TODO: Set this?
 }
 
 void sekrit(){
@@ -1464,7 +1514,7 @@ if(my_path().id != 25){
   abort("Not in Community Service");
 }
 
-if(((get_property("lcs_time_at_start").to_int() * 1.2) > now_to_int()) || ((get_property("lcs_time_at_start").to_int() * 1.2) < now_to_int())){
+if(((get_property("lcs_time_at_start").to_int() * 1.3) > now_to_int()) || ((get_property("lcs_time_at_start").to_int() * 1.3) < now_to_int())){
   set_property("lcs_time_at_start", now_to_int());
 }
 
