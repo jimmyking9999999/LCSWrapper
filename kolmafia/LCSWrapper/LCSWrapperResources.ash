@@ -1,3 +1,4 @@
+
 boolean get_effect(effect effe){
 
 	if (have_effect(effe).to_boolean()){
@@ -208,7 +209,10 @@ string [int] mox_effects = {
 	6:"Butt-rock hair",
 	7:"Unrunnable face",
 	8:"Feeling Excited",
-	9:"END",
+	9:"Quiet Desperation",
+	10:"Stevedave's Shanty of Superiority",
+	11:"The Moxious Madrigal",
+	12:"END",
 }; 
 
 string [int] mus_effects = {
@@ -241,8 +245,9 @@ string [int] item_effects = {
 	8:"Spice haze",
 	9:"Lantern-Charged",
 	10:"Wizard Sight",
-	11:"Feeling Lost",
-	12:"END",
+	11:"Glowing Hands",
+	12:"Feeling Lost",
+	13:"END",
 }; 
 
 string [int] hot_res_effects = {
@@ -262,7 +267,8 @@ string [int] fam_weight_effects = {
 	3:"Leash of Linguini",
 	4:"Blood Bond",
 	5:"Billiards Belligerence",
-	6:"END",
+	6:"Loyal as a Rock",
+	7:"END",
 }; 
 
 string [int] non_combat_effects = {
@@ -279,23 +285,24 @@ string [int] non_combat_effects = {
 }; 
 
 string [int] weapon_damage_effects = {
-	1:"Cowrruption",
-	2:"Billiards Belligerence",
-	3:"Scowl of the auk",
-	4:"Tenacity of the snapper",
-	5:"Frenzied, bloody",
-	6:"Disdain of the war snapper",
-	7:"Lack of body-building",
-	8:"Carol of the Bulls",
-	9:"Song of the North",
-	10:"Rage of the Reindeer",
-	11:"Song of the North",
-	12:"Feeling punchy",
-	13:"Engorged weapon",
-	14:"Pronounced Potency",
-	15:"Ham-fisted",
-	16:"END",
-}; 
+	1:"Bow-Legged Swagger",
+	2:"Cowrruption",
+	3:"Billiards Belligerence",
+	4:"Scowl of the auk",
+	5:"Tenacity of the snapper",
+	6:"Frenzied, bloody",
+	7:"Disdain of the war snapper",
+	8:"Lack of body-building",
+	9:"Carol of the Bulls",
+	10:"Song of the North",
+	11:"Rage of the Reindeer",
+	12:"Song of the North",
+	13:"Feeling punchy",
+	14:"Engorged weapon",
+	15:"Pronounced Potency",
+	16:"Ham-fisted",
+	17:"END",
+};
 
 string [int] spell_damage_effects = {
 	1:"We're all made of starfish",
