@@ -58,6 +58,30 @@ boolean get_effect(effect effe){
 	return have_effect(effe).to_boolean();
 } 
 
+boolean wish_effect(effect effe){
+	print(`Trying to wish for effect: {effe}`, "teal");
+	if(have_effect(effe).to_boolean())
+		return true;
+
+	if(available_amount($item[Cursed Monkey's Paw]).to_boolean()){
+		visit_url("main.php?action=cmonk&pwd");
+		run_choice(1, "wish=$" + effe);
+
+		if(have_effect(effe).to_boolean())
+			return true;
+	}
+
+  if(item_amount($item[Genie Bottle]).to_boolean() || item_amount($item[Pocket Wish]).to_boolean()){
+    cli_execute(`genie effect {effe}`);
+  }
+
+	visit_url("main.php");
+	return have_effect(effe).to_boolean();
+}
+
+
+
+
 string yip1;
 string yip2;
 string yip3;
