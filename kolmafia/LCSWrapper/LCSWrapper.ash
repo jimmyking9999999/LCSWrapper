@@ -230,8 +230,6 @@ if((get_property("_juneCleaverFightsLeft") == 0) && have_equipped($item[June Cle
 }
 
 if((have_familiar($familiar[Pair of Stomping Boots])) || (test)){
-  print("Do you want to stop for +8 turns saved? (Freerun in the shadow rift until you hit the mainstat train, reconfigure to coal -> mainstat -> meat and get to level 5. Pull a calzone after. Then rerun! It'll eat the calzone and be up a pull ^^)", "teal");
-  if(user_confirm("Test feature time! Press YES to continue")){
     string shadow_freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
     
     if(have_familiar($familiar[Pair of Stomping Boots])){
@@ -273,7 +271,6 @@ if((have_familiar($familiar[Pair of Stomping Boots])) || (test)){
     } else {
       print("We don't have a calzone of legend...", "red");
     }
-  } 
 } else if((my_level() < 5) || (!item_amount($item[Calzone of Legend]).to_boolean())){
 
 if(!get_property("_borrowedTimeUsed").to_boolean()){
@@ -398,7 +395,11 @@ if((sekrit) && (!have_effect($effect[All Wound Up]).to_boolean())){
 }
 */
 
-if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1)){
+
+
+if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1) && !wish_effect($effect[Different Way of Seeing Things])){
+
+  // Saves us a pull, which is more useful later!
 
   if(mall_price($item[Non-Euclidean angle]) > (50000 + 1.88 * get_property("valueOfAdventure").to_float())){
     print("Pulling a wish, as the angle is worth more ...", "teal");
@@ -429,20 +430,18 @@ if((get_property("_g9Effect").to_int() >= 200) && (have_effect($effect[Experimen
   }
   take_storage(1,$item[experimental serum G-9]);
   use(1, $item[experimental serum G-9]);
-} else if((have_effect($effect[New and Improved]) == 0) && (get_property("_g9Effect").to_int() <= 200) && (pulls_remaining() > 1)){
+} else if((have_effect($effect[New and Improved]) == 0) && (get_property("_g9Effect").to_int() <= 200) && (pulls_remaining() > 1) && !wish_effect($effect[New and Improved])){
   print("Pulling an warbear rejuvenation potion...", "teal");
+
   if(!storage_amount($item[warbear rejuvenation potion]).to_boolean()){
     buy_using_storage(1, $item[warbear rejuvenation potion]);
   }
   take_storage(1,$item[warbear rejuvenation potion]);
   use(1, $item[warbear rejuvenation potion]);
-} // TODO: Check if this is 50k+. If so, pull pocket wish and wish instead
+} 
 
 
-// TODO: Yikes haha
-if((available_amount($item[genie bottle]).to_boolean()) && (have_effect($effect[A Contender]) == 0)){
-  cli_execute("genie effect A Contender");
-}
+wish_effect($effect[A Contender]);
 
 if(!get_property('_clanFortuneBuffUsed').to_boolean()){
   if(test){
@@ -895,9 +894,7 @@ if((my_inebriety() < 6) && !have_effect($effect[Sacr&eacute; Mental]).to_boolean
   }
 }
 
-if((available_amount($item[genie bottle]).to_boolean()) && (!have_effect($effect[Infernal Thirst]).to_boolean())){
-  cli_execute("genie effect Infernal Thirst");
-}
+wish_effect($effect[Infernal Thirst]);
 
 refresh();
 
@@ -925,14 +922,14 @@ if(test_turns(9) <= get_property("lcs_turn_threshold_item").to_int()){
 void fam_weight_test(){
 
 foreach it in $familiars[]{
-  if(familiar_weight(it) > 6){
+  if(familiar_weight(it) > 8){
     use_familiar(it);
   }
 }
 
 maximize("Familiar weight", false);
 
-foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze]{
+foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze, Loyal as a Rock]{
   get_effect(it);
 }
 
@@ -1060,7 +1057,7 @@ while(test_turns(8) > get_property("lcs_turn_threshold_non_combat").to_int()){
 
 if(item_amount($item[Pocket Wish]) != 0){
   if((test_turns(8) > 12)){
-    cli_execute("genie effect Disquiet Riot");
+    wish_effect($effect[Disquiet Riot]);
   }
 } 
 
@@ -1134,9 +1131,8 @@ if((!item_amount($item[Red Eye]).to_boolean()) && (!have_effect($effect[Everythi
 }
 
 
-if((available_amount($item[genie bottle]).to_boolean()) && (!have_effect($effect[Outer Wolf&trade;]).to_boolean()) && ((get_property("_genieWishesUsed") != 3) || (item_amount($item[Pocket Wish]).to_boolean()))){
-  cli_execute("genie effect Outer Wolf&trade;");
-}
+wish_effect($effect[Outer Wolf&trade;]);
+
 
 if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (available_amount($item[Hewn moon-rune spoon]).to_boolean()) && (my_meat() > 2000)){
   retrieve_item(1, $item[Bitchin' Meatcar]);
@@ -1252,9 +1248,9 @@ if(pulls_remaining() > 0){
   use(1, $item[Tobiko marble soda]);
 }
 
-if(item_amount($item[Pocket Wish]) > 0){
-  cli_execute("genie effect Witch Breaded");
-}
+
+wish_effect($effect[Witch Breaded]);
+
 
 if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean() && (!have_effect($effect[Sigils of Yeg]).to_boolean())){
 	cli_execute("cargo item yeg's motel hand soap");
