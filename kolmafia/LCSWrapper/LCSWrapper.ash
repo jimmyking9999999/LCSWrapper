@@ -601,7 +601,8 @@ if(get_property("ownsSpeakeasy").to_boolean()){
   }
 }
 
-if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobster])){ 
+if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobster])){
+  familiar prev_fam = my_familiar(); 
   use_familiar($familiar[God lobster]);
 
   cli_execute("set choiceAdventure1310 = 3");
@@ -616,7 +617,10 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
       run_choice(3);
     }
   }
+
+  use_familiar(prev_fam);
 }
+
 
 if(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
   adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser;");
@@ -729,7 +733,7 @@ while(get_property("_backUpUses").to_int() < 10){
 
 void myst_test(){
 
-maximize("mys", false); 
+maximize("mys, switch left-hand man", false); 
 cli_execute("modtrace mys"); 
 
 print("Expected test turns: "+test_turns(3)+ " turns", "lime");
@@ -753,7 +757,7 @@ if(!have_effect($effect[Expert Oiliness]).to_boolean()){
   use(1, $item[Oil of Expertise]);
 }
 
-maximize("mox", false); 
+maximize("mox, switch left-hand man", false); 
 
 
 
@@ -773,7 +777,7 @@ visit_url("choice.php?whichchoice=1089&option=4&pwd");
 }
 
 void mus_test(){
-maximize("mus", false); 
+maximize("mus, switch left-hand man", false); 
 
 while(test_turns(1) > get_property("lcs_turn_threshold_mus").to_int()){
   buff_up(1);
@@ -789,7 +793,7 @@ visit_url("choice.php?whichchoice=1089&option=2&pwd");
 }
 
 void hp_test(){
-maximize("hp", false); 
+maximize("hp, switch left-hand man", false); 
 
 while(test_turns(1) > get_property("lcs_turn_threshold_hp").to_int()){
   buff_up(1);
@@ -816,6 +820,12 @@ if(my_sign() == "Blender"){
 
 
 void item_test(){
+
+foreach it in $familiars[]{
+  if(familiar_weight(it) > 8){
+    use_familiar(it);
+  }
+}
 
 if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
   equip($slot[Familiar], $item[Tiny Stillsuit]);
@@ -883,7 +893,7 @@ if(get_property("sourceTerminalEducateKnown") != ""){
   get_effect($effect[items.enh]);
 }
 
-maximize("item, booze drop, -equip broken champagne bottle", false); 
+maximize("item, booze drop, -equip broken champagne bottle, switch left-hand man", false); 
 
 if((my_inebriety() < 6) && !have_effect($effect[Sacr&eacute; Mental]).to_boolean()){
   use_skill(1, $skill[The Ode to Booze]);
@@ -1087,7 +1097,7 @@ if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 10
 if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of the Deep Dark Deeps]).to_boolean())){
 	get_effect($effect[Elemental saucesphere]);
 	get_effect($effect[Astral shell]);
-	maximize("1000 spooky res, hp, mp", false);
+	maximize("1000 spooky res, hp, mp, switch left-hand man", false);
   cli_execute("hottub");
   use_skill(1, $skill[Deep Dark Visions]);
 }
@@ -1104,9 +1114,27 @@ if (available_amount($item[beach comb]) > 0){
 	get_effect($effect[Lack of body-building]);
 }
 
-maximize("Weapon damage percent, weapon damage", false);
+maximize("Weapon damage percent, weapon damage, switch left-hand man", false);
 
 // TODO: Kung fu hustler lmao? +45 flat
+
+if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
+  foreach x, outfit_name in get_custom_outfits()
+    foreach x,piece in outfit_pieces(outfit_name)
+      if(piece.contains_text("Stick-Knife of Loathing")){
+        print(`Outfit '{outfit_name}' has a {piece} in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
+        take_storage(1, $item[Stick-knife of Loathing]);
+        use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+        outfit(outfit_name);
+      } 
+      
+      if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+        abort("Uh-oh, you don't have an outfit with a knife in it!");
+      }
+
+
+}
+
 
 
 if((my_meat() > 1000) && (!(get_property("_madTeaParty")).to_boolean())){
@@ -1213,7 +1241,7 @@ if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) 
 if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of the Deep Dark Deeps]).to_boolean())){
 	get_effect($effect[Elemental saucesphere]);
 	get_effect($effect[Astral shell]);
-	maximize("1000 spooky res, hp, mp", false);
+	maximize("1000 spooky res, hp, mp, switch left-hand man", false);
 	restore_hp(800);
   use_skill(1, $skill[Deep Dark Visions]);
 }
@@ -1235,7 +1263,7 @@ if(!have_effect($effect[Mental A-cue-ity]).to_boolean()){
   cli_execute("pool 2");
 }
 
-maximize("Spell damage, spell damage percent", false);
+maximize("Spell damage, spell damage percent, switch left-hand man", false);
 
 if(pulls_remaining() > 0){
   print("Pulling a tobiko marble soda...", "teal");
