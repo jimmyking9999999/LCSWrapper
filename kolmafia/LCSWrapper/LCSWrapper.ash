@@ -7,6 +7,7 @@ boolean test;
 boolean sekrit;
 boolean parka_spiked;
 string lcs_abort = "abort";
+string freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill 7301; skill 7301; endif";
 
 // Refreshes Mafia
 void refresh() {
@@ -177,7 +178,7 @@ if(item_amount($item[Ear Candle]).to_boolean()){
   get_effect($effect[The Odour of Magick]);
 }
 
-string cs_wrapper_freerun = "if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; call freerun; sub freerun; if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; endsub;";
+string cs_wrapper_freerun = `if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; call freerun; sub freerun; {freerun}; endsub;`;
 cli_execute("/aa none");
 set_property("customCombatScript", "default");
 
@@ -324,6 +325,11 @@ if((available_amount($item[Kramco Sausage-o-Matic&trade;]).to_boolean()) && (!ge
   if(have_familiar($familiar[Melodramedary])){
   use_familiar($familiar[Melodramedary]);
   }
+
+  if(my_hp() < my_maxhp()){
+    cli_execute("hottub");
+  }
+
   string cswrappersideways = "if hasskill	Fire Extinguisher: Foam 'em Up; skill Fire Extinguisher: Foam 'em Up; endif; if hasskill bowl sideways; skill bowl sideways; endif; if hascombatitem red rocket; use red rocket; endif; if hasskill Launch spikolodon spikes; skill Launch spikolodon spikes; endif; attack;";
   adv1($location[The Neverending Party], -1, cswrappersideways);
   parka_spiked = true;
@@ -457,7 +463,21 @@ if(available_amount($item[pebble of proud pyrite]).to_boolean()){
 }
 
 if (!get_property('_floundryItemCreated').to_boolean()){
-  cli_execute("acquire Fish Hatchet"); 
+  if(test){
+  cli_execute("acquire Codpiece"); 
+  } else { 
+    cli_execute("acquire Fish Hatchet"); 
+  }
+}
+
+if(item_amount($item[portable pantogram]) > 0 && available_amount($item[pantogram pants]) == 0) {
+	visit_url(`inv_use.php?which=3&whichitem=9573&pwd={my_hash()}`, false, true);
+	// Mys, Hot res, MP, Spell, -Combat
+  // &s2 = -1,0 for weapon damage or -2,0 for spell
+
+	visit_url(`choice.php?pwd&whichchoice=1270&option=1&e=1&s1=-2,0&s2=-2,0&s3=-1,0&m=2`,true,true);
+  
+	cli_execute("refresh all");
 }
 
 print("Maximizing for mainstat buffs!", "teal");
@@ -494,6 +514,10 @@ if(available_amount($item[A ten-percent bonus]).to_boolean()){
 
 if((available_amount($item[Bastille Battalion control rig]).to_boolean()) && (!get_property("_bastilleGames").to_boolean())){
   cli_execute("bastille mainstat brutalist");
+}
+
+if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`) && get_property(`timesRested`) == `0`){
+  visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
 }
 
 if(!storage_amount($item[Calzone of Legend]).to_boolean()){
@@ -538,6 +562,10 @@ foreach eff in $effects[Glittering Eyelashes, Feeling Excited, Feeling Peaceful,
   get_effect(eff);
 }
 
+if(my_class() == $class[Pastamancer] && my_thrall() == $thrall[None] && have_skill($skill[Bind Spice Ghost])){
+  use_skill($skill[Bind Spice Ghost]);
+}
+
 if((have_effect($effect[On the Trolley]) == 0) && !(test)){
   cli_execute("drink 1 bee's knees");
 }
@@ -570,12 +598,6 @@ if(my_hp() < my_maxhp()){
   cli_execute("hottub");
 }
 
-
-// TODO: Remove lantern-charged in favour of +150% spell damage, as we have dynamic buff handling now.
-foreach it in $effects[Lantern-Charged, Ermine Eyes]{
-  get_effect(it);
-}
-
 if(!have_effect($effect[Mystically Oiled]).to_boolean()){
   create(1, $item[Ointment of the Occult]);
   use(1, $item[Ointment of the Occult]);
@@ -596,13 +618,14 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && availa
 
 if(get_property("ownsSpeakeasy").to_boolean()){
   while(get_property("_speakeasyFreeFights") < 3){
-    adv1($location[An Unusually Quiet Barroom Brawl]);
-    // TODO: Add map support
+    adv1($location[An Unusually Quiet Barroom Brawl], -1, "if hasskill sing along; skill sing along; endif; attack;");
+    // TODO: Add map support for imported taffy
   }
 }
 
+familiar prev_fam = my_familiar();
+
 if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobster])){
-  familiar prev_fam = my_familiar(); 
   use_familiar($familiar[God lobster]);
 
   cli_execute("set choiceAdventure1310 = 3");
@@ -622,31 +645,39 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
 }
 
 
-if(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
-  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser;");
+while(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
+  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
+}
+
+// ghost yoked
+
+if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holiday Yoked]).to_boolean()){
+  use_familiar($familiar[Ghost of Crimbo Carols]);
 }
 
 string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hascombatitem very small red dress; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; use very small red dress; endif; endif; skill saucegeyser; skill saucegeyser;";
-string nep_freerun_sideways = "skill bowl sideways; endif; if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
+string nep_freerun_sideways = `skill bowl sideways; {freerun}; abort`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
 set_property("choiceAdventure1324", 5);
 
 while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
-  
-    adv1($location[The Neverending Party], -1, nep_powerlevel);
+  adv1($location[The Neverending Party], -1, nep_powerlevel);
 
-    if((!have_effect($effect[\[1701\]Hip to the Jive]).to_boolean()) && (my_meat() >= 5000)){
-      cli_execute("drink 1 hot socks");
-    }
+  if((!have_effect($effect[\[1701\]Hip to the Jive]).to_boolean()) && (my_meat() >= 5000)){
+    cli_execute("drink 1 hot socks");
+  }
+    
+  if(my_familiar() == $familiar[Ghost of Crimbo Carols] && have_effect($effect[Holiday Yoked]).to_boolean()){
+    use_familiar(prev_fam);
+  }
 
-    if(available_amount($item[Autumn-aton]).to_boolean()){
-      cli_execute("autumnaton send The Neverending Party");
-    } // TODO: Autumn-aton upgrade
+  if(available_amount($item[Autumn-aton]).to_boolean()){
+    cli_execute("autumnaton send The Neverending Party");
+  } // TODO: Autumn-aton upgrade
 
-    if(have_effect($effect[Beaten Up]).to_boolean()){
-      abort("We got beaten up =(");
-    }
-
+  if(have_effect($effect[Beaten Up]).to_boolean()){
+    abort("We got beaten up =(");
+  }
   
   if(get_property("cosmicBowlingBallReturnCombats") == 0){
     adv1($location[The Neverending Party], -1, nep_freerun_sideways);
@@ -734,7 +765,8 @@ while(get_property("_backUpUses").to_int() < 10){
 void myst_test(){
 
 maximize("mys, switch left-hand man", false); 
-cli_execute("modtrace mys"); 
+get_modtrace("Mysticality");
+newline();
 
 print("Expected test turns: "+test_turns(3)+ " turns", "lime");
 
@@ -765,7 +797,9 @@ while(test_turns(4) > get_property("lcs_turn_threshold_mox").to_int()){
   buff_up(4);
 } 
 
-cli_execute("modtrace mox");
+get_modtrace("Moxie");
+newline();
+
 print("Expected test turns: "+test_turns(4)+ " turns", "lime");
 
 visit_url("council.php");
@@ -779,15 +813,17 @@ visit_url("choice.php?whichchoice=1089&option=4&pwd");
 void mus_test(){
 maximize("mus, switch left-hand man", false); 
 
-while(test_turns(1) > get_property("lcs_turn_threshold_mus").to_int()){
-  buff_up(1);
+while(test_turns(2) > get_property("lcs_turn_threshold_mus").to_int()){
+  buff_up(2);
 } 
 
-cli_execute("modtrace mus");
-print("Expected test turns: "+test_turns(1)+ " turns", "lime");
+get_modtrace("Muscle");
+newline();
+
+print("Expected test turns: "+test_turns(2)+ " turns", "lime");
 
 visit_url("council.php");
-if(test_turns(1) <= get_property("lcs_turn_threshold_mus").to_int()){
+if(test_turns(2) <= get_property("lcs_turn_threshold_mus").to_int()){
 visit_url("choice.php?whichchoice=1089&option=2&pwd");
 }
 }
@@ -800,7 +836,9 @@ while(test_turns(1) > get_property("lcs_turn_threshold_hp").to_int()){
 }
 
 
-cli_execute("modtrace hp");
+get_modtrace("HP");
+newline();
+
 print("Expected test turns: "+test_turns(1)+ " turns", "lime");
 
 visit_url("council.php");
@@ -822,7 +860,7 @@ if(my_sign() == "Blender"){
 void item_test(){
 
 foreach it in $familiars[]{
-  if(familiar_weight(it) > 8){
+  if(familiar_weight(it) > 8 && it != $familiar[Homemade Robot]){
     use_familiar(it);
   }
 }
@@ -839,7 +877,7 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 
     set_property("choiceAdventure1497", "2");
     use(1, $item[closed-circuit pay phone]);
-    // Artifact, as boss is a bit annoying to kill. TODO
+    /* Artifact, as boss is a bit annoying to kill. TODO */
   }
 
   while(have_effect($effect[Shadow Affinity]) > 0){
@@ -864,7 +902,7 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 
   string choicebefore = get_property("choiceAdventure1500");
   set_property("choiceAdventure1500", "2");
-  adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, lcs_abort);
+  adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, "abot");
   set_property("choiceAdventure1500", choicebefore);
 }
 
@@ -902,9 +940,10 @@ if((my_inebriety() < 6) && !have_effect($effect[Sacr&eacute; Mental]).to_boolean
   if(available_amount($item[Tiny Stillsuit]).to_boolean()){
     cli_execute("drink stillsuit distillate");
   }
-}
+} 
 
 wish_effect($effect[Infernal Thirst]);
+
 
 refresh();
 
@@ -912,8 +951,9 @@ while(test_turns(9) > get_property("lcs_turn_threshold_item").to_int()){
   buff_up(9);
 }
 
-cli_execute("Modtrace item");
-cli_execute("Modtrace booze");
+get_modtrace(item_modifiers);
+newline();
+
 refresh();
 
 print("Expected test turns: "+test_turns(9)+ " turns", "lime");
@@ -1031,7 +1071,9 @@ while(test_turns(10) > get_property("lcs_turn_threshold_hot_res").to_int()){
   buff_up(10);
 }
 
-cli_execute("modtrace hot resistance");
+get_modtrace("Hot resistance");
+newline();
+
 print("Expected test turns: "+test_turns(10)+ " turns", "lime");
 
 visit_url("council.php");
@@ -1087,11 +1129,28 @@ void weapon_damage_test(){
 if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 100) && !have_effect($effect[Spit upon]).to_boolean()){
   print("Getting spit on!", "teal");
   use_familiar($familiar[Melodramedary]);
-  string spit_on_me = "if hasskill Meteor Shower; skill Meteor Shower; skill Use the Force; endif; skill 7340; if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; if hasskill bowl a curveball; skill bowl a curveball; endif;";
+  string spit_on_me = "if hasskill Meteor Shower; skill Meteor Shower; skill Use the Force; endif; skill 7340;  endif; if hasskill bowl a curveball; skill bowl a curveball; endif;";
   adv1($location[The Neverending Party], -1, spit_on_me);
   if(choice_follows_fight()){
     run_choice(1);
   }
+}
+
+if(have_familiar($familiar[Ghost of Crimbo Carols])){
+  print("Getting Do You Crush What I Crush?", "teal");
+
+  use_familiar($familiar[Ghost of Crimbo Carols]);
+
+  if(item_amount($item[Kramco Sausage-o-Matic&trade;]).to_boolean()){
+    equip($item[Kramco Sausage-o-Matic&trade;]);
+  }
+
+  if(have_effect($effect[Feeling Lost]).to_boolean()){
+    abort("We have feeling lost... Maybe fax a sausage goblin?");
+  } 
+
+  adv1($location[The Outskirts of Cobb's Knob], -1, `if monsterid 2104; skill saucegeyser; endif; {freerun}; abort;`);
+
 }
 
 if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of the Deep Dark Deeps]).to_boolean())){
@@ -1209,7 +1268,8 @@ while(test_turns(6) > get_property("lcs_turn_threshold_weapon_damage").to_int())
 
 
 print("Expected test turns: "+test_turns(6)+ " turns", "lime");
-cli_execute("Modtrace weapon damage");
+get_modtrace("Weapon damage");
+newline();
 
 visit_url("council.php");
 if(test_turns(6) <= get_property("lcs_turn_threshold_weapon_damage").to_int()){
@@ -1276,14 +1336,15 @@ if(pulls_remaining() > 0){
   use(1, $item[Tobiko marble soda]);
 }
 
-
 wish_effect($effect[Witch Breaded]);
-
 
 if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean() && (!have_effect($effect[Sigils of Yeg]).to_boolean())){
 	cli_execute("cargo item yeg's motel hand soap");
   use(1, $item[Yeg's Motel hand soap]);
 }
+
+get_modtrace(spell_modifiers);
+newline();
 
 print("Expected test turns: "+test_turns(7)+ " turns", "lime");
 
@@ -1329,13 +1390,14 @@ void donate_body_to_science(){
 
 void sekrit(){
   print("OwO", "lime");
+  sekrit = true;
+  
+	get_modtrace(spell_modifiers);
+
 
   // TEST //
 
-
-  /* while(test_turns(7) > 1){
-    buff_up(7);
-  } */ 
+  abort();
 
   // TEST END //
 }
@@ -1487,7 +1549,10 @@ if(available_choices["help"].to_boolean()){
     print("");
 
     foreach it in $strings[mys, mox, mus, hp, item, hot_res, fam_weight, non_combat, weapon_damage, spell_damage]{ // Turn thresholds
-      string threshold = user_prompt(`Turn threshold for test {it}? (Leave blank to use last used value)`).to_int();
+      matcher space = create_matcher(" ", it);
+      string test = replace_all(space, "_");
+
+      string threshold = user_prompt(`Turn threshold for test {test}? (Leave blank to use last used value of [{get_property(`lcs_turn_threshold_{it}`)}])`).to_int();
 
       if((threshold.to_int() == 0) && (get_property(`lcs_turn_threshold_{it}`) != "")){
         print("Skipping!", "teal");
