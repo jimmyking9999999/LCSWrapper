@@ -67,15 +67,18 @@ boolean wish_effect(effect effe){
 		visit_url("main.php?action=cmonk&pwd");
 		run_choice(1, "wish=$" + effe);
 
+		visit_url("main.php");
+
+
 		if(have_effect(effe).to_boolean())
 			return true;
 	}
+
 
   if(item_amount($item[Genie Bottle]).to_boolean() || item_amount($item[Pocket Wish]).to_boolean()){
     cli_execute(`genie effect {effe}`);
   }
 
-	visit_url("main.php");
 	return have_effect(effe).to_boolean();
 }
 
@@ -236,7 +239,8 @@ string [int] mox_effects = {
 	9:"Quiet Desperation",
 	10:"Stevedave's Shanty of Superiority",
 	11:"The Moxious Madrigal",
-	12:"END",
+	12:"aMAZing",
+	13:"END",
 }; 
 
 string [int] mus_effects = {
@@ -270,8 +274,9 @@ string [int] item_effects = {
 	9:"Lantern-Charged",
 	10:"Wizard Sight",
 	11:"Glowing Hands",
-	12:"Feeling Lost",
-	13:"END",
+	12:"Ermine Eyes",
+	13:"Feeling Lost",
+	14:"END",
 }; 
 
 string [int] hot_res_effects = {
@@ -321,16 +326,17 @@ string [int] weapon_damage_effects = {
 	10:"Song of the North",
 	11:"Rage of the Reindeer",
 	12:"Song of the North",
-	13:"Feeling punchy",
-	14:"Engorged weapon",
-	15:"Pronounced Potency",
-	16:"Ham-fisted",
-	17:"END",
+	13:"Imported Strength",
+	14:"Feeling punchy",
+	15:"Engorged weapon",
+	16:"Pronounced Potency",
+	17:"Ham-fisted",
+	18:"END",
 };
 
 string [int] spell_damage_effects = {
 	1:"We're all made of starfish",
-	2:"Jackasses' symphony of destruction",
+	2:"Jackasses' Symphony of Destruction",
 	3:"Cowrruption",
 	4:"Arched eyebrow of the archmage",
 	5:"AA-Charged",
@@ -338,9 +344,11 @@ string [int] spell_damage_effects = {
 	7:"Spirit of Peppermint",
 	8:"Song of Sauce",
 	9:"Mental A-cue-ity",
-	10:"AAA-Charged",
-	11:"D-Charged",
-	12:"END",
+	10:"Imported Strength",
+	11:"AAA-Charged",
+	12:"D-Charged",
+	13:"Concentration",
+	14:"END",
 }; 
 
 
@@ -549,3 +557,191 @@ switch (test) {
 
 }
 }
+
+// From Panto
+
+void get_modtrace(string modifier, boolean exact) {
+	string html_output = cli_execute_output("modtrace " + modifier);
+	float val, total_val = 0;
+ 
+	string header = substring(html_output, index_of(html_output, "<tr>") + 4, index_of(html_output, "</tr>"));
+	string [int] headers;
+	string [int] [int] gs = group_string(header, "(>)(.*?)(</td>)");
+	int exact_col = -1;
+	foreach idx in gs {
+		headers[idx] = gs[idx][2];
+		if (to_lower_case(headers[idx]) == to_lower_case(modifier)) exact_col = idx;			
+	}
+ 
+	if (exact && exact_col == -1) {
+		print("Could not find exact string match of " + modifier, "red");
+		return;
+	}
+ 
+	if (to_lower_case(modifier) == "familiar weight") {
+		print("[Familiar Weight] Base weight (" + familiar_weight(my_familiar()) + ")");
+		total_val += familiar_weight(my_familiar());
+	}
+ 
+	html_output = substring(html_output, index_of(html_output, "</tr>") + 5, index_of(html_output, "</table>"));
+	string row, source;
+	string [int] row_data;
+	int idx_start, idx_end;	
+ 
+	while (html_output.length() > 0) {
+		idx_start = index_of(html_output, "<tr>");
+		idx_end = index_of(html_output, "</tr>");
+		if (idx_start == -1) break;
+		row = substring(html_output, idx_start + 4, idx_end);
+		row = replace_all(create_matcher("(>)(</td>)", row), ">0</td>");		
+		gs = group_string(row, "(>)(.*?)(</td>)");
+		foreach idx in gs {
+			row_data[idx] = gs[idx][2];
+			if (idx > 1) {
+				val = row_data[idx].to_float();
+				if (val != 0 && idx%2 == 0 && (!exact || (exact && (idx/2 + 1 == exact_col)))) {				
+					print("[" + headers[idx/2 + 1] + "] " + row_data[1] + " (" + val + ")");
+					total_val += val;
+				}	
+			}
+ 
+		}		
+		html_output = substring(html_output, idx_end + 5);
+	}
+ 
+	if (to_lower_case(modifier) == "weapon damage") {
+		if (have_effect($effect[bow-legged swagger]) > 0) {
+			print("[Weapon Damage] Bow-Legged Swagger (" + total_val + ")");
+			total_val += total_val;
+		}
+	} else if (to_lower_case(modifier) == "weapon damage percent") {
+		if (have_effect($effect[bow-legged swagger]) > 0) {
+			print("[Weapon Damage Percent] Bow-Legged Swagger (" + total_val + ")");
+			total_val += total_val;
+		}
+	}
+ 
+	print("Total " + modifier + ": " + total_val, "lime");
+}
+ 
+void get_modtrace(string modifier) {
+	get_modtrace(modifier, true);
+}
+ 
+void get_modtrace(string [int] modifiers, string base_modifier) {
+	string html_output = cli_execute_output("modtrace " + base_modifier);
+	float val;
+	float [string] total_val;
+ 
+	string header = substring(html_output, index_of(html_output, "<tr>") + 4, index_of(html_output, "</tr>"));
+	string [int] headers;
+	string [int] [int] gs = group_string(header, "(>)(.*?)(</td>)");
+	int [int] good_cols; 
+
+	foreach idx in gs {
+		headers[idx] = gs[idx][2];
+		foreach key in modifiers {
+			if (to_lower_case(headers[idx]) == to_lower_case(modifiers[key])) {
+				good_cols[idx] = key;
+				total_val[headers[idx]] = 0.0;
+			}
+		}		
+	}
+ 
+	if (to_lower_case(base_modifier) == "familiar weight") {
+		print("[Familiar Weight] Base weight (" + familiar_weight(my_familiar()) + ")");
+		total_val["Familiar Weight"] += familiar_weight(my_familiar());
+	}
+ 
+	html_output = substring(html_output, index_of(html_output, "</tr>") + 5, index_of(html_output, "</table>"));
+	string row, source;
+	string [int] row_data;
+	int idx_start, idx_end;	
+ 
+	while (html_output.length() > 0) {
+		idx_start = index_of(html_output, "<tr>");
+		idx_end = index_of(html_output, "</tr>");
+		if (idx_start == -1) break;
+		row = substring(html_output, idx_start + 4, idx_end);
+		row = replace_all(create_matcher("(>)(</td>)", row), ">0</td>");		
+		gs = group_string(row, "(>)(.*?)(</td>)");
+		foreach idx in gs {
+			row_data[idx] = gs[idx][2];
+			if (idx > 1) {
+				val = row_data[idx].to_float();
+				foreach col in good_cols {
+					if (val != 0 && idx%2 == 0 && (idx/2 + 1 == col)) {				
+						print("[" + headers[idx/2 + 1] + "] " + row_data[1] + " (" + val + ")");
+						total_val[headers[idx/2 + 1]] += val;
+					}	
+				}
+			}
+ 
+		}		
+		html_output = substring(html_output, idx_end + 5);
+	}
+ 
+	foreach key in modifiers {
+		if (to_lower_case(modifiers[key]) == "weapon damage") {
+			if (have_effect($effect[bow-legged swagger]) > 0) {
+				print("[Weapon Damage] Bow-Legged Swagger (" + total_val["Weapon Damage"] + ")");
+				total_val["Weapon Damage"] *= 2;
+			}
+		} else if (to_lower_case(modifiers[key]) == "weapon damage percent") {
+			if (have_effect($effect[bow-legged swagger]) > 0) {
+				print("[Weapon Damage Percent] Bow-Legged Swagger (" + total_val["Weapon Damage Percent"] + ")");
+				total_val["Weapon Damage Percent"] *= 2;
+			}
+		}
+	}
+ 
+	float total = 0.0;
+	foreach key in total_val {
+		total += total_val[key];
+		print(key + " => " + total_val[key], "teal");
+	}	
+ 
+	print("Total " + base_modifier + ": " + total, "lime");
+}
+ 
+void get_modtrace(string [int] modifiers) {
+	int [int] base_modifiers;
+	foreach key in modifiers {
+		base_modifiers[key] = 1;
+	}
+ 
+	foreach key_this in modifiers {
+		foreach key_next in modifiers {
+			if (key_this != key_next && contains_text(modifiers[key_this], modifiers[key_next])) {				
+				base_modifiers[key_this] = 0;
+				break;
+			}
+		}
+	}
+ 
+	foreach key_this in modifiers {
+		if (base_modifiers[key_this] == 0) continue;
+ 
+		string [int] modifiers_subset;
+		modifiers_subset[key_this] = modifiers[key_this];		
+ 
+		foreach key_next in modifiers {
+			if (key_this != key_next && contains_text(modifiers[key_next], modifiers[key_this])) {
+				modifiers_subset[key_next] = modifiers[key_next];
+			}
+		}		
+		get_modtrace(modifiers_subset, modifiers[key_this]);
+	}
+}
+
+string [int] spell_modifiers = {
+	0: "Spell Damage Percent",
+	1: "Spell Damage",
+	2: "Sauce Spell Damage"
+};
+
+ 
+string [int] item_modifiers = {
+	0: "Item Drop",
+	1: "Booze Drop"
+};
