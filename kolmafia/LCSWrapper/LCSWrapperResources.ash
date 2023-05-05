@@ -64,10 +64,23 @@ boolean wish_effect(effect effe){
 		return true;
 
 	if(available_amount($item[Cursed Monkey's Paw]).to_boolean()){
+
+		boolean equipped_paw;
+
+		foreach it in $slots[Acc1, acc2, acc3]{
+			if(equipped_item(it) == $item[Cursed Monkey's Paw]){
+				equip(it, $item[None]);
+				equipped_paw = true;
+			}
+		}
 		visit_url("main.php?action=cmonk&pwd");
 		run_choice(1, "wish=$" + effe);
 
 		visit_url("main.php");
+
+		if(equipped_paw){
+			cli_execute("equip Cursed Monkey's Paw");
+		}
 
 
 		if(have_effect(effe).to_boolean())
@@ -253,7 +266,8 @@ string [int] mus_effects = {
 	7:"Song of bravado",
 	8:"Quiet determination",
 	9:"Feeling excited",
-	10:"END",
+	10:"Phorcefullness",
+	11:"END",
 }; 
 
 string [int] hp_effects = {
