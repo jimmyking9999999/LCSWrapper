@@ -6,9 +6,9 @@ KoL Script to handle a softcore Community Service ascension as a sauceror. This 
 
 To install, paste the following into the CGLI:
 
-~~`git checkout https://github.com/jimmyking9999999/LCSWrapper.git`~~
+`git checkout https://github.com/jimmyking9999999/LCSWrapper.git main`
 
-Edit: This doesn't work. Download the files manually and put them in your scripts folder instead!
+WARNING: This may? not work. Download the files manually and put them in your scripts folder instead!
 
 To run, simply type `lcswrapper` into the CGLI.
 
@@ -52,7 +52,7 @@ A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_
 
 ## Ascending into CS:
 
-This script only works for saucerors at the current moment, and hardcore is not supported. Most moon signs should be fine - If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Sauceror/Wallaby is best, as we'll be able to get early beach access for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned) for easier powerleveling. An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is preferred, due to the much larger turngen, and will be used as the primary source of adventures in the run. Most pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred.
+This script only works for myst classes at the current moment, and hardcore is not supported. Most moon signs should be fine - If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best, as we'll be able to get early beach access for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned) for easier powerleveling. An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is preferred, due to the much larger turngen, and will be used as the primary source of adventures in the run. Most pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred.
 
 
 ## Additional Information:
