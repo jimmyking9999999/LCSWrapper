@@ -138,6 +138,10 @@ set_auto_attack("none");
 cli_execute("backupcamera reverser on");
 cli_execute("garden pick");
 
+if(item_amount($item[Whet Stone]).to_boolean()){
+  use(1, $item[Whet Stone]);
+}
+
 }
 
 // (clan_viplounge.php?preaction=lovetester);
@@ -252,7 +256,7 @@ if((have_familiar($familiar[Pair of Stomping Boots])) || (test)){
     if(40 + get_property("lastTrainsetConfiguration").to_int() - get_property("trainsetPosition").to_int() >= 0){
       print("Resetting train position to hit coal -> myst again!", "teal");
       visit_url("campground.php?action=workshed");
-      visit_url("choice.php?pwd&whichchoice=1485&option=1&slot[0]=14&slot[1]=4&slot[2]=7&slot[3]=8&slot[4]=16&slot[5]=1&slot[6]=3&slot[7]=2",true,true);
+      visit_url("choice.php?pwd&whichchoice=1485&option=1&slot[0]=14&slot[1]=4&slot[2]=7&slot[3]=8&slot[4]=16&slot[5]=1&slot[6]=3&slot[7]=17",true,true);
     }
 
     while(get_property("trainsetPosition").to_int() < 5){
@@ -402,40 +406,48 @@ if((sekrit) && (!have_effect($effect[All Wound Up]).to_boolean())){
 */
 
 
+if(!item_amount($item[Cincho de Mayo]).to_boolean()){
 
-if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1) && !wish_effect($effect[Different Way of Seeing Things])){
+  if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1) && !wish_effect($effect[Different Way of Seeing Things])){
 
-  // Saves us a pull, which is more useful later!
+    // Saves us a pull, which is more useful later!
 
-  if(mall_price($item[Non-Euclidean angle]) > (50000 + 1.88 * get_property("valueOfAdventure").to_float())){
-    print("Pulling a wish, as the angle is worth more ...", "teal");
-    if(!storage_amount($item[Pocket Wish]).to_boolean()){
-      buy_using_storage(1, $item[Pocket Wish]);
+    if(mall_price($item[Non-Euclidean angle]) > (50000 + 1.88 * get_property("valueOfAdventure").to_float())){
+      print("Pulling a wish, as the angle is worth more ...", "teal");
+      if(!storage_amount($item[Pocket Wish]).to_boolean()){
+        buy_using_storage(1, $item[Pocket Wish]);
+      }
+      take_storage(1,$item[Pocket Wish]);
+      cli_execute("genie effect Different Way of Seeing Things");
+          
+    } else { 
+      print("Pulling an non-Euclidean angle...", "teal");
+      if(!storage_amount($item[non-Euclidean angle]).to_boolean()){
+        buy_using_storage(1, $item[non-Euclidean angle]);
+      }
+      take_storage(1,$item[non-Euclidean angle]);
+      use(1, $item[non-Euclidean angle]);
+
     }
-    take_storage(1,$item[Pocket Wish]);
-    cli_execute("genie effect Different Way of Seeing Things");
-        
-  } else { 
-    print("Pulling an non-Euclidean angle...", "teal");
-    if(!storage_amount($item[non-Euclidean angle]).to_boolean()){
-      buy_using_storage(1, $item[non-Euclidean angle]);
-    }
-    take_storage(1,$item[non-Euclidean angle]);
-    use(1, $item[non-Euclidean angle]);
-
   }
+
 }
+
 visit_url("desc_item.php?whichitem=661049168");
 refresh();
 
 
 if((get_property("_g9Effect").to_int() >= 200) && (have_effect($effect[Experimental Effect G-9]) == 0) && (pulls_remaining() > 1)){
-  print("Pulling an experimental serum G-9...", "teal");
-  if(!storage_amount($item[experimental serum G-9]).to_boolean()){
-    buy_using_storage(1, $item[experimental serum G-9]);
+  print("Getting experimental effect G-9...", "teal");
+
+  if(!wish_effect($effect[Experimental Effect G-9])){
+    if(!storage_amount($item[experimental serum G-9]).to_boolean()){
+      buy_using_storage(1, $item[experimental serum G-9]);
+    }
+    take_storage(1,$item[experimental serum G-9]);
+    use(1, $item[experimental serum G-9]);
   }
-  take_storage(1,$item[experimental serum G-9]);
-  use(1, $item[experimental serum G-9]);
+
 } else if((have_effect($effect[New and Improved]) == 0) && (get_property("_g9Effect").to_int() <= 200) && (pulls_remaining() > 1) && !wish_effect($effect[New and Improved])){
   print("Pulling an warbear rejuvenation potion...", "teal");
 
@@ -447,7 +459,8 @@ if((get_property("_g9Effect").to_int() >= 200) && (have_effect($effect[Experimen
 } 
 
 
-wish_effect($effect[A Contender]);
+if(!test)
+  wish_effect($effect[A Contender]);
 
 if(!get_property('_clanFortuneBuffUsed').to_boolean()){
   if(test){
@@ -592,7 +605,7 @@ if((my_sign() == "Blender") && (!have_effect($effect[Baconstoned]).to_boolean() 
   use(1, $item[vial of baconstone juice]); 
 }
 
-maximize("myst, 5 ML, 3 exp, 30 mysticality experience percent, 5 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic", false); 
+maximize("myst, 5 ML, 3 exp, 30 mysticality experience percent, 5 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, 100 bonus Cincho de Mayo", false); 
 
 if(my_hp() < my_maxhp()){
   cli_execute("hottub");
@@ -655,7 +668,7 @@ if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holi
   use_familiar($familiar[Ghost of Crimbo Carols]);
 }
 
-string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hascombatitem very small red dress; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; use very small red dress; endif; endif; skill saucegeyser; skill saucegeyser;";
+string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser;";
 string nep_freerun_sideways = `skill bowl sideways; {freerun}; abort`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
 set_property("choiceAdventure1324", 5);
@@ -701,7 +714,7 @@ while(freekills > 0){
     cli_execute("drink 1 hot socks");
   }
     
-  if((my_mp() > 30) && (item_amount($item[Magical Sausage Casing]) > 0)){
+  if((my_mp() < 80) && (item_amount($item[Magical Sausage Casing]) > 0)){
     cli_execute("eat magical sausage");
   }
 
@@ -717,7 +730,7 @@ while(freekills > 0){
 
 
 
-string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill sing along; skill sing along; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser";
+string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; skill 7444; endif; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser";
 equip($item[Kramco Sausage-o-Matic&trade;]);
 
 if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
@@ -765,7 +778,7 @@ while(get_property("_backUpUses").to_int() < 10){
 void myst_test(){
 
 maximize("mys, switch left-hand man", false); 
-get_modtrace("Mysticality");
+get_modtrace("Mysticality percent");
 newline();
 
 print("Expected test turns: "+test_turns(3)+ " turns", "lime");
@@ -783,7 +796,7 @@ visit_url("choice.php?whichchoice=1089&option=3&pwd");
 }
 
 
-void mox_test(){
+void mox_test(){ 
 if(!have_effect($effect[Expert Oiliness]).to_boolean()){
   retrieve_item($item[Oil of Expertise]);
   use(1, $item[Oil of Expertise]);
@@ -797,7 +810,7 @@ while(test_turns(4) > get_property("lcs_turn_threshold_mox").to_int()){
   buff_up(4);
 } 
 
-get_modtrace("Moxie");
+get_modtrace("Moxie percent");
 newline();
 
 print("Expected test turns: "+test_turns(4)+ " turns", "lime");
@@ -817,7 +830,7 @@ while(test_turns(2) > get_property("lcs_turn_threshold_mus").to_int()){
   buff_up(2);
 } 
 
-get_modtrace("Muscle");
+get_modtrace("Muscle percent");
 newline();
 
 print("Expected test turns: "+test_turns(2)+ " turns", "lime");
@@ -836,7 +849,7 @@ while(test_turns(1) > get_property("lcs_turn_threshold_hp").to_int()){
 }
 
 
-get_modtrace("HP");
+get_modtrace("Maximum HP Percent");
 newline();
 
 print("Expected test turns: "+test_turns(1)+ " turns", "lime");
@@ -1086,7 +1099,6 @@ if(test_turns(10) <= get_property("lcs_turn_threshold_hot_res").to_int()){
 
 }
 
-
 void non_combat_test(){
 
 if(have_familiar($familiar[Disgeist])){
@@ -1193,8 +1205,6 @@ if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount(
 
 
 }
-
-
 
 if((my_meat() > 1000) && (!(get_property("_madTeaParty")).to_boolean())){
   retrieve_item($item[goofily-plumed helmet]);
@@ -1341,6 +1351,10 @@ wish_effect($effect[Witch Breaded]);
 if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean() && (!have_effect($effect[Sigils of Yeg]).to_boolean())){
 	cli_execute("cargo item yeg's motel hand soap");
   use(1, $item[Yeg's Motel hand soap]);
+}
+
+if(pulls_remaining() > 0){
+  abort("We still have some pulls remaining!");
 }
 
 get_modtrace(spell_modifiers);
