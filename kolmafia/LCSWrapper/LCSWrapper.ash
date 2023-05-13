@@ -344,7 +344,7 @@ if((item_amount($item[Calzone of Legend]).to_boolean()) && (my_level() >= 5)){
 }
 
 if(available_amount($item[Magical sausage casing]) == 0){
-  abort("Uh oh! We didn't get a magical sausage? Check what went wrong. (You may just not have a kramco. In that case, ow. Manually do coil wire. Afterwards, make & drink a perfect drink and rerun)");
+  abort("Uh oh! We didn't get a magical sausage? Check what went wrong. (You may just not have a kramco. In that case, ow. Manually do coil wire and rerun.)");
 }
 
 visit_url("council.php");
@@ -378,6 +378,7 @@ if(pulls_remaining() < 1){
  waitq(5);
 }
 
+// TODO: Mafia NC tracking change
 if ((have_effect($effect[Tomes of Opportunity]) == 0) && (parka_spiked) && (my_adventures() > 0)){
   visit_url("adventure.php?snarfblat=528");
   run_choice(1); run_choice(2);
@@ -533,7 +534,7 @@ if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`)
   visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
 }
 
-if(!storage_amount($item[Calzone of Legend]).to_boolean()){
+if(!storage_amount($item[Calzone of Legend]).to_boolean() && !get_property("calzoneOfLegendEaten").to_boolean()){
   print("You don't have a calzone of legend in your Hagnk's. That's... not good.", "red");
   print("We're going to attempt to continue, after 25 seconds. This may fail for a variety of reasons.", "red");
   waitq(25);
@@ -660,6 +661,34 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
 
 while(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
   adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
+}
+
+
+if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
+  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
+
+  if(get_property("questRufus") == "unstarted"){
+
+    set_property("choiceAdventure1497", "2");
+    use(1, $item[closed-circuit pay phone]);
+    /* Artifact, as boss is a bit annoying to kill. TODO */
+  }
+
+  while(have_effect($effect[Shadow Affinity]) > 0){
+
+    if(have_familiar($familiar[Cookbookbat]) && item_amount($item[Vegetable of Jarlsberg]) < 2){
+      use_familiar($familiar[Cookbookbat]);
+    } else if (have_familiar($familiar[Melodramedary])){
+      use_familiar($familiar[Melodramedary]);
+    }
+
+    adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
+
+    if(handling_choice()){
+      run_choice(-1);
+    }
+
+  }
 }
 
 // ghost yoked
@@ -882,41 +911,17 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && availa
   equip($slot[Familiar], $item[Tiny Stillsuit]);
 }
 
-
-if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
-  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
-
-  if(get_property("questRufus") == "unstarted"){
-
-    set_property("choiceAdventure1497", "2");
-    use(1, $item[closed-circuit pay phone]);
-    /* Artifact, as boss is a bit annoying to kill. TODO */
-  }
-
-  while(have_effect($effect[Shadow Affinity]) > 0){
-
-    if((get_property("camelSpit") == "100" || get_property("camelSpit") == "0") && have_familiar($familiar[Cookbookbat])){
-      use_familiar($familiar[Cookbookbat]);
-    }
-    adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
-
-    if(handling_choice()){
-      run_choice(-1);
-    }
-
-  }
-
+if(item_amount($item[closed-circuit pay phone]).to_boolean()){
   use(1, $item[closed-circuit pay phone]);
   run_choice(1);
-  
-  if(!item_amount($item[Rufus's shadow lodestone]).to_boolean()){
-    abort("We don't have a lodestone, for some reason...");
-  }
 
-  string choicebefore = get_property("choiceAdventure1500");
-  set_property("choiceAdventure1500", "2");
-  adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, "abot");
-  set_property("choiceAdventure1500", choicebefore);
+
+  if(item_amount($item[Rufus's shadow lodestone]).to_boolean()){
+    string choicebefore = get_property("choiceAdventure1500");
+    set_property("choiceAdventure1500", "2");
+    adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, "abot");
+    set_property("choiceAdventure1500", choicebefore);
+  }
 }
 
 set_location($location[The Sleazy Back Alley]);
@@ -989,6 +994,44 @@ foreach it in $familiars[]{
     use_familiar(it);
   }
 }
+
+
+if(get_property("commaFamiliar") == "Homemade Robot"){
+  use_familiar($familiar[Comma Chameleon]);
+  visit_url("charpane.php");
+}
+
+
+if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($familiar[Homemade Robot]).to_boolean() && pulls_remaining() > 0 && get_property("commaFamiliar") != "Homemade Robot"){
+  print("Pulling some homemade robot gear! (or a box of familiar jacks)", "teal");
+
+  item gear = $item[Homemade Robot Gear];
+
+  if(mall_price($item[Box of Familiar Jacks]) < mall_price($item[Homemade robot gear])){
+    gear = $item[Box of Familiar Jacks];
+  }
+
+  if(!storage_amount(gear).to_boolean()){
+    buy_using_storage(1, gear);
+  }
+  take_storage(1, gear);
+
+  if(gear == $item[Box of familiar jacks]){
+    use_familiar($familiar[Homemade Robot]);
+    use(1, $item[Box of Familiar jacks]);
+  }
+
+  use_familiar($familiar[Comma Chameleon]);
+
+  visit_url("inv_equip.php?which=2&action=equip&whichitem=6102&pwd");
+  visit_url("charpane.php");
+}
+
+if(get_property("commaFamiliar") == "Homemade Robot"){
+  use_familiar($familiar[Comma Chameleon]);
+  visit_url("charpane.php");
+}
+
 
 maximize("Familiar weight", false);
 
@@ -1394,6 +1437,10 @@ void donate_body_to_science(){
 
   cli_execute("breakfast");
 
+  if(item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed") < 3){
+    cli_execute("genie wish wish");
+  }
+
   if(get_property("autumnatonUpgrades") == ""){
     cli_execute("autumnaton upgrade");
   }
@@ -1747,3 +1794,7 @@ print(`Organ use: {my_fullness()} fullness, {my_inebriety()} drunkeness, {my_spl
 print("Summary:");
 summary();
 }
+
+
+
+  
