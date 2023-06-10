@@ -95,58 +95,6 @@ boolean wish_effect(effect effe){
 	return have_effect(effe).to_boolean();
 }
 
-
-
-
-string yip1;
-string yip2;
-string yip3;
-int digits;
-
-string convert_commas(int number) { 
-	digits = length(number);
-	switch{
-		case (digits == 4):
-			yip1 = "";
-			yip2 = substring(number.to_string(), 0, 1) + ",";
-			yip3 = substring(number.to_string(), 1, 4);	
-			break;
-		case (digits == 5):
-			yip1 = "";
-			yip2 = substring(number.to_string(), 0, 2) + ",";
-			yip3 = substring(number.to_string(), 2, 5);	
-			break;
-		case (digits == 6):
-			yip1 = "";
-			yip2 = substring(number.to_string(), 0, 3) + ",";
-			yip3 = substring(number.to_string(), 3, 6);	
-			break;
-		case (digits == 7):
-			yip1 = substring(number.to_string(), 0, 1) + ","; 
-			yip2 = substring(number.to_string(), 1, 4) + ",";
-			yip3 = substring(number.to_string(), 4, 7);			
-			break;
-		case (digits == 8):
-			yip1 = substring(number.to_string(), 0, 2) + ",";
-			yip2 = substring(number.to_string(), 2, 5) + ",";
-			yip3 = substring(number.to_string(), 5, 8);			
-			break;
-		case (digits == 9):
-			yip1 = substring(number.to_string(), 0, 3) + ",";
-			yip2 = substring(number.to_string(), 3, 6) + ",";
-			yip3 = substring(number.to_string(), 6, 10);			
-			break;
-
-		default:
-			yip1 = "";
-			yip2 = "";
-			yip3 = number;
-		}
-
-return yip1 + yip2 + yip3;
-}
-
-
 int test_turns(int test){
 	switch (test) {
 		default:
@@ -311,7 +259,8 @@ string [int] fam_weight_effects = {
 	4:"Blood Bond",
 	5:"Billiards Belligerence",
 	6:"Loyal as a Rock",
-	7:"END",
+	7:"Party Soundtrack",
+	8:"END",
 }; 
 
 string [int] non_combat_effects = {
@@ -352,7 +301,7 @@ string [int] spell_damage_effects = {
 	1:"We're all made of starfish",
 	2:"Jackasses' Symphony of Destruction",
 	3:"Cowrruption",
-	4:"Arched eyebrow of the archmage",
+	4:"Arched Eyebrow of the Archmage",
 	5:"AA-Charged",
 	6:"Carol of the Hells",
 	7:"Spirit of Peppermint",
@@ -365,6 +314,51 @@ string [int] spell_damage_effects = {
 	14:"END",
 }; 
 
+boolean adinethonk(int test_number, string eff_to_check) {
+	if(eff_to_check == "END"){
+		abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test_number)} turns!`);
+	}
+
+
+	if(have_effect(eff).to_boolean()){
+		return true;
+	}
+
+
+
+
+	if(contains_text(eff_to_check, "WISH")){
+    string eff_to_wish = replace_all(create_matcher("WISH", eff_to_check), "");
+		return wish_effect(eff_to_wish.to_effect());
+	}
+
+	/*
+	if(contains_text(eff_to_check, "CLI_EX")){
+		eff_to_check = replace_all(create_matcher("CLI_EX", eff_to_check), "");
+		string[int] cli_command = split_string(eff_to_check, "IF_COND");
+
+		if(cli_command[1]){
+			cli_execute(cli_command[0]);
+			return true;
+		}
+
+	return false;
+	
+		
+	}
+*/
+	eff = eff_to_check.to_effect();
+		
+		if(get_effect(eff)){
+			print(`Successfully obtained effect {eff}, {test_turns(1)} turns left to save!`, "lime");
+			print("");
+			return true;
+		} else {
+			print("");
+		} 
+	
+	return false;
+}
 
 
 void buff_up(int test){
@@ -374,8 +368,8 @@ switch (test) {
 		abort("Invalid test number!");
 
 	case 1:
-	foreach it in hp_effects{
-		if(hp_effects[it] == "END"){
+		foreach it in hp_effects{
+			if(hp_effects[it] == "END"){
 			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(1)} turns!`);
 		}
 
