@@ -34,6 +34,38 @@ visit_url("choice.php");
 refresh(); 
 }
 
+void meteor_shower(){
+
+  
+
+  if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (get_property('_saberForceUses').to_int() < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
+  familiar pre_shower_fam = my_familiar();
+  use_familiar($familiar[none]);
+  
+  string meteorsaber = "skill Meteor Shower; skill Use the Force";
+  if(have_effect($effect[Feeling Lost]).to_boolean()){
+    if(user_confirm("You have a potential 4-8 turn save from Meteor Showered, but you also have feeling lost. Do you want to stop to manually get it via a barrel combat? (Defaulting to no in 20s)", 20000, true)) { abort("Get the buff and rerun!"); }
+  } 
+
+  if(!(item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()) && my_meat() > 6900 && can_adventure($location[thugnderdome])){
+    buy(1, $item[Desert Bus Pass]);
+  }
+
+
+  if(can_adventure($location[thugnderdome]) && (item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean())){
+    adv1($location[thugnderdome], -1, meteorsaber);
+  } else {
+    
+    maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber", false);
+    adv1($location[Noob Cave], -1, meteorsaber);
+
+  }
+  
+  if(choice_follows_fight())
+    run_choice(1);
+  use_familiar(pre_shower_fam);
+  }
+}
 
 // Toot oriole/Start-of-day-actions
 void oriole() {
@@ -98,6 +130,7 @@ if(get_property("autumnatonUpgrades") == ""){
 cli_execute("Autumnaton send sleazy back alley");
 }
 
+// TODO: Shortest-order cook
 if(my_familiar() != $familiar[Cookbookbat]){
   use_familiar($familiar[Cookbookbat]);
 }
@@ -407,7 +440,7 @@ if((sekrit) && (!have_effect($effect[All Wound Up]).to_boolean())){
 */
 
 
-if(!item_amount($item[Cincho de Mayo]).to_boolean()){
+if(!available_amount($item[Cincho de Mayo]).to_boolean()){
 
   if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1) && !wish_effect($effect[Different Way of Seeing Things])){
 
@@ -676,10 +709,19 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 
   while(have_effect($effect[Shadow Affinity]) > 0){
 
+    boolean break_flag;
+
     if(have_familiar($familiar[Cookbookbat]) && item_amount($item[Vegetable of Jarlsberg]) < 2){
       use_familiar($familiar[Cookbookbat]);
-    } else if (have_familiar($familiar[Melodramedary])){
-      use_familiar($familiar[Melodramedary]);
+
+    } else {
+
+      foreach fam in $familiars[Cookbookbat, Melodramedary, Shorter-Order Cook, Comma Chameleon, Disgeist]{
+        if(have_familiar(fam) && !break_flag){
+          use_familiar(fam);
+          break_flag = true;
+        }
+      }
     }
 
     adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
@@ -687,17 +729,16 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
     if(handling_choice()){
       run_choice(-1);
     }
-
   }
 }
 
 // ghost yoked
 
-if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holiday Yoked]).to_boolean()){
+if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holiday Yoked]).to_boolean() && !get_property("lcs_skip_yoked").to_boolean()){
   use_familiar($familiar[Ghost of Crimbo Carols]);
 }
 
-string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser;";
+string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser;";
 string nep_freerun_sideways = `skill bowl sideways; {freerun}; abort`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
 set_property("choiceAdventure1324", 5);
@@ -717,6 +758,10 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
     cli_execute("autumnaton send The Neverending Party");
   } // TODO: Autumn-aton upgrade
 
+  if(my_hp() * 3 < my_maxhp()){
+    restore_hp(my_maxhp());
+  }
+
   if(have_effect($effect[Beaten Up]).to_boolean()){
     abort("We got beaten up =(");
   }
@@ -734,7 +779,10 @@ print("Running "+freekills+" freekill(s) in the NEP!","teal");
 
 
 // If someone has daily affirmation: think win-lose I think they're off running a better script then this
-equip($slot[acc3], $item[Lil' Doctor&trade; bag]);
+item pre_freekill_acc3 = equipped_item($slot[Acc3]);
+
+if(item_amount($item[Lil' Doctor&trade; bag]).to_boolean())
+  equip($slot[acc3], $item[Lil' Doctor&trade; bag]);
 
 
 while(freekills > 0){
@@ -757,9 +805,9 @@ while(freekills > 0){
   print(""+freekills+" freekill(s) left!","teal");
 }
 
+equip($slot[acc3], pre_freekill_acc3);
 
-
-string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; skill Stuffed Mortar Shell; skill 7444; endif; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser";
+string nep_powerlevel_backup = "if hasskill Back-Up to your Last Enemy; skill Back-Up to your Last Enemy; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 2";
 equip($item[Kramco Sausage-o-Matic&trade;]);
 
 if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
@@ -774,35 +822,37 @@ if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
   } 
 }
 
-print("Now backing up your fights!","teal");
-equip($slot[acc3], $item[Backup Camera]);
+int backup_uses = get_property(`lcs_alloted_backup_uses`).to_int();
 
-while(get_property("_backUpUses").to_int() < 7){
-  adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
+if(backup_uses != 0){
+  print("Now backing up your fights!","teal");
+  equip($slot[acc3], $item[Backup Camera]);
 
-  // if((get_property("cosmicBowlingBallReturnCombats") == 0) && have_skill($skill[CLEESH])){
-  //   adv1($location[The Neverending Party], -1, nep_freerun_sideways);
-  // }
+  while(get_property("_backUpUses").to_int() < (backup_uses - 3)){
+    adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
+
+    // if((get_property("cosmicBowlingBallReturnCombats") == 0) && have_skill($skill[CLEESH])){
+    //   adv1($location[The Neverending Party], -1, nep_freerun_sideways);
+    // }
+  }
+
+  if(!contains_text(get_property("lastEncounter"), "Bishop")){
+    print("Reminiscing that one time when you reincarnated as a witchess bishop.","teal");
+
+    visit_url("inventory.php?reminisce=1", false);
+    visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1942");
+    run_combat(nep_powerlevel);
+  }
+
+  print("Now fighting 3 backed up Witchess Bishops!", "teal");
+
+  while(get_property("_backUpUses").to_int() < backup_uses){
+    adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
+  }
+
 }
 
-if(!contains_text(get_property("lastEncounter"), "Bishop")){
-  print("Reminiscing that one time when you reincarnated as a witchess bishop.","teal");
-
-  visit_url("inventory.php?reminisce=1", false);
-  visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1942");
-
-  refresh();
-  run_combat(nep_powerlevel);
 }
-
-print("Now fighting 3 backed up Witchess Bishops!", "teal");
-while(get_property("_backUpUses").to_int() < 10){
-  adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
-}
-
-}
-
-
 
 void myst_test(){
 
@@ -888,7 +938,8 @@ visit_url("council.php");
 if(test_turns(1) <= get_property("lcs_turn_threshold_hp").to_int()){
   visit_url("choice.php?whichchoice=1089&option=1&pwd");
 } else {
-  abort("Manually do the test, see if you can optimize any further, then ping me your turn threshold (if needed) ^w^");
+  print("Manually do the test, see if you can optimize any further, then ping me your turn threshold (if needed) ^w^", "red");
+  abort("Alternatively, pull and eat a pizza of legend.");
 }
 
 if(my_sign() == "Blender"){
@@ -900,12 +951,6 @@ if(my_sign() == "Blender"){
 
 
 void item_test(){
-
-foreach it in $familiars[]{
-  if(familiar_weight(it) > 8 && it != $familiar[Homemade Robot]){
-    use_familiar(it);
-  }
-}
 
 if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
   equip($slot[Familiar], $item[Tiny Stillsuit]);
@@ -951,10 +996,14 @@ if(get_property("sourceTerminalEducateKnown") != ""){
 
 maximize("item, booze drop, -equip broken champagne bottle, switch left-hand man", false); 
 
-if((my_inebriety() < 6) && !have_effect($effect[Sacr&eacute; Mental]).to_boolean()){
+if((my_inebriety() < 6) && (item_amount($item[Astral Pilsner]) >= 4)){
   use_skill(1, $skill[The Ode to Booze]);
-  drink(1, $item[Sacramento wine]);
   drink(4, $item[Astral Pilsner]);
+
+  if(item_amount($item[Sacramento wine]).to_boolean())
+    drink(1, $item[Sacramento wine]);
+
+
   if(available_amount($item[Tiny Stillsuit]).to_boolean()){
     cli_execute("drink stillsuit distillate");
   }
@@ -989,12 +1038,17 @@ if(test_turns(9) <= get_property("lcs_turn_threshold_item").to_int()){
 
 void fam_weight_test(){
 
+int max_familiar_weight;
+familiar max_famwt_familiar;
+
 foreach it in $familiars[]{
-  if(familiar_weight(it) > 8){
-    use_familiar(it);
+  if(max_familiar_weight < familiar_weight(it) && it != $familiar[Homemade Robot]){
+    max_familiar_weight = familiar_weight(it);
+    max_famwt_familiar = it;
   }
 }
 
+use_familiar(max_famwt_familiar);
 
 if(get_property("commaFamiliar") == "Homemade Robot"){
   use_familiar($familiar[Comma Chameleon]);
@@ -1048,15 +1102,7 @@ if(item_amount($item[Astral Pilsner]) == 2){
 }
 
 
-if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
-  string meteorsaber = "skill Meteor Shower, skill Use the Force";
-  if(have_effect($effect[Feeling Lost]).to_boolean()){
-    if(user_confirm("You have a potential 4 turn save from Meteor Showered, but you also have feeling lost. Do you want to stop to manually get it via a barrel combat? (Defaulting to no in 20s)", 2000, false)) { abort("Get the buff and rerun!"); }
-  } else {
-    adv1($location[Noob Cave], -1, meteorsaber);
-    run_choice(1);
-  }
-}
+meteor_shower();
 
 print("Expected test turns: "+test_turns(5)+ " turns", "lime");
 
@@ -1179,7 +1225,11 @@ if(test_turns(8) <= get_property("lcs_turn_threshold_non_combat").to_int()){
 
 }
 
-void weapon_damage_test(){
+void weapon_damage_test(){ 
+
+if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") != "These Fists Were Made for Punchin"){
+	cli_execute("Boombox damage");
+}
 
 if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 100) && !have_effect($effect[Spit upon]).to_boolean()){
   print("Getting spit on!", "teal");
@@ -1189,6 +1239,9 @@ if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 10
   if(choice_follows_fight()){
     run_choice(1);
   }
+}
+if(have_effect($effect[Holiday Yoked]).to_boolean()){
+  set_property("lcs_skip_yoked", "True");
 }
 
 if(have_familiar($familiar[Ghost of Crimbo Carols])){
@@ -1254,25 +1307,32 @@ if((my_meat() > 1000) && (!(get_property("_madTeaParty")).to_boolean())){
   cli_execute("hatter 20");
 }
 
-if((!item_amount($item[Red Eye]).to_boolean()) && (!have_effect($effect[Everything Looks Yellow]).to_boolean())){
+if((!item_amount($item[Red Eye]).to_boolean()) && available_amount($item[Combat Lover's Locket]).to_boolean()){
   print("Reminiscing a red skeleton!","teal");
-  cli_execute("checkpoint");
-  equip($item[Jurassic Parka]);
-  cli_execute("Parka dilophosaur");
 
-  visit_url("inventory.php?reminisce=1", false);
-  visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1521");
+  if(!have_effect($effect[Everything Looks Yellow]).to_boolean()){
+    item prev_shirt = equipped_item($slot[Shirt]);
 
-  refresh();
-  run_combat("skill spit jurassic acid; abort;");
-  cli_execute("outfit checkpoint");
-  use(1, $item[Red eye]);
+    equip($item[Jurassic Parka]);
+    cli_execute("Parka dilophosaur");
+
+    visit_url("inventory.php?reminisce=1", false);
+    visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1521");
+
+    refresh();
+    run_combat("skill spit jurassic acid; abort;");
+    equip($slot[Shirt], prev_shirt);
+  } else if (have_skill($skill[Shocking Lick])){
+    visit_url("inventory.php?reminisce=1", false);
+    visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1521");
+
+    run_combat("skill shocking lick; abort;");
+
+  }
+  if(item_amount($item[Red eye]).to_boolean())
+    use(1, $item[Red eye]);
 
 }
-
-
-wish_effect($effect[Outer Wolf&trade;]);
-
 
 if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (available_amount($item[Hewn moon-rune spoon]).to_boolean()) && (my_meat() > 2000)){
   retrieve_item(1, $item[Bitchin' Meatcar]);
@@ -1295,6 +1355,7 @@ if(my_inebriety() <= 13){
   use_skill(1, $skill[The Ode to Booze]);
   cli_execute("drink 1 Sockdollager");
 }
+
 
 if(test_turns(6) >= 4){ // Threshold that pulling yeg wpdmg is better then spell dmg 
   if((pulls_remaining() > 0) && (!have_effect($effect[Rictus of Yeg]).to_boolean())){
@@ -1341,15 +1402,7 @@ if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) &
   use_skill(1, $skill[Simmer]);
 }
 
-if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
-  string meteorshower = "skill Meteor Shower, skill Use the Force";
-  if(have_effect($effect[Feeling Lost]).to_boolean()){
-    if(user_confirm("You have a potential 4 turn save from Meteor Showered, but you also have feeling lost. Do you want to stop to manually get it? (Defaulting to no in 20s)", 2000, false)) { abort("Get the buff and rerun!"); }
-  } else {
-    adv1($location[Noob Cave], -1, meteorshower);
-    run_choice(1);
-  }
-}
+meteor_shower();
 
 if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of the Deep Dark Deeps]).to_boolean())){
 	get_effect($effect[Elemental saucesphere]);
@@ -1391,6 +1444,10 @@ if(pulls_remaining() > 0){
 
 wish_effect($effect[Witch Breaded]);
 
+if(get_property("_monkeyPawWishesUsed") > 5 && get_property("_monkeyPawWishesUsed") != 0){
+  wish_effect($effect[Sparkly!]);
+}
+
 if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean() && (!have_effect($effect[Sigils of Yeg]).to_boolean())){
 	cli_execute("cargo item yeg's motel hand soap");
   use(1, $item[Yeg's Motel hand soap]);
@@ -1422,6 +1479,10 @@ void donate_body_to_science(){
   refresh();
   cli_execute("make calzone of legend");
 
+  if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") != "Food Vibrations"){
+	cli_execute("Boombox food");
+  }
+  
   if((!item_amount($item[Bitchin' Meatcar]).to_boolean()) && (!item_amount($item[Desert Bus Pass]).to_boolean())){
     cli_execute("make bitchin' meatcar");
   }
@@ -1562,6 +1623,32 @@ string[string] available_choices = {
   "sekrit":"",
 };
 
+if(get_property("lcs_start") == ""){
+  
+  newline();
+
+  print("Hello! Thanks for running this script for the first time or updating this script to this version!");
+  print("Since this is your first and only time you'll see this screen, we've set a couple of settings for you.");
+  print("If you ever want to adjust these changes, please run the help command!");
+
+  newline();
+  set_property("lcs_alloted_backup_uses", "10");
+
+  if(have_familiar($familiar[Pair of Stomping Boots])){
+    set_property("lcs_use_beta_version", "true");
+  }
+
+  if(get_property("goorbo_clan") != ""){
+    set_property("lcs_clan", get_property("goorbo_clan"));
+  }
+  set_property("lcs_start", "v1.3");
+
+  abort("Please run the script again to continue!");
+}
+
+
+
+
 newline();
 
 foreach key in options {  
@@ -1578,8 +1665,8 @@ newline();
 
 // TEST TEST TEST //
 /* Put anything here you want to test, with an abort() at the end! Eg. if you want to do the tests in a different order! */
-if(available_choices["test"].to_boolean()){
-  print("Entering test mode!", "red");
+if(available_choices["test"].to_boolean() || get_property("lcs_use_beta_version").to_boolean()){
+  print("Entering test mode! Thanks for helping to test!", "lime");
   test  = true;
   newline();
   if(available_choices["sekrit"].to_boolean()){
@@ -1610,8 +1697,7 @@ if(available_choices["help"].to_boolean()){
     print("");
 
     foreach it in $strings[mys, mox, mus, hp, item, hot_res, fam_weight, non_combat, weapon_damage, spell_damage]{ // Turn thresholds
-      matcher space = create_matcher(" ", it);
-      string test = replace_all(space, "_");
+      string test = replace_all(create_matcher(" ", it), "_");
 
       string threshold = user_prompt(`Turn threshold for test {test}? (Leave blank to use last used value of [{get_property(`lcs_turn_threshold_{it}`)}])`).to_int();
 
@@ -1624,8 +1710,9 @@ if(available_choices["help"].to_boolean()){
   }
 
   if(user_confirm("Would you like to set this script's global settings?")){ 
-    foreach it in $strings[clan, vip_fortune_buff]{ // String settings
-      string user_setting = user_prompt(`What would you like to set this script's {it} to? (Leave blank to use last used value)`);
+    foreach it in $strings[clan, vip_fortune_buff, alloted_backup_uses]{ // String settings
+      string no_space = replace_all(create_matcher("_", it), " ");
+      string user_setting = user_prompt(`What would you like to set this script's {no_space} to? (Leave blank to use last used value)`);
 
       if((user_setting == "") && (get_property(`lcs_{it}`) != "")){
         print("Skipping!", "teal");
@@ -1634,8 +1721,9 @@ if(available_choices["help"].to_boolean()){
       }
     }
 
-    foreach it in $strings[drink_bees_knees, get_cyclops_eyedrops, skip_warbear_potion]{ // Boolean settings
-      string user_setting = user_confirm(`Would you like the script to {it}? (Leave blank to use last used value)`);
+    foreach it in $strings[drink_bees_knees, get_cyclops_eyedrops, skip_warbear_potion, use_beta_version]{ // Boolean settings
+      string no_space_too = replace_all(create_matcher("_", it), " ");
+      string user_setting = user_confirm(`Would you like the script to {no_space_too}? (Leave blank to use last used value)`);
 
       if((user_setting == "") && (get_property(`lcs_{it}`) != "")){
         print("Skipping!", "teal");
@@ -1695,7 +1783,7 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
 }
 
 
-if((my_level()) < 15 || available_choices["powerlevel"].to_boolean()){
+if((my_level()) < 14 || available_choices["powerlevel"].to_boolean()){
   powerlevel();
   set_property("post_time_powerlevel", now_to_int());
   set_property("post_advs_powerlevel", turns_played());
