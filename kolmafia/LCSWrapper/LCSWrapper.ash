@@ -36,8 +36,6 @@ refresh();
 
 void meteor_shower(){
 
-  
-
   if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (get_property('_saberForceUses').to_int() < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
   familiar pre_shower_fam = my_familiar();
   use_familiar($familiar[none]);
@@ -47,33 +45,41 @@ void meteor_shower(){
     if(user_confirm("You have a potential 4-8 turn save from Meteor Showered, but you also have feeling lost. Do you want to stop to manually get it via a barrel combat? (Defaulting to no in 20s)", 20000, true)) { abort("Get the buff and rerun!"); }
   } 
 
+  cli_execute("checkpoint");
+  maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber", false);
+
   if(!(item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()) && my_meat() > 6900 && can_adventure($location[thugnderdome])){
     buy(1, $item[Desert Bus Pass]);
   }
 
 
   if(can_adventure($location[thugnderdome]) && (item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean())){
-    adv1($location[thugnderdome], -1, meteorsaber);
+    visit_url("adventure.php?snarfblat=46");
+    refresh();
+    run_combat(meteorsaber);
+    run_choice(3);
+    
   } else {
     
-    maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber", false);
-    adv1($location[Noob Cave], -1, meteorsaber);
+    visit_url("adventure.php?snarfblat=240");
+    refresh();
+    run_combat(meteorsaber);
+    run_choice(3);
 
   }
-  
-  if(choice_follows_fight())
-    run_choice(1);
+
   use_familiar(pre_shower_fam);
+  cli_execute("outfit checkpoint");
   }
 }
 
 // Toot oriole/Start-of-day-actions
 void oriole() {
 
-if(get_property("_canSeekBirds") == "false"){
-    print("Visiting your favourite bird...", "teal");
+if(get_property("_birdOfTheDayMods") != ""){
+  print("Visiting your favourite bird...", "teal");
 } else {
-    print("Visiting your second favourite bird...", "teal");
+  print("Visiting your second favourite bird...", "teal");
 }
 
 if(get_property("questM05Toot") != "finished"){
@@ -563,10 +569,6 @@ if((available_amount($item[Bastille Battalion control rig]).to_boolean()) && (!g
   cli_execute("bastille mainstat brutalist");
 }
 
-if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`) && get_property(`timesRested`) == `0`){
-  visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
-}
-
 if(!storage_amount($item[Calzone of Legend]).to_boolean() && !get_property("calzoneOfLegendEaten").to_boolean()){
   print("You don't have a calzone of legend in your Hagnk's. That's... not good.", "red");
   print("We're going to attempt to continue, after 25 seconds. This may fail for a variety of reasons.", "red");
@@ -616,7 +618,7 @@ if(my_class() == $class[Pastamancer] && my_thrall() == $thrall[None] && have_ski
 if((have_effect($effect[On the Trolley]) == 0) && !(test)){
   cli_execute("drink 1 bee's knees");
 }
-
+// TODO: Bird-a-day
 cli_execute("breakfast");
 
 if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
@@ -691,11 +693,12 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
   use_familiar(prev_fam);
 }
 
-
-while(get_property("_snojoFreeFights") < 10 && get_property("snojoAvailable").to_boolean()){
-  adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
+if(get_property("snojoAvailable").to_boolean()){
+  visit_url("choice.php?pwd&whichchoice=1118&option=3");
+  while(get_property("_snojoFreeFights") < 10){
+    adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
+  }
 }
-
 
 if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
   string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
@@ -757,6 +760,11 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   if(available_amount($item[Autumn-aton]).to_boolean()){
     cli_execute("autumnaton send The Neverending Party");
   } // TODO: Autumn-aton upgrade
+
+
+  if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`) && get_property("_cinchUsed") >= 30){
+    visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
+  }
 
   if(my_hp() * 3 < my_maxhp()){
     restore_hp(my_maxhp());
@@ -1104,6 +1112,9 @@ if(item_amount($item[Astral Pilsner]) == 2){
 
 meteor_shower();
 
+get_modtrace("Familiar Weight");
+newline();
+
 print("Expected test turns: "+test_turns(5)+ " turns", "lime");
 
 visit_url("council.php");
@@ -1227,19 +1238,17 @@ if(test_turns(8) <= get_property("lcs_turn_threshold_non_combat").to_int()){
 
 void weapon_damage_test(){ 
 
-if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") != "These Fists Were Made for Punchin"){
+if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") != "These Fists Were Made for Punchin\'"){
 	cli_execute("Boombox damage");
 }
 
 if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 100) && !have_effect($effect[Spit upon]).to_boolean()){
   print("Getting spit on!", "teal");
   use_familiar($familiar[Melodramedary]);
-  string spit_on_me = "if hasskill Meteor Shower; skill Meteor Shower; skill Use the Force; endif; skill 7340;  endif; if hasskill bowl a curveball; skill bowl a curveball; endif;";
+  string spit_on_me = `skill 7340; endif; if hasskill bowl a curveball; skill bowl a curveball; endif; {freerun}`;
   adv1($location[The Neverending Party], -1, spit_on_me);
-  if(choice_follows_fight()){
-    run_choice(1);
-  }
 }
+
 if(have_effect($effect[Holiday Yoked]).to_boolean()){
   set_property("lcs_skip_yoked", "True");
 }
@@ -1286,19 +1295,33 @@ maximize("Weapon damage percent, weapon damage, switch left-hand man", false);
 // TODO: Kung fu hustler lmao? +45 flat
 
 if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
+  
+  foreach i, o_name in get_custom_outfits(){
+    if(o_name.to_lower_case() == "stick-knife"){
+        take_storage(1, $item[Stick-knife of Loathing]);
+        use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+        outfit(o_name);
+    }
+  }
+  
+  if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+  
   foreach x, outfit_name in get_custom_outfits()
+
     foreach x,piece in outfit_pieces(outfit_name)
+
       if(piece.contains_text("Stick-Knife of Loathing")){
         print(`Outfit '{outfit_name}' has a {piece} in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
+
         take_storage(1, $item[Stick-knife of Loathing]);
         use_skill(1, $skill[Bind Undead Elbow Macaroni]);
         outfit(outfit_name);
       } 
       
       if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-        abort("Uh-oh, you don't have an outfit with a knife in it!");
+        abort("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!");
       }
-
+  }
 
 }
 
@@ -1351,7 +1374,9 @@ if(my_sign() == "Blender" && !have_effect($effect[Engorged Weapon]).to_boolean()
   use(1, $item[Meleegra&trade; pills]);
 }
 
-if(my_inebriety() <= 13){
+meteor_shower();
+
+if(my_inebriety() <= 13 && get_property("lcs_skip_sockdollager").to_boolean()){
   use_skill(1, $skill[The Ode to Booze]);
   cli_execute("drink 1 Sockdollager");
 }
@@ -1383,6 +1408,8 @@ while(test_turns(6) > get_property("lcs_turn_threshold_weapon_damage").to_int())
 
 print("Expected test turns: "+test_turns(6)+ " turns", "lime");
 get_modtrace("Weapon damage");
+get_modtrace("Weapon damage percent");
+
 newline();
 
 visit_url("council.php");
@@ -1412,7 +1439,27 @@ if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of t
   use_skill(1, $skill[Deep Dark Visions]);
 }
 
-if (available_amount($item[beach comb]) > 0){
+if(item_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
+  use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+
+  foreach i, o_name in get_custom_outfits(){
+    if(o_name.to_lower_case() == "stick-knife"){
+        outfit(o_name);
+    }
+  }
+  
+  if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+  foreach x, outfit_name in get_custom_outfits()
+    foreach x,piece in outfit_pieces(outfit_name)
+
+      if(piece.contains_text("Stick-Knife of Loathing")){
+        outfit(outfit_name);
+      } 
+  }
+}
+
+
+if(available_amount($item[beach comb]) > 0){
   get_effect($effect[We're all made of starfish]);
 }
 
@@ -1442,9 +1489,11 @@ if(pulls_remaining() > 0){
   use(1, $item[Tobiko marble soda]);
 }
 
-wish_effect($effect[Witch Breaded]);
+if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
+  wish_effect($effect[Witch Breaded]);
+}
 
-if(get_property("_monkeyPawWishesUsed") > 5 && get_property("_monkeyPawWishesUsed") != 0){
+if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
   wish_effect($effect[Sparkly!]);
 }
 
@@ -1721,15 +1770,10 @@ if(available_choices["help"].to_boolean()){
       }
     }
 
-    foreach it in $strings[drink_bees_knees, get_cyclops_eyedrops, skip_warbear_potion, use_beta_version]{ // Boolean settings
+    foreach it in $strings[drink_bees_knees, get_cyclops_eyedrops, skip_sockdollager, skip_warbear_potion, use_beta_version]{ // Boolean settings
       string no_space_too = replace_all(create_matcher("_", it), " ");
-      string user_setting = user_confirm(`Would you like the script to {no_space_too}? (Leave blank to use last used value)`);
-
-      if((user_setting == "") && (get_property(`lcs_{it}`) != "")){
-        print("Skipping!", "teal");
-      } else {
-        set_property(`lcs_{it}`, user_setting);
-      }
+      string user_setting = user_confirm(`Would you like the script to {no_space_too}?`);
+      set_property(`lcs_{it}`, user_setting);
     }
   }
 
@@ -1749,7 +1793,7 @@ if(get_property("lcs_turn_threshold_mys") == ""){
 }
 
 if(my_path().id != 25){
-  abort("Not in Community Service");
+  abort("We're not in Community Service! If you want a summary of last run, type 'lcswrapper summary'!");
 }
 
 if(((get_property("lcs_time_at_start").to_int() * 1.3) > now_to_int()) || ((get_property("lcs_time_at_start").to_int() * 1.3) < now_to_int())){
