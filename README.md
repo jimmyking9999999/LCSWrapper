@@ -8,8 +8,6 @@ To install, paste the following into the CGLI:
 
 `git checkout https://github.com/jimmyking9999999/LCSWrapper.git main`
 
-WARNING: This may? not work. Download the files manually and put them in your scripts folder instead!
-
 To run, simply type `lcswrapper` into the CGLI.
 
 
