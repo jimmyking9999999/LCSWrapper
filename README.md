@@ -50,10 +50,15 @@ A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_
 
 ## Ascending into CS:
 
-This script only works for myst classes at the current moment, both softcore and hardcore. Most moon signs should be fine - If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best, as we'll be able to get cheap beach access through the creation of the meatcar before tuning moons for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned), due to saving the meat from the bus pass. An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is required due to the much larger turngen, and will be used as the primary source of adventures in the run. All astral pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred, for an extra 1-2 turns saved - If you have a comma chameleon or choose to value the karma over the turns, you may run the script without a pet.
+This script only works for myst classes at the current moment, both softcore and hardcore. Most moon signs should be fine.
+However, If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best as we'll be able to get cheap beach access for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned).
 
+An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is required due to the much larger turngen, and will be used as the primary source of adventures in the run. All astral pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred, for an extra 1-2 turns saved.
+If you have a comma chameleon or choose to value the karma over the turns, you may run the script without a pet.
 
-## Additional Information:
+A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in Hagnk's, if you're ascending softcore. The script will continue without it, but you will lose the turngen and spell damage. If you have a [Cookbookbat](https://kol.coldfront.net/thekolwiki/index.php/Cookbookbat) and cannot cap the item test, you should have the [roasted vegetable of Jarlsberg](https://kol.coldfront.net/thekolwiki/index.php/Roasted_vegetable_of_Jarlsberg) recipe unlocked. 
+
+## IoTM Support:
 
 My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most perms and skills that are supported. Additional IoTMs that are supported include the following IoTM functionalities. Stat-stick shinies, such as the Guzzlr application will always be included, as the script uses the mafia maximizer:
 
@@ -70,4 +75,12 @@ My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most
 
 \* Due to the introduction of the Cincho de Mayo, this IoTM is no longer fully used.
 
+## Additional Information:
 
+When first starting the script, you will be prompted to run the `help` option in the popup. This will prompt you to set certain settings within the script, allowing for flexibility. 
+
+In the menu, you will be asked for your minimum turncount for tests. It is a good idea to set everything to 1, and manually buff up what the script does not for your tests. This will fine tune your minimum turncount, so that you may optimize your CS loops. 
+
+
+
+Happy Looping!
