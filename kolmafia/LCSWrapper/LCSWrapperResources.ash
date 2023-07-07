@@ -1,3 +1,6 @@
+void refresh() {
+  visit_url("main.php");
+}
 
 boolean get_effect(effect effe){
 
@@ -57,6 +60,110 @@ boolean get_effect(effect effe){
 
 	return have_effect(effe).to_boolean();
 } 
+
+
+void meteor_shower(){
+  // If we have the skill but not the meteor showered effect, as well as saber/shower uses remaining
+  if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (get_property('_saberForceUses').to_int() < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
+  familiar pre_shower_fam = my_familiar();
+  use_familiar($familiar[none]);
+
+  // Prevents wanderers
+  foreach it in $items[Kramco Sausage-o-Matic&trade;, &quot;I Voted!&quot; sticker]{
+    if(equipped_amount(it) != 0){
+      maximize(`-equip {it}`, false);
+    }
+  }
+
+  int prev_adv = turns_played();
+  string meteorsaber = "skill Meteor Shower; skill Use the Force";
+
+  cli_execute("checkpoint");
+  maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber", false);
+
+  if(have_effect($effect[Feeling Lost]).to_boolean()){ // Tries to fight a barrel mimic if you have feeling lost 
+      visit_url("barrel.php");
+      foreach slotnum in $strings[00, 01, 02, 10, 11, 12, 20, 21, 22]{
+        if(!have_effect($effect[Meteor Showered]).to_boolean()){
+          visit_url(`choice.php?whichchoice=1099&pwd={my_hash()}&option=1&slot={slotnum}`);
+          if(current_round() != 0){
+            run_combat(meteorsaber);
+            run_choice(1);
+          }
+      }
+    }
+
+    
+  } else {
+
+    if(can_adventure($location[thugnderdome]) && (item_amount($item[Bitchin' Meatcar]).to_boolean() || item_amount($item[Desert Bus Pass]).to_boolean())){
+      visit_url("adventure.php?snarfblat=46");
+      refresh();
+      run_combat(meteorsaber);
+      run_choice(3);
+      
+    } else {
+      // Noob cave
+      visit_url("adventure.php?snarfblat=240");
+      refresh();
+      run_combat(meteorsaber);
+      run_choice(3);
+
+    }
+  }
+
+  use_familiar(pre_shower_fam);
+  cli_execute("outfit checkpoint");
+
+  // Uses a thrall + outfit combo to equip a stick-knife if we have one in our inventory that needs 150 musc to equip
+
+  if(item_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
+    use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+
+    foreach i, o_name in get_custom_outfits(){
+      if(o_name.to_lower_case() == "stick-knife"){
+          outfit(o_name);
+      }
+    }
+    
+    if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+    foreach x, outfit_name in get_custom_outfits()
+      foreach x,piece in outfit_pieces(outfit_name)
+
+        if(piece.contains_text("Stick-Knife of Loathing")){
+          outfit(outfit_name);
+        } 
+    }
+  }
+
+    if(prev_adv != turns_played()){
+      abort("Acquiring meteor showered took a turn, which isn't supposed to happen. Please DM Jimmyking with a log <3");
+    }
+  }
+}
+
+void newline() {
+  print(" ");
+}
+
+string is_plural(int number){
+	if(number == 1){
+		return "";
+	}
+	return "s";
+}
+
+boolean clip_art(item it) {
+	if (!have_skill($skill[summon clip art]) || get_property("tomeSummons").to_int() >= 3){
+		return false;
+	}
+
+	if(item_amount(it) > 0){
+	  return true;
+  }
+
+	return retrieve_item(it);
+}
 
 boolean wish_effect(effect effe){
 	print(`Trying to wish for effect: {effe}`, "teal");
@@ -225,20 +332,21 @@ string [int] hp_effects = {
 }; 
 
 string [int] item_effects = {
-	1:"Ode to Booze",
-	2:"Nearly All-Natural",
-	3:"Steely-Eyed Squint",
-	4:"Fat Leon's Phat Loot Lyric",
-	5:"Singer's Faithful Ocelot",
-	6:"Crunching Leaves",
-	7:"El Aroma de Salsa",
-	8:"Spice haze",
-	9:"Lantern-Charged",
-	10:"Wizard Sight",
-	11:"Glowing Hands",
-	12:"Ermine Eyes",
-	13:"Feeling Lost",
-	14:"END",
+	"Ode to Booze",
+	"Nearly All-Natural",
+	"Steely-Eyed Squint",
+	"Fat Leon's Phat Loot Lyric",
+	"Singer's Faithful Ocelot",
+	"Crunching Leaves",
+	"El Aroma de Salsa",
+	"Spice haze",
+	"Lantern-Charged",
+	"Wizard Sight",
+	"Glowing Hands",
+	"Ermine Eyes",
+	"Spitting Rhymes",
+	"Feeling Lost",
+	"END",
 }; 
 
 string [int] hot_res_effects = {
@@ -298,21 +406,42 @@ string [int] weapon_damage_effects = {
 };
 
 string [int] spell_damage_effects = {
-	1:"We're all made of starfish",
-	2:"Jackasses' Symphony of Destruction",
-	3:"Cowrruption",
-	4:"Arched Eyebrow of the Archmage",
-	5:"AA-Charged",
-	6:"Carol of the Hells",
-	7:"Spirit of Peppermint",
-	8:"Song of Sauce",
-	9:"Mental A-cue-ity",
-	10:"Imported Strength",
-	11:"AAA-Charged",
-	12:"D-Charged",
-	13:"Concentration",
-	14:"END",
+	"We're all made of starfish",
+	"Jackasses' Symphony of Destruction",
+	"Cowrruption",
+	"Arched Eyebrow of the Archmage",
+	"AA-Charged",
+	"Carol of the Hells",
+	"Spirit of Peppermint",
+	"Song of Sauce",
+	"Mental A-cue-ity",
+	"Imported Strength",
+	"AAA-Charged",
+	"D-Charged",
+	"Concentration",
+	"END",
 }; 
+
+/*
+// Name [number] [conditional] [execution] [buff amount] 
+string  [int]    [string]         [int] test_muscle_effects = {
+ 
+	1:"AA-Charged", "if(true)":"buff_up(4)",50:"Mys Percent"
+
+};
+// { <key>: <value>, <key>: <value>, <key>: <value> ... }
+
+
+*/
+
+
+
+
+
+
+
+
+
 
 boolean adinethonk(int test_number, string eff_to_check) {
 	if(eff_to_check == "END"){
@@ -332,12 +461,12 @@ boolean adinethonk(int test_number, string eff_to_check) {
 		return wish_effect(eff_to_wish.to_effect());
 	}
 
-	/*
+	
 	if(contains_text(eff_to_check, "CLI_EX")){
 		eff_to_check = replace_all(create_matcher("CLI_EX", eff_to_check), "");
 		string[int] cli_command = split_string(eff_to_check, "IF_COND");
 
-		if(cli_command[1]){
+		if(cli_command[1].to_boolean()){
 			cli_execute(cli_command[0]);
 			return true;
 		}
@@ -346,7 +475,7 @@ boolean adinethonk(int test_number, string eff_to_check) {
 	
 		
 	}
-*/
+
 	eff = eff_to_check.to_effect();
 		
 		if(get_effect(eff)){
