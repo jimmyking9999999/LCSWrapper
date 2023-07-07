@@ -1,6 +1,6 @@
 # kolmafia-LCSWrapper
 
-KoL Script to handle a softcore Community Service ascension as a sauceror. This script is medium shiny!
+KoL Script to handle a softcore Community Service ascension as a mysticallity class. This script is medium shiny, with a few higher-end IOTMs supported!
 
 ## Installation:
 
@@ -44,20 +44,30 @@ A fully suited out VIP clan - You can set this clan by typing `lcswrapper help` 
 If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/thekolwiki/index.php/Fourth_of_May_Cosplay_Saber) and an [Industrial Fire Extinguisher](https://kol.coldfront.net/thekolwiki/index.php/Packaged_industrial_fire_extinguisher), you'll need a Faxbot whitelisted into your clan, for a [Factory Worker](https://kol.coldfront.net/thekolwiki/index.php/Factory_worker_\(female\)) fax.
 
 
-[Saucegeyser](https://kol.coldfront.net/thekolwiki/index.php/Saucegeyser), [Curse of Weaksauce](https://kol.coldfront.net/thekolwiki/index.php/Curse_of_Weaksauce), and [Itchy Curse Finger](https://kol.coldfront.net/thekolwiki/index.php/Itchy_Curse_Finger) - This trivializes most combat encounters we'll be facing, the latter two helping to regulate surviability and MP usage.
+[Saucegeyser](https://kol.coldfront.net/thekolwiki/index.php/Saucegeyser), [Curse of Weaksauce](https://kol.coldfront.net/thekolwiki/index.php/Curse_of_Weaksauce), and [Itchy Curse Finger](https://kol.coldfront.net/thekolwiki/index.php/Itchy_Curse_Finger) permed. This trivializes most combat encounters we'll be facing, the latter two helping to regulate surviability and MP usage. If you have a saber and a fire extinguisher, you'll want [Double-Fisted Skull Smashing](https://kol.coldfront.net/thekolwiki/index.php/Double-Fisted_Skull_Smashing) permed as well. 
 
 A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in your inventory when you ascend - The 300% myst buff is invaluable to our powerleveling needs.
 
 ## Ascending into CS:
 
-This script only works for myst classes at the current moment, and hardcore is not supported. Most moon signs should be fine - If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best, as we'll be able to get early beach access for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned) for easier powerleveling. An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is preferred, due to the much larger turngen, and will be used as the primary source of adventures in the run. Most pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred.
+This script only works for myst classes at the current moment, both softcore and hardcore. Most moon signs should be fine - If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best, as we'll be able to get cheap beach access through the creation of the meatcar before tuning moons for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned), due to saving the meat from the bus pass. An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is required due to the much larger turngen, and will be used as the primary source of adventures in the run. All astral pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred, for an extra 1-2 turns saved - If you have a comma chameleon or choose to value the karma over the turns, you may run the script without a pet.
 
 
 ## Additional Information:
 
+My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most perms and skills that are supported. Additional IoTMs that are supported include the following IoTM functionalities. Stat-stick shinies, such as the Guzzlr application will always be included, as the script uses the mafia maximizer:
 
-## Run Plan:
+- Boxing Day care package
+- Distant Woods Getaway Brochure
+- Beach Comb Box
+- mint-in-box Powerful Glove
+- God Lobster Egg
+- pantogram
+- X-32-F snowman crate
+- Chateau Mantegna room key*
+- Tome of Clip Art
+- Apathargic Bandersnatch
 
-
+* Due to the introduction of the Cincho de Mayo, this IoTM is no longer fully used.
 
 
