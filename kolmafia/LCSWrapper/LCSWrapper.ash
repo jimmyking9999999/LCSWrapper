@@ -1083,7 +1083,7 @@ if(get_property("commaFamiliar") == "Homemade Robot"){
 if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($familiar[Homemade Robot]).to_boolean() && get_property("commaFamiliar") != "Homemade Robot"){
   print("Pulling/creating some homemade robot gear!", "teal");
 
-  if(!in_hardcore()){
+  if(!in_hardcore()){ 
     if(!clip_art($item[Box of Familiar Jacks])){
       item gear = $item[Homemade Robot Gear];
 
@@ -1097,20 +1097,18 @@ if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($fami
       take_storage(1, gear);
     }
 
-    if(item_amount($item[Box of familiar jacks]) > 1 && item_amount($item[Homemade Robot Gear]) == 0){
-      use_familiar($familiar[Homemade Robot]);
-      use(1, $item[Box of Familiar jacks]);
-    }
-
   } else {
     clip_art($item[Box of Familiar Jacks]);
   }
-}
 
-if(item_amount($item[Box of Familiar Jacks]).to_boolean()){
-  use_familiar($familiar[Comma Chameleon]);
-  visit_url("inv_equip.php?which=2&action=equip&whichitem=6102&pwd");
-  visit_url("charpane.php");
+  if(item_amount($item[Box of familiar jacks]) > 0 && item_amount($item[Homemade Robot Gear]) == 0){
+    use_familiar($familiar[Homemade Robot]);
+    use(1, $item[Box of Familiar jacks]);
+    use_familiar($familiar[Comma Chameleon]);
+    visit_url("inv_equip.php?which=2&action=equip&whichitem=6102&pwd");
+    visit_url("charpane.php");
+  }
+
 }
 
 if(get_property("commaFamiliar") == "Homemade Robot"){
