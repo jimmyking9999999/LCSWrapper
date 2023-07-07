@@ -1,6 +1,6 @@
 # kolmafia-LCSWrapper
 
-KoL Script to handle a softcore Community Service ascension as a mysticallity class. This script is medium shiny, with a few higher-end IOTMs supported!
+KoL Script to handle a softcore Community Service ascension as a mysticallity class. This script is medium shiny, with a few higher-end IOTMs supported! Contrary to the name, **this is not a wrapper, and will only complete the community service path and nothing else.**
 
 ## Installation:
 
@@ -60,7 +60,7 @@ A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_
 
 ## IoTM Support:
 
-My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most perms and skills that are supported. Additional IoTMs that are supported include the following IoTM functionalities. Stat-stick shinies, such as the Guzzlr application will always be included, as the script uses the mafia maximizer:
+My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most perms and skills that are supported. Additional IoTMs that are supported include the following IoTM functionalities. Stat-stick shinies such as the Guzzlr application will always be included, as the script uses the mafia maximizer for equipment stats:
 
 - Boxing Day care package
 - Distant Woods Getaway Brochure
