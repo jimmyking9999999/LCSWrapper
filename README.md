@@ -68,6 +68,6 @@ My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking) includes most
 - Tome of Clip Art
 - Apathargic Bandersnatch
 
-* Due to the introduction of the Cincho de Mayo, this IoTM is no longer fully used.
+\* Due to the introduction of the Cincho de Mayo, this IoTM is no longer fully used.
 
 
