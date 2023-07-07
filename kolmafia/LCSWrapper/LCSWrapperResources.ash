@@ -79,7 +79,7 @@ void meteor_shower(){
   string meteorsaber = "skill Meteor Shower; skill Use the Force";
 
   cli_execute("checkpoint");
-  maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber", false);
+  maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber, -equip i voted, -equip Kramco Sausage-o-Matic", false);
 
   if(have_effect($effect[Feeling Lost]).to_boolean()){ // Tries to fight a barrel mimic if you have feeling lost 
       visit_url("barrel.php");
