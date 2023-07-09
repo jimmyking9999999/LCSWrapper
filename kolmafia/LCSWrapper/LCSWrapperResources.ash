@@ -697,8 +697,8 @@ switch (test) {
 
 // From Panto
 
-void get_modtrace(string modifier, boolean exact) {
-	string html_output = cli_execute_output("modtrace " + modifier);
+void get_modtrace(string mod, boolean exact) {
+	string html_output = cli_execute_output("modtrace " + mod);
 	float val, total_val = 0;
  
 	string header = substring(html_output, index_of(html_output, "<tr>") + 4, index_of(html_output, "</tr>"));
@@ -707,15 +707,15 @@ void get_modtrace(string modifier, boolean exact) {
 	int exact_col = -1;
 	foreach idx in gs {
 		headers[idx] = gs[idx][2];
-		if (to_lower_case(headers[idx]) == to_lower_case(modifier)) exact_col = idx;			
+		if (to_lower_case(headers[idx]) == to_lower_case(mod)) exact_col = idx;			
 	}
  
 	if (exact && exact_col == -1) {
-		print("Could not find exact string match of " + modifier, "red");
+		print("Could not find exact string match of " + mod, "red");
 		return;
 	}
  
-	if (to_lower_case(modifier) == "familiar weight") {
+	if (to_lower_case(mod) == "familiar weight") {
 		print("[Familiar Weight] Base weight (" + familiar_weight(my_familiar()) + ")");
 		total_val += familiar_weight(my_familiar());
 	}
@@ -746,23 +746,23 @@ void get_modtrace(string modifier, boolean exact) {
 		html_output = substring(html_output, idx_end + 5);
 	}
  
-	if (to_lower_case(modifier) == "weapon damage") {
+	if (to_lower_case(mod) == "weapon damage") {
 		if (have_effect($effect[bow-legged swagger]) > 0) {
 			print("[Weapon Damage] Bow-Legged Swagger (" + total_val + ")");
 			total_val += total_val;
 		}
-	} else if (to_lower_case(modifier) == "weapon damage percent") {
+	} else if (to_lower_case(mod) == "weapon damage percent") {
 		if (have_effect($effect[bow-legged swagger]) > 0) {
 			print("[Weapon Damage Percent] Bow-Legged Swagger (" + total_val + ")");
 			total_val += total_val;
 		}
 	}
  
-	print("Total " + modifier + ": " + total_val, "lime");
+	print("Total " + mod + ": " + total_val, "lime");
 }
  
-void get_modtrace(string modifier) {
-	get_modtrace(modifier, true);
+void get_modtrace(string mod) {
+	get_modtrace(mod, true);
 }
  
 void get_modtrace(string [int] modifiers, string base_modifier) {
