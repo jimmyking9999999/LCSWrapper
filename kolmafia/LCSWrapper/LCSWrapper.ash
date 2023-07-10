@@ -1675,7 +1675,7 @@ if(get_property("lcs_start") != current_script_ver){
 
   newline();
 
-  if(get_property("lcs_start").substring(0, 1) != 'v'){
+  if(get_property("lcs_start") == ''){
     print("Hello! Thanks for running this script for the first time or updating this script to this version!");
     print("Since this is your first and only time you'll see this screen, we've set a couple of settings for you.");
     print("If you ever want to adjust these changes, please run the help command!");
