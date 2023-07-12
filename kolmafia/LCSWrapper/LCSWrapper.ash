@@ -152,8 +152,13 @@ if(available_amount($item[astral six-pack]).to_boolean()){
 
 void coil_wire(){
 
+if(item_amount($item[Ear Candle]).to_boolean()){
+  get_effect($effect[Clear Ears, Can't Lose]);
+  get_effect($effect[The Odour of Magick]);
+}
+
 if (have_effect($effect[Inscrutable Gaze]) == 0){
-    use_skill(1, to_skill($effect[Inscrutable Gaze]));
+  use_skill(1, to_skill($effect[Inscrutable Gaze]));
 }
 
 if ((get_property("voteAlways").to_boolean()) && !(get_property("_voteToday").to_boolean())){
@@ -177,11 +182,6 @@ print("Adventuring/mapping for a novelty tropical skeleton!", "teal");
 cli_execute("parka dilophosaur");
 set_property("customCombatScript", "default");
 set_auto_attack("none");
-
-if(item_amount($item[Ear Candle]).to_boolean()){
-  get_effect($effect[Clear Ears, Can't Lose]);
-  get_effect($effect[The Odour of Magick]);
-}
 
 string cs_wrapper_freerun = `if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; call freerun; sub freerun; {freerun}; endsub;`;
 cli_execute("/aa none");
@@ -711,7 +711,7 @@ if(get_property("snojoAvailable").to_boolean()){
 }
 
 if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
-  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; abort";
+  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; attack; repeat !times 10; abort";
 
   if(get_property("questRufus") == "unstarted"){
 
@@ -756,7 +756,7 @@ if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holi
   use_familiar($familiar[Ghost of Crimbo Carols]);
 }
 
-string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser;";
+string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser; attack; repeat !times 10; abort;";
 string nep_freerun_sideways = `skill bowl sideways; {freerun}; abort`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
 set_property("choiceAdventure1324", 5);
@@ -1490,12 +1490,14 @@ if(pulls_remaining() > 0){
   use(1, $item[Tobiko marble soda]);
 }
 
-foreach eff in $effects[Sparkly!, Witch Breaded, Pisces in the Skyces, Celestial Mind]{
-  if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
-    wish_effect(eff);
+// TODO: Preference for paw/wish uses
+if(my_name() = "Jimmyking"){
+  foreach eff in $effects[Sparkly!, Witch Breaded, Pisces in the Skyces, Celestial Mind]{
+    if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
+      wish_effect(eff);
+    }
   }
 }
-
 
 
 if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean() && (!have_effect($effect[Sigils of Yeg]).to_boolean())){
@@ -1529,6 +1531,9 @@ void donate_body_to_science(){
   cli_execute("hagnk all");
 
   refresh();
+  if(available_amount($item[Beach Comb]).to_boolean()){
+    cli_execute(`try; combo {11 - get_property("_freeBeachWalksUsed").to_int()}`);
+  }
   cli_execute("make calzone of legend");
 
   if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBoxSong") != "Food Vibrations"){
