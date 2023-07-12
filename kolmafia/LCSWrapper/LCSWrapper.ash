@@ -1,6 +1,6 @@
 script "LCSWrapper.ash";
 import <LCSWrapperResources.ash>
-string current_script_ver = "v1.32";
+
 
 print_html("<center><font color=66b2b2><font size=3><i>Running LCSWrapper.</i></font></font></center>");
 
@@ -11,7 +11,7 @@ boolean parka_spiked;
 string lcs_abort = "abort";
 // Freerun macro to call back on in other macros
 string freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill 7301; skill 7301; endif";
-
+boolean can_synthesis = have_skill($skill[Sweet Synthesis]).to_boolean() && available_amount($item[Cincho de Mayo]).to_boolean() && (get_property("lcs_skip_cincho") == "" || get_property("lcs_skip_cincho") == "false");
 
 // Ascends sauceror, path blender. Buys astral pilsners & a pet sweater 
 void ascend() {
@@ -386,7 +386,6 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
 }
 
 
-
 void powerlevel(){
 
 print("Powerleveling!", "teal");
@@ -621,6 +620,10 @@ foreach eff in $effects[Glittering Eyelashes, Feeling Excited, Feeling Peaceful,
   get_effect(eff);
 }
 
+if (get_property("_horsery") != "crazy horse"){
+  cli_execute('horsery crazy');
+}
+
 if(my_class() == $class[Pastamancer] && my_thrall() == $thrall[None] && have_skill($skill[Bind Spice Ghost])){
   use_skill($skill[Bind Spice Ghost]);
 }
@@ -635,6 +638,20 @@ if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
   cli_execute("umbrella broken");
 }
 
+
+effect love_effect = $effect[Tainted Love Potion];
+
+if(have_effect(love_effect) == 0) {
+  if(!available_amount($item[Love Potion #XYZ]).to_boolean() && have_skill($skill[Love Mixology])){
+    use_skill(1, $skill[Love Mixology]);
+  }
+        
+  visit_url('desc_effect.php?whicheffect=' + love_effect.descid);
+  if (love_effect.numeric_modifier('mysticality') > 5 && love_effect.numeric_modifier('muscle') > - 10 && love_effect.numeric_modifier('moxie') > - 10){
+    use(1, $item[Love Potion #XYZ]);
+  }
+}
+  
 if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (available_amount($item[Hewn moon-rune spoon]).to_boolean()) && (my_meat() > 2000)){
   retrieve_item(1, $item[Bitchin' Meatcar]);
   foreach sl in $slots[acc1, acc2, acc3]{
@@ -1180,22 +1197,35 @@ if(have_familiar($familiar[Exotic Parrot])){
 
 
 if(!have_effect($effect[Fireproof Foam Suit]).to_boolean()){
-  
+
+  if(get_property("_photocopyUsed").to_boolean()){
+    abort("Uh-oh, you've already used the fax!");
+  }
+  string spit = "if hasskill Become a Cloud of Mist; skill Become a Cloud of Mist; endif; if hasskill shocking lick; skill shocking lick; endif; skill spit Jurassic Acid; abort";
+
   equip($item[Jurassic Parka]);
   cli_execute("parka dilophosaur");
 
-  string spit = "if hasskill shocking lick; skill shocking lick; endif; skill spit Jurassic Acid; abort";
-  chat_private("Cheesefax", "Factory Worker");
 
-  waitq(10);
-  cli_execute("fax get");
+  if (available_amount($item[photocopied monster]) == 0) {
+    chat_private("Cheesefax", "Factory Worker");
+    for i from 1 to 3 {
+      wait(6);
+      cli_execute("fax receive");
 
-  if((item_amount($item[Photocopied Monster]) == 1) && (get_property("photocopyMonster") == "Factory Worker")){
-    use(1, $item[Photocopied Monster]);
-    run_combat(spit);
-  } else {
-    abort("We couldn't get a factory worker fax. Manually get one and yellow ray it, before rerunning.");
+      if (get_property("photocopyMonster") == "factory worker") {
+      cli_execute("fax send");
+        
+      }
+    }
   }
+
+  if (available_amount($item[photocopied monster]) == 0 && (get_property("photocopyMonster") != "Factory Worker")){
+    abort("Failed to get a Factory Worker fax. Cheesefax may be offline or another person may have been using the fax. Try manually and rerun");
+  }
+  // TODO: visit_url for using a fax, use may use a default CCS
+  use(1, $item[Photocopied Monster]);
+  run_combat(spit);
 }
 
 maximize("hot res", false);
@@ -1491,7 +1521,7 @@ if(pulls_remaining() > 0){
 }
 
 // TODO: Preference for paw/wish uses
-if(my_name() = "Jimmyking"){
+if(my_name() == "Jimmyking"){
   foreach eff in $effects[Sparkly!, Witch Breaded, Pisces in the Skyces, Celestial Mind]{
     if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
       wish_effect(eff);
@@ -1676,6 +1706,7 @@ string[string] available_choices = {
   "sekrit":"",
 };
 
+string current_script_ver = "v1.33";
 if(get_property("lcs_start") != current_script_ver){
 
   newline();
@@ -1702,9 +1733,9 @@ if(get_property("lcs_start") != current_script_ver){
 
   print(`Welcome back, {my_name()}! Here's what changed:`, "teal");
   newline();
-  print("- HC Support! Yay!");
-  print("- Small bugfixes for low-shiny and/or low-perm accounts");
-  print("- Clip art support");
+  print("- Love potion support");
+  print("- More bugfixes for low-shiny and/or low-perm accounts");
+  print("- We save 3 mp now. Yay?");
   newline();
 
 
