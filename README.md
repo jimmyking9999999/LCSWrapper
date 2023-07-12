@@ -60,11 +60,10 @@ A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_
 
 ## IoTM Support:
 
-My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking#a4) includes most perms and skills that are supported. Additional IoTMs that are supported include the following IoTM functionalities. Stat-stick shinies such as the Guzzlr application will always be included, as the script uses the mafia maximizer for equipment stats:
+My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking#a4) includes most perms and skills that are supported. Additional IoTMs that are supported with their functionalities are listed below: (Stat-stick shinies such as the Guzzlr application will always be included, as the script uses the mafia maximizer for equipment stats)
 
 - Boxing Day care package
 - Distant Woods Getaway Brochure
-- Beach Comb Box
 - mint-in-box Powerful Glove
 - God Lobster Egg
 - pantogram
