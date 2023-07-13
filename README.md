@@ -46,7 +46,10 @@ If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/the
 
 [Saucegeyser](https://kol.coldfront.net/thekolwiki/index.php/Saucegeyser), [Curse of Weaksauce](https://kol.coldfront.net/thekolwiki/index.php/Curse_of_Weaksauce), and [Itchy Curse Finger](https://kol.coldfront.net/thekolwiki/index.php/Itchy_Curse_Finger) permed. This trivializes most combat encounters we'll be facing, the latter two helping to regulate surviability and MP usage. If you have a saber and a fire extinguisher, you'll want [Double-Fisted Skull Smashing](https://kol.coldfront.net/thekolwiki/index.php/Double-Fisted_Skull_Smashing) permed as well. 
 
-A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in your inventory when you ascend - The 300% myst buff is invaluable to our powerleveling needs.
+A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in your inventory when you ascend - The 300% myst buff is invaluable to our powerleveling needs. The script will function without one if you're in a run, and will instead pull a pressurized potion instead.
+
+
+If you're running the script as a Pastamancer and have a [Stick-Knife of Loathing](https://kol.coldfront.net/thekolwiki/index.php/Stick-Knife_of_Loathing) as well as [Bind Undead Elbow Macaroni](https://kol.coldfront.net/thekolwiki/index.php/Bind_Undead_Elbow_Macaroni) permed, an outfit of any name with a singular stick-knife in it will allow the stick-knife to be pulled for turnsave.
 
 ## Ascending into CS:
 
