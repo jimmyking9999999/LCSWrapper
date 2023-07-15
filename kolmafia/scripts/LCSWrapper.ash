@@ -623,7 +623,7 @@ if(have_effect($effect[Tainted Love Potion]) == 0 && have_skill($skill[Love Mixo
     use_skill(1, $skill[Love Mixology]);
   }
         
-  visit_url('desc_effect.php?whicheffect=' + love_effect.descid);
+  visit_url('desc_effect.php?whicheffect=' + $effect[Tainted Love Potion].descid);
   if ($effect[Tainted Love Potion].numeric_modifier('mysticality') > 5 && $effect[Tainted Love Potion].numeric_modifier('muscle') > - 10 && $effect[Tainted Love Potion].numeric_modifier('moxie') > - 10){
     use(1, $item[Love Potion #XYZ]);
   }
