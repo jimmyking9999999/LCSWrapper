@@ -645,7 +645,9 @@ if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (ava
 
 if((my_sign() == "Blender") && (!have_effect($effect[Baconstoned]).to_boolean() && (item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()))){
   retrieve_item(1, $item[vial of baconstone juice]);
-  use(1, $item[vial of baconstone juice]); 
+  if(item_amount($item[vial of baconstone juice]).to_boolean()){
+    use(1, $item[vial of baconstone juice]); 
+  }
 }
 
 maximize("myst, 5 ML, 3 exp, 30 mysticality experience percent, 5 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, 100 bonus Cincho de Mayo", false); 
