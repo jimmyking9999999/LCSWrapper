@@ -379,9 +379,9 @@ int test_turns(int test){
 
 boolean gain_adventures(int advs_to_gain){
 	while(my_adventures() < advs_to_gain){
-		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze
+		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
 		if(item_amount($item[Astral Pilsner]).to_boolean()){
-			get_effect($effect[Ode to Booze]);
+			use_skill(2, $skill[The Ode to Booze]);
 			drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
 		}
 
