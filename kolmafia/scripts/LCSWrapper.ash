@@ -692,7 +692,7 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
   for i from 0 to 2 {
     visit_url('main.php?fightgodlobster=1');
     
-    run_combat();
+    run_combat("skill saucegeyser; repeat !times 5");
     refresh();
 
     if((handling_choice()) || choice_follows_fight()){
@@ -704,6 +704,7 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
 }
 
 if(get_property("snojoAvailable").to_boolean()){
+  visit_url("place.php?whichplace=snojo&action=snojo_controller");
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
   while(get_property("_snojoFreeFights") < 10){
     adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
