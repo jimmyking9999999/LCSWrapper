@@ -449,7 +449,7 @@ if(!available_amount($item[Cincho de Mayo]).to_boolean() && !in_hardcore()){
   }
 }
 
-if(get_property("tomeSummons") == "0"){
+if(get_property("tomeSummons") == "0" && !have_effect($effect[Purity of Spirit]).to_boolean()){
   if(clip_art($item[cold-filtered water])){
     use(1, $item[cold-filtered water]);
   }
@@ -1271,7 +1271,7 @@ if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount(
     }
   }
   
-  if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+  if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean() && storage_amount($item[Stick-knife of Loathing]).to_boolean()){
   
   foreach x, outfit_name in get_custom_outfits()
 
@@ -1286,7 +1286,7 @@ if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount(
       } 
       
       if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-        abort("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!");
+        print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!");
       }
   }
 
