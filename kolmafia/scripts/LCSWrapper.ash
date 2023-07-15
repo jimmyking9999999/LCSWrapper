@@ -1580,7 +1580,6 @@ string flavour_text(int stage_name){
 void main(string... settings){
   
 string[int] options = settings.join_strings(" ").split_string(" ");
-options = split_string(settings, " ");
 
 string[string] available_choices = {
   "help":"",
