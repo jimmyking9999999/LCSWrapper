@@ -132,6 +132,7 @@ if(!available_amount($item[Ebony Epee]).to_boolean() && item_amount($item[Spinma
 set_auto_attack(0);
 
 cli_execute("backupcamera reverser on");
+// TOOD: Mushroom garden exception
 cli_execute("garden pick");
 
 if(item_amount($item[Whet Stone]).to_boolean()){
@@ -969,7 +970,7 @@ if(have_familiar($familiar[Disgeist])){
 }
 
 if (item_amount($item[mumming trunk]) > 0) {
-	cli_execute('mummery item');
+	cli_execute('try; mummery item');
 }
 
 if((!have_effect($effect[One Very Clear Eye]).to_boolean()) && (!test)){
