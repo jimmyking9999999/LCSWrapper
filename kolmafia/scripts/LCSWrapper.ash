@@ -618,16 +618,13 @@ if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
   cli_execute("umbrella broken");
 }
 
-
-effect love_effect = $effect[Tainted Love Potion];
-
-if(have_effect(love_effect) == 0) {
-  if(!available_amount($item[Love Potion #XYZ]).to_boolean() && have_skill($skill[Love Mixology])){
+if(have_effect($effect[Tainted Love Potion]) == 0 && have_skill($skill[Love Mixology])) {
+  if(!available_amount($item[Love Potion #XYZ]).to_boolean()){
     use_skill(1, $skill[Love Mixology]);
   }
         
   visit_url('desc_effect.php?whicheffect=' + love_effect.descid);
-  if (love_effect.numeric_modifier('mysticality') > 5 && love_effect.numeric_modifier('muscle') > - 10 && love_effect.numeric_modifier('moxie') > - 10){
+  if ($effect[Tainted Love Potion].numeric_modifier('mysticality') > 5 && $effect[Tainted Love Potion].numeric_modifier('muscle') > - 10 && $effect[Tainted Love Potion].numeric_modifier('moxie') > - 10){
     use(1, $item[Love Potion #XYZ]);
   }
 }
