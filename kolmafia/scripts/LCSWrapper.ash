@@ -102,7 +102,7 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && availa
 }
 
 if(item_amount($item[mumming trunk]) > 0) {
-	cli_execute('mummery mys');
+	cli_execute('try; mummery mys');
 }
 
 if(get_property("frAlways").to_boolean() && available_amount($item[Fantasyrealm g. e. m.]) == 0) {
