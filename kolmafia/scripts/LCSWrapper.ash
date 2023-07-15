@@ -712,7 +712,7 @@ if(get_property("snojoAvailable").to_boolean()){
 }
 
 if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
-  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; skill saucegeyser; repeat !times 10; attack; repeat !times 10; abort";
+  string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if !mpbelow 30; skill saucegeyser; endif; repeat !times 10; attack; repeat !times 10; abort";
 
   if(get_property("questRufus") == "unstarted"){
 
@@ -1482,7 +1482,9 @@ void donate_body_to_science(){
     run_choice(1);
   }
 
-  cli_execute("breakfast");
+  if(get_property("breakfastCompleted") != "true"){
+    cli_execute("breakfast");
+  }
 
   if(item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed") < 3){
     for(int i; i < get_property("_genieWishesUsed").to_int(); i++){
