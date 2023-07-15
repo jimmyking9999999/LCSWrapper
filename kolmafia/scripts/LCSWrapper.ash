@@ -644,8 +644,9 @@ if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (ava
 }
 
 if((my_sign() == "Blender") && (!have_effect($effect[Baconstoned]).to_boolean() && (item_amount($item[Bitchin' Meatcar]).to_boolean()) || (item_amount($item[Desert Bus Pass]).to_boolean()))){
-  retrieve_item(1, $item[vial of baconstone juice]);
-  if(item_amount($item[vial of baconstone juice]).to_boolean()){
+  
+  if(!item_amount($item[vial of baconstone juice]).to_boolean() && item_amount($item[Baconstone]).to_boolean()){
+    retrieve_item(1, $item[vial of baconstone juice]);
     use(1, $item[vial of baconstone juice]); 
   }
 }
