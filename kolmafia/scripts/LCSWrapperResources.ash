@@ -1,3 +1,18 @@
+// LCSWrapper Resources
+/* IoTMs currently in here (Ctrl + F to jump):
+
+--pocketmeteors
+--alicearmy
+--clipart
+--monkeypaw
+--bottledgenie
+--cargopants
+
+Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
+*/
+
+/* Days since last effect system rework: 73 */
+
 void refresh() {
   visit_url("main.php");
 }
@@ -61,7 +76,7 @@ boolean get_effect(effect effe){
 	return have_effect(effe).to_boolean();
 } 
 
-
+// --pocketmeteors
 void meteor_shower(){
   // If we have the skill but not the meteor showered effect, as well as saber/shower uses remaining
   if((have_skill($skill[Meteor Lore])) && (get_property("_meteorShowerUses") < 5) && (get_property('_saberForceUses').to_int() < 5) && (!have_effect($effect[Meteor Showered]).to_boolean())){
@@ -153,6 +168,7 @@ string is_plural(int number){
 	return "s";
 }
 
+// --clipart
 boolean clip_art(item it) {
 	if (!have_skill($skill[summon clip art]) || get_property("tomeSummons").to_int() >= 3){
 		return false;
@@ -165,6 +181,7 @@ boolean clip_art(item it) {
 	return retrieve_item(it);
 }
 
+// --bottledgenie | --monkeypaw
 boolean wish_effect(effect effe){
 	print(`Trying to wish for effect: {effe}`, "teal");
 	if(have_effect(effe).to_boolean())
@@ -200,6 +217,109 @@ boolean wish_effect(effect effe){
   }
 
 	return have_effect(effe).to_boolean();
+}
+
+// --alicearmy
+boolean alice_army_snack(effect soda){
+	item snack = substring(soda.default, 6).to_item();
+
+	if(!get_property("grimoire3Summons").to_boolean() && have_skill($skill[Summon Alice's Army Cards])){
+		use_skill(1, $skill[Summon Alice's Army Cards]);
+		buy($coinmaster[Game Shoppe Snacks], 1, snack);
+	}
+	if(item_amount(snack).to_boolean()){
+		use(1, snack);
+	}
+
+	return(have_effect(soda).to_boolean());
+}
+
+// --cargopants
+boolean cargo_effect(effect eff){
+
+	if(have_effect(eff).to_boolean()){
+		return true;
+	}
+
+	if(available_amount($item[Cargo Cultist Shorts]).to_boolean() && !get_property('_cargoPocketEmptied').to_boolean()){
+		switch(eff) {
+			case $effect[Rictus of Yeg]:
+				cli_execute("cargo item Yeg's Motel Toothbrush");
+				use(1, $item[Yeg's Motel Toothbrush]);
+			break;
+
+			case $effect[Sigils of Yeg]:
+				cli_execute("cargo item Yeg's Motel Hand Soap");
+				use(1, $item[Yeg's Motel Hand Soap]);
+			break;
+
+			default:
+				cli_execute(`cargo effect {eff}`);
+			break;
+		}
+	}
+
+	return have_effect(eff).to_boolean();
+}
+
+string is_an(string it){
+  if($strings[a, e, i, o, u] contains substring(it, 0, 1)){
+    return "n";
+  }
+
+  return "";
+}
+
+boolean pull_item(item it, string condition){
+  if(available_amount(it).to_boolean()){
+    return true;
+  }
+
+  if(pulls_remaining() == 0){
+	return false;
+  }
+
+  print(`Pulling a{is_an(it.to_string())} {it}!`);
+
+  if(condition == ""){
+	if(!storage_amount(it).to_boolean()){
+		buy_using_storage(1, it);
+	}
+
+	take_storage(1,it);
+  } else {
+    if(cli_execute(`ashq if({condition});`).to_boolean()){
+		if(!storage_amount(it).to_boolean()){
+			buy_using_storage(1, it);
+		}
+
+		take_storage(1,it);
+    }
+  }
+
+  return available_amount(it).to_boolean();
+}
+
+string test_number_to_name(int testnum){
+
+	switch(testnum){
+		default:
+			abort("Invalid test number!");
+		case 1: return "hp"; 
+		case 2: return "mus"; 
+		case 3: return "mys"; 
+		case 4: return "mox"; 
+		case 5: return "fam_weight"; 
+		case 6: return "weapon_damage"; 
+		case 7: return "spell_damage"; 
+		case 8: return "non_combat"; 
+		case 9: return "item"; 
+		case 10: return "hot_res"; 
+		case 11: return "coil_wire";
+		case 30: return "science_vessel";
+
+	}
+
 }
 
 int test_turns(int test){
@@ -257,6 +377,54 @@ int test_turns(int test){
 	}
 }
 
+boolean gain_adventures(int advs_to_gain){
+	while(my_adventures() < advs_to_gain){
+		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze
+		if(item_amount($item[Astral Pilsner]).to_boolean()){
+			get_effect($effect[Ode to Booze]);
+			drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
+		}
+
+
+
+	}
+
+	return my_adventures() > advs_to_gain;
+}
+
+void cs_test(int testnum){
+
+	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
+
+	gain_adventures(test_turns(testnum));
+
+	visit_url("council.php");	
+	if(test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+		visit_url(`choice.php?whichchoice=1089&option={testnum}&pwd`);
+	} else {
+		abort("Manually do the test, see if you can optimize any further, then ping me your turn threshold (if needed) ^w^");
+	}
+}
+
+// TODO synthesis oh no
+boolean synthesis_effect(effect eff){
+	if(have_effect(eff).to_boolean()){
+		return true;
+	}
+
+	if(!have_skill($skill[Sweet Synthesis])){
+		return false;
+	}
+
+
+
+	if(have_skill($skill[Summon crimbo candy])){
+		use_skill(1, $skill[Summon crimbo candy]);
+	}
+
+	return false;
+}
+
 
 
 effect eff;
@@ -264,71 +432,71 @@ boolean no_more_buffs = false;
 /* Effects go here, numbered by priority */
 
 string [int] powerlevel_effects = {
-	1:"Glittering Eyelashes",
-	2:"Inscrutable Gaze",
-	3:"Ode to Booze",
-	4:"Saucemastery",
-	5:"Big",
-	6:"Carol of the Thrills",
-	7:"Spirit of Cayenne",
-	8:"Ur-Kel's Aria of Annoyance",
-	9:"Shanty of Superiority",
-	10:"Leash of Linguini",
-	11:"Empathy",
-	12:"Pride of the Puffin",
-	13:"Feeling Nervous",
-	14:"Feeling Excited",
-	15:"Feeling Peaceful",
-	16:"Blood Bubble",
-	17:"Song of Bravado",
-	18:"Disdain of she-who-was",
-	19:"Blood Bond",
-	20:"Bendin' Hell",
-	21:"END",
-}; 
+    "Glittering Eyelashes",
+    "Inscrutable Gaze",
+    "Ode to Booze",
+    "Saucemastery",
+    "Big",
+    "Carol of the Thrills",
+    "Spirit of Cayenne",
+    "Ur-Kel's Aria of Annoyance",
+    "Shanty of Superiority",
+    "Leash of Linguini",
+    "Empathy",
+    "Pride of the Puffin",
+    "Feeling Nervous",
+    "Feeling Excited",
+    "Feeling Peaceful",
+    "Blood Bubble",
+    "Song of Bravado",
+    "Disdain of she-who-was",
+    "Blood Bond",
+    "Bendin' Hell",
+    "END",
+};
 
 string [int] mys_effects = {
-	1:"Glittering Eyelashes",
-	2:"Big",
-	3:"Quiet Judgement",
-	4:"Shanty of Superiority",
-	5:"END",
+	"Glittering Eyelashes",
+	"Big",
+	"Quiet Judgement",
+	"Shanty of Superiority",
+	"END",
 }; 
 
 string [int] mox_effects = {
-	1:"Expert Oiliness",
-	2:"Song of bravado",
-	3:"Blubbered up",
-	4:"Disco state of mind",
-	5:"Mariachi mood",
-	6:"Butt-rock hair",
-	7:"Unrunnable face",
-	8:"Feeling Excited",
-	9:"Quiet Desperation",
-	10:"Stevedave's Shanty of Superiority",
-	11:"The Moxious Madrigal",
-	12:"aMAZing",
-	13:"END",
-}; 
+    "Expert Oiliness",
+    "Song of bravado",
+    "Blubbered up",
+    "Disco state of mind",
+    "Mariachi mood",
+    "Butt-rock hair",
+    "Unrunnable face",
+    "Feeling Excited",
+    "Quiet Desperation",
+    "Stevedave's Shanty of Superiority",
+    "The Moxious Madrigal",
+    "aMAZing",
+    "END",
+};
 
 string [int] mus_effects = {
-	1:"Expert Oiliness",
-	2:"Go get 'em, tiger!",
-	3:"Seal clubbing frenzy",
-	4:"Rage of the reindeer",
-	5:"Patience of the tortoise",
-	6:"Disdain of the war snapper",
-	7:"Song of bravado",
-	8:"Quiet determination",
-	9:"Feeling excited",
-	10:"Phorcefullness",
-	11:"END",
-}; 
+    "Expert Oiliness",
+    "Go get 'em, tiger!",
+    "Seal clubbing frenzy",
+    "Rage of the reindeer",
+    "Patience of the tortoise",
+    "Disdain of the war snapper",
+    "Song of bravado",
+    "Quiet determination",
+    "Feeling excited",
+    "Phorcefullness",
+    "END",
+};
 
 string [int] hp_effects = {
-	1:"Song of starch",
-	2:"Reptilian fortitude",
-	3:"END",
+	"Song of starch",
+	"Reptilian fortitude",
+	"END",
 }; 
 
 string [int] item_effects = {
@@ -350,59 +518,57 @@ string [int] item_effects = {
 }; 
 
 string [int] hot_res_effects = {
-	1:"Elemental Saucesphere",
-	2:"Astral Shell",
-	3:"Leash of Linguini",
-	4:"Empathy",
-	5:"Amazing",
-	6:"Feeling Peaceful",
-	7:"Hot-headed",
-	8:"END",
-}; 
+    "Elemental Saucesphere",
+    "Astral Shell",
+    "Leash of Linguini",
+    "Empathy",
+    "Amazing",
+    "Feeling Peaceful",
+    "Hot-headed",
+    "END",
+};
 
 string [int] fam_weight_effects = {
-	1:"Ode to Booze",
-	2:"Empathy",
-	3:"Leash of Linguini",
-	4:"Blood Bond",
-	5:"Billiards Belligerence",
-	6:"Loyal as a Rock",
-	7:"Party Soundtrack",
-	8:"END",
-}; 
-
+    "Ode to Booze", // Hmmm...
+    "Empathy",
+    "Leash of Linguini",
+    "Blood Bond",
+    "Billiards Belligerence",
+    "Loyal as a Rock",
+    "Party Soundtrack",
+    "END",
+};
 string [int] non_combat_effects = {
-	1:"Smooth Movements",
-	2:"The Sonata of Sneakiness",
-	3:"A Rose by any Other Material",
-	4:"Leash of Linguini",
-	5:"Empathy",
-	6:"Feeling Lonely",
-	7:"Feeling Sneaky",
-	8:"Throwing Some Shade",
-	9:"Silent Running",
-	10:"END",
-}; 
+    "Smooth Movements",
+    "The Sonata of Sneakiness",
+    "A Rose by any Other Material",
+    "Leash of Linguini",
+    "Empathy",
+    "Feeling Lonely",
+    "Feeling Sneaky",
+    "Throwing Some Shade",
+    "Silent Running",
+    "END",
+};
 
 string [int] weapon_damage_effects = {
-	1:"Bow-Legged Swagger",
-	2:"Cowrruption",
-	3:"Billiards Belligerence",
-	4:"Scowl of the auk",
-	5:"Tenacity of the snapper",
-	6:"Frenzied, bloody",
-	7:"Disdain of the war snapper",
-	8:"Lack of body-building",
-	9:"Carol of the Bulls",
-	10:"Song of the North",
-	11:"Rage of the Reindeer",
-	12:"Song of the North",
-	13:"Imported Strength",
-	14:"Feeling punchy",
-	15:"Engorged weapon",
-	16:"Pronounced Potency",
-	17:"Ham-fisted",
-	18:"END",
+	"Bow-Legged Swagger",
+	"Cowrruption",
+	"Billiards Belligerence",
+	"Scowl of the auk",
+	"Tenacity of the snapper",
+	"Frenzied, bloody",
+	"Disdain of the war snapper",
+	"Lack of body-building",
+	"Carol of the Bulls",
+	"Song of the North",
+	"Rage of the Reindeer",
+	"Imported Strength",
+	"Feeling punchy",
+	"Engorged weapon",
+	"Pronounced Potency",
+	"Ham-fisted",
+	"END",
 };
 
 string [int] spell_damage_effects = {
