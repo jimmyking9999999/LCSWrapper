@@ -17,6 +17,8 @@ void refresh() {
   visit_url("main.php");
 }
 
+// Following snippet from c2t //
+
 boolean get_effect(effect effe){
 
 	if (have_effect(effe).to_boolean()){
@@ -107,8 +109,6 @@ void meteor_shower(){
           }
       }
     }
-
-    
   } else {
 
     if(can_adventure($location[thugnderdome]) && (item_amount($item[Bitchin' Meatcar]).to_boolean() || item_amount($item[Desert Bus Pass]).to_boolean())){
@@ -168,6 +168,39 @@ string is_plural(int number){
 	return "s";
 }
 
+
+int get_all_freekills(){
+	int total_freekills;
+
+	if(get_property("lcs_skip_freekills").to_boolean()){
+		return 1;
+	}
+
+	if(have_skill($skill[Shattering Punch]).to_boolean()){
+		total_freekills += 3 - get_property("_shatteringPunchUsed").to_int();
+	}
+
+	if(available_amount($item[Lil' Doctor&trade; bag]).to_boolean()){
+		total_freekills += 3 - get_property("_chestXRayUsed").to_int();
+	}
+
+	total_freekills += available_amount($item[Groveling Gravel]).to_int();
+
+	if(have_skill($skill[Gingerbread Mob Hit]) && get_property("_gingerbreadMobHitUsed").to_boolean()){
+		total_freekills++;
+	}
+
+	total_freekills += get_property("shockingLickCharges").to_int();
+
+	if(total_freekills == 0){
+		total_freekills++;
+	}
+
+	return total_freekills;
+}
+
+
+
 // --clipart
 boolean clip_art(item it) {
 	if (!have_skill($skill[summon clip art]) || get_property("tomeSummons").to_int() >= 3){
@@ -176,7 +209,7 @@ boolean clip_art(item it) {
 
 	if(item_amount(it) > 0){
 	  return true;
-  }
+  	}
 
 	return retrieve_item(it);
 }
@@ -381,8 +414,12 @@ boolean gain_adventures(int advs_to_gain){
 	while(my_adventures() < advs_to_gain){
 		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
 		if(item_amount($item[Astral Pilsner]).to_boolean()){
-			use_skill(2, $skill[The Ode to Booze]);
-			drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
+			if(!have_effect($effect[Ode to Booze]).to_boolean()){
+				use_skill($skill[The Ode to Booze]);
+			}
+
+			drink(1, $item[Astral Pilsner]);
+			// drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
 		}
 
 
@@ -425,7 +462,31 @@ boolean synthesis_effect(effect eff){
 	return false;
 }
 
+familiar current_best_fam(){
+	// CS Optimal familiars: CBB (6.6 turns on item%) -> Camel (4 turns on weapon damage, 2 on spell damage) -> Shortest-Order Cook (2 turns on familiar weight) -> Garbage Fire (1-2 turns on familiar weight) -> Sombrero (Stats)
+	if(have_familiar($familiar[Cookbookbat]) && !get_property("lcs_skip_cbb").to_boolean() && item_amount($item[Vegetable of Jarlsberg]) < 2){
+		return $familiar[Cookbookbat];
+	}
 
+	if(have_familiar($familiar[Melodramedary]) && !have_effect($effect[Spit Upon]).to_boolean() && get_property("camelSpit").to_int() < 100){
+		return $familiar[Melodramedary];
+	}
+
+	if(have_familiar($familiar[Garbage Fire]) && (!available_amount($item[burning paper crane]).to_boolean() || item_amount($item[burning newspaper]).to_boolean())){
+		return $familiar[Garbage Fire];
+	}
+
+	if(have_familiar($familiar[Shorter-Order Cook]) && !item_amount($item[short stack of pancakes]).to_boolean() && !have_effect($effect[Shortly Stacked]).to_boolean()){
+		return $familiar[Shorter-Order Cook];
+	}
+
+	if(have_familiar($familiar[Artistic Goth Kid])){
+		return $familiar[Artistic Goth Kid];
+	}
+
+	return $familiar[Hovering Sombrero];
+
+}
 
 effect eff;
 boolean no_more_buffs = false;
@@ -612,7 +673,7 @@ string  [int]    [string]         [int] test_muscle_effects = {
 boolean adinethonk(int test_number, string eff_to_check) {
 	if(eff_to_check == "END"){
 		abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test_number)} turns!`);
-	}
+	}	
 
 
 	if(have_effect(eff).to_boolean()){
