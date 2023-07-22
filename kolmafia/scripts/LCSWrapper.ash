@@ -132,8 +132,10 @@ if(!available_amount($item[Ebony Epee]).to_boolean() && item_amount($item[Spinma
 set_auto_attack(0);
 
 cli_execute("backupcamera reverser on");
-// TOOD: Mushroom garden exception
-cli_execute("garden pick");
+if(!visit_url("campground.php").contains_text("mushroom")){
+  cli_execute("garden pick");
+}
+
 
 if(item_amount($item[Whet Stone]).to_boolean()){
   use(1, $item[Whet Stone]);
@@ -350,9 +352,7 @@ if((available_amount($item[Kramco Sausage-o-Matic&trade;]).to_boolean()) && (!ge
   if(available_amount($item[Industrial Fire Extinguisher]).to_boolean()){
   equip($item[Industrial Fire Extinguisher]); }
 
-  if(have_familiar($familiar[Melodramedary])){
-  use_familiar($familiar[Melodramedary]);
-  }
+  use_familiar(current_best_fam());
 
   if(my_hp() < my_maxhp()){
     cli_execute("hottub");
@@ -549,7 +549,7 @@ if (get_property("daycareOpen").to_boolean() && !get_property("_daycareSpa").to_
 
 print("Using a ten-percent bonus! (And bastille!)", "teal");
 
-if(get_property("getawayCampsiteUnlocked").to_boolean()){
+if(get_property("getawayCampsiteUnlocked").to_boolean() && !have_effect($effect[That's Just Cloud-Talk, Man]).to_boolean()){
   visit_url("place.php?whichplace=campaway&action=campaway_sky");
 }
 
@@ -612,7 +612,9 @@ if((have_effect($effect[On the Trolley]) == 0) && !(test)){
   cli_execute("drink 1 bee's knees");
 }
 // TODO: Bird-a-day
-cli_execute("breakfast");
+if(get_property("breakfastCompleted") != "true"){
+  cli_execute("breakfast");
+}
 
 if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
   cli_execute("umbrella broken");
@@ -664,9 +666,7 @@ if(available_amount($item[January's Garbage Tote]).to_boolean()){
   equip($item[Makeshift Garbage Shirt]);
 }
 
-if(have_familiar($familiar[Melodramedary])){
-  use_familiar($familiar[Melodramedary]);
-}
+use_familiar(current_best_fam());
 
 if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
   equip($slot[Familiar], $item[Tiny Stillsuit]);
@@ -703,7 +703,8 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
 if(get_property("snojoAvailable").to_boolean()){
   visit_url("place.php?whichplace=snojo&action=snojo_controller");
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
-  while(get_property("_snojoFreeFights") < 10){
+  while(get_property("_snojoFreeFights").to_int() < 10){
+    use_familiar(current_best_fam());
     adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
   }
 }
@@ -722,19 +723,7 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 
     boolean break_flag;
 
-    if(have_familiar($familiar[Cookbookbat]) && item_amount($item[Vegetable of Jarlsberg]) < 2){
-      use_familiar($familiar[Cookbookbat]);
-
-    } else {
-
-      foreach fam in $familiars[Cookbookbat, Melodramedary, Shorter-Order Cook, Comma Chameleon, Disgeist]{
-        if(have_familiar(fam) && !break_flag){
-          use_familiar(fam);
-          break_flag = true;
-        }
-      }
-    }
-
+    use_familiar(current_best_fam());
     adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
 
     if(handling_choice()){
@@ -754,6 +743,11 @@ if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holi
   use_familiar($familiar[Ghost of Crimbo Carols]);
 }
 
+if(available_amount($item[Autumn-aton]).to_boolean()){
+  cli_execute("autumnaton send The Neverending Party");
+}
+
+boolean yoked_obtained = false;
 string nep_powerlevel = "if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser; attack; repeat !times 10; abort;";
 string nep_freerun_sideways = `skill bowl sideways; {freerun}; abort`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
@@ -767,12 +761,12 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   }
     
   if(my_familiar() == $familiar[Ghost of Crimbo Carols] && have_effect($effect[Holiday Yoked]).to_boolean()){
-    use_familiar(prev_fam);
+    yoked_obtained = true;
   }
 
-  if(available_amount($item[Autumn-aton]).to_boolean()){
-    cli_execute("autumnaton send The Neverending Party");
-  } // TODO: Autumn-aton upgrade
+  if(yoked_obtained || !have_familiar($familiar[Ghost of Crimbo Carols])){
+    use_familiar(current_best_fam());
+  }
 
 
   if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`) && get_property("_cinchUsed") >= 30){
@@ -792,10 +786,9 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   }
 }
 
-int freekills = (3 - get_property("_shatteringPunchUsed").to_int()) + (3 - get_property("_chestXRayUsed").to_int()) + available_amount($item[Groveling Gravel]).to_int() + get_property("shockingLickCharges").to_int() - 1;
-if(!get_property("_gingerbreadMobHitUsed").to_boolean()){freekills++;}
-// Saves one just in case
 
+// Saves one just in case
+int freekills = get_all_freekills() - 1;
 print(`Running {freekills} freekill{is_plural(freekills)} in the NEP!`,"teal");
 
 // If someone has daily affirmations I think they're off running a better script then this
@@ -820,6 +813,11 @@ while(freekills > 0){
   }
   
   adv1($location[The Neverending Party], -1, nep_powerlevel_freekills);
+  use_familiar(current_best_fam());
+
+  if(get_property("garbageShirtCharge") < 2 && equipped_amount($item[Makeshift Garbage Shirt]).to_boolean()){
+    equip($slot[Shirt], $item[none]);
+  } // TODO: post-adv script
 
   freekills--;
   print(`{freekills} freekill{is_plural(freekills)} left!`,"teal");
@@ -843,10 +841,6 @@ if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
 }
 
 int backup_uses = get_property(`lcs_alloted_backup_uses`).to_int();
-
-if(get_property("garbageShirtCharge") < 2 && available_amount($item[makeshift garbage shirt]).to_boolean() && available_amount($item[Jurassic Parka]).to_boolean()){
-  equip($slot[Shirt], $item[Jurassic Parka]);
-}
 
 if(backup_uses != 0){
   print("Now backing up your fights!","teal");
@@ -1068,7 +1062,7 @@ if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($fami
 
 }
 
-if(get_property("commaFamiliar") == "Homemade Robot"){
+if(get_property("commaFamiliar") == "Homemade Robot" && have_familiar($familiar[Comma Chameleon])){
   use_familiar($familiar[Comma Chameleon]);
   visit_url("charpane.php");
 }
@@ -1096,7 +1090,6 @@ cs_test(5);
 
 void hot_res_test(){
 
-boolean canfoam = false;
 if((available_amount($item[Industrial Fire Extinguisher]).to_boolean()) && (available_amount($item[Fourth of May Cosplay Saber]).to_boolean()) && (!have_effect($effect[Fireproof Foam Suit]).to_boolean())){
   
   string saber_foam = "if hasskill Mist Form; skill mist form; endif; skill Fire Extinguisher: Polar Vortex; skill Fire Extinguisher: Foam Yourself; skill Use the Force;";
@@ -1142,9 +1135,8 @@ if(!have_effect($effect[Fireproof Foam Suit]).to_boolean()){
       wait(6);
       cli_execute("fax receive");
 
-      if (get_property("photocopyMonster") == "factory worker") {
-      cli_execute("fax send");
-        
+      if (get_property("photocopyMonster") != "factory worker") {
+        cli_execute("fax send");
       }
     }
   }
@@ -1214,7 +1206,7 @@ if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 10
 }
 
 if(have_effect($effect[Holiday Yoked]).to_boolean()){
-  set_property("lcs_skip_yoked", "True");
+  set_property("lcs_skip_yoked", "true");
 }
 
 if(have_familiar($familiar[Ghost of Crimbo Carols])){
@@ -1289,12 +1281,12 @@ if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount(
 
 }
 
-if((my_meat() > 1000) && !(get_property("_madTeaParty")).to_boolean() && get_property("lcs_skip_weapon_hatter") != ""){
+if((my_meat() > 1000) && !(get_property("_madTeaParty")).to_boolean() && get_property("lcs_hatter_buff") == "weapon"){
   retrieve_item($item[goofily-plumed helmet]);
   cli_execute("hatter 20");
 }
 
-if((!item_amount($item[Red Eye]).to_boolean()) && available_amount($item[Combat Lover's Locket]).to_boolean() && (get_property("lcs_skip_red_eye") == "true")){
+if((!item_amount($item[Red Eye]).to_boolean()) && available_amount($item[Combat Lover's Locket]).to_boolean() && (get_property("lcs_skip_red_eye") != "true")){
   print("Reminiscing a red skeleton!","teal");
 
   if(!have_effect($effect[Everything Looks Yellow]).to_boolean()){
@@ -1427,7 +1419,7 @@ if(pulls_remaining() > 0 && !alice_army_snack($effect[Pisces in the Skyces])){
 }
 
 // TODO: Preference for paw/wish uses
-if(my_name() == "Jimmyking"){
+if(my_id() == "3272033"){
   foreach eff in $effects[Sparkly!, Witch Breaded, Pisces in the Skyces, Celestial Mind]{
     if(get_property("_monkeyPawWishesUsed") < 5 && get_property("_monkeyPawWishesUsed") != 0){
       wish_effect(eff);
@@ -1479,9 +1471,9 @@ void donate_body_to_science(){
     run_choice(1);
   }
 
-  if(get_property("breakfastCompleted") != "true"){
-    cli_execute("breakfast");
-  }
+  
+  cli_execute("breakfast");
+  
 
   if(item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed") < 3){
     for(int i; i < get_property("_genieWishesUsed").to_int(); i++){
@@ -1864,7 +1856,7 @@ if(get_property("csServicesPerformed").split_string(",").count() == 11){
 
 print("Done!", "green");
 
-print(`Time taken: {((now_to_int() - get_property("lcs_time_at_start").to_int())/60000)} minute(s) and {(floor((now_to_int() - get_property("lcs_time_at_start").to_int())%60000/1000.0))} second{is_plural(floor((now_to_int() - get_property("lcs_time_at_start").to_int())%60000/1000.0))}.`, "teal");
+print(`Time taken: {((now_to_int() - get_property("lcs_time_at_start").to_int())/60000)} minute{is_plural((now_to_int() - get_property("lcs_time_at_start").to_int())/60000)} and {(floor((now_to_int() - get_property("lcs_time_at_start").to_int())%60000/1000.0))} second{is_plural(floor((now_to_int() - get_property("lcs_time_at_start").to_int())%60000/1000.0))}.`, "teal");
 print("Turns used: "+turns_played()+" turns.", "teal");
 newline();
 
