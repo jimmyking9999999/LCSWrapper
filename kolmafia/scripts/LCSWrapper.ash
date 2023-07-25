@@ -1768,7 +1768,7 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
   print("We took "+((get_property("post_time_wire").to_int() - get_property("post_time_oriole").to_int())/1000)+" seconds and "+(get_property("post_advs_wire").to_int() - get_property("post_advs_oriole").to_int())+" adventure(s) coiling some wires!", "lime");
 }
 
-if((my_level()) < 14 || !available_choices["skipleveling"].to_boolean()){
+if((my_level()) < 14 && !available_choices["skipleveling"].to_boolean()){
   powerlevel();
   set_property("post_time_powerlevel", now_to_int());
   set_property("post_advs_powerlevel", turns_played());
