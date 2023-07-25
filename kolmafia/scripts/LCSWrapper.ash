@@ -31,7 +31,7 @@ void ascend() {
 // Toot oriole/Start-of-day-actions
 void oriole() {
 
-if(get_property("_birdOfTheDayMods") != ""){
+if(get_property("_birdOfTheDayMods") == ""){
   print("Visiting your favourite bird...", "teal");
 } else {
   print("Visiting your second favourite bird...", "teal");
@@ -183,12 +183,10 @@ if (get_property('questM23Meatsmith') == 'unstarted') {
 if(available_amount($item[Cherry]) == 0){
 print("Adventuring/mapping for a novelty tropical skeleton!", "teal");
 cli_execute("parka dilophosaur");
-set_property("customCombatScript", "default");
+
 set_auto_attack("none");
 
 string cs_wrapper_freerun = `if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; call freerun; sub freerun; {freerun}; endsub;`;
-cli_execute("/aa none");
-set_property("customCombatScript", "default");
 
 if((have_familiar($familiar[Pair of Stomping Boots])) && (!have_skill($skill[Map the Monsters]))){
   cs_wrapper_freerun = "if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; runaway";
@@ -403,7 +401,7 @@ if(pulls_remaining() < 1 && !in_hardcore()){
 
 // TODO: Mafia NC tracking change
 if ((have_effect($effect[Tomes of Opportunity]) == 0) && (parka_spiked) && (my_adventures() > 0)){
-  visit_url("adventure.php?snarfblat=528");
+  visit_url("adventure.php?snarfblat=528"); // Stops on holiday wanderers. TODO
   run_choice(1); run_choice(2);
 }
 
@@ -511,7 +509,7 @@ if(available_amount($item[pebble of proud pyrite]).to_boolean()){
   use(1, $item[pebble of proud pyrite]);
 }
 
-if (!get_property('_floundryItemCreated').to_boolean()){
+if (!get_property('_floundryItemCreated').to_boolean() && get_property("lcs_foundry") != "none"){
   cli_execute("acquire Codpiece"); 
 }
 
@@ -614,6 +612,7 @@ if((have_effect($effect[On the Trolley]) == 0) && !(test)){
 // TODO: Bird-a-day
 if(get_property("breakfastCompleted") != "true"){
   cli_execute("breakfast");
+  // TODO Better breakfast
 }
 
 if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
@@ -689,7 +688,7 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
   for i from 0 to 2 {
     visit_url('main.php?fightgodlobster=1');
     
-    run_combat("skill saucegeyser; repeat !times 5");
+    run_combat("attack; skill saucegeyser; repeat !times 5");
     refresh();
 
     if((handling_choice()) || choice_follows_fight()){
@@ -1581,18 +1580,9 @@ string[string] available_choices = {
   "help":"",
   "ascend":"", 
   "start":"", 
-  "wire":"", 
-  "powerlevel":"", 
-  "mys":"", 
-  "mox":"", 
-  "mus":"", 
-  "hp":"", 
-  "item":"", 
-  "non_combat":"", 
-  "spell_damage":"", 
-  "weapon_damage":"", 
-  "fam_weight":"", 
-  "hot_res":"", 
+
+  "skipleveling":"", 
+
   "test":"",
   "summary":"",
   "sekrit":"",
@@ -1749,10 +1739,19 @@ if(my_path().id != 25){
   abort("We're not in Community Service! If you want a summary of last run, type 'lcswrapper summary'!");
 }
 
+string prev_ccs = get_property('customCombatScript');
 string clan_at_start = get_clan_name();
 if(get_property("lcs_clan") != ""){
   cli_execute(`/whitelist {get_property("lcs_clan")}`);
 }
+  buffer ccs;
+
+  ccs.append("[default]");
+  ccs.append("\n");
+  ccs.append("consult LCSWrapperCombat.ash");
+
+  write_ccs(ccs, "lcswrapper_combat_script");
+  set_property('customCombatScript',"lcswrapper_combat_script");
 
 
 if(available_amount($item[astral six-pack]).to_boolean()){
@@ -1769,7 +1768,7 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
   print("We took "+((get_property("post_time_wire").to_int() - get_property("post_time_oriole").to_int())/1000)+" seconds and "+(get_property("post_advs_wire").to_int() - get_property("post_advs_oriole").to_int())+" adventure(s) coiling some wires!", "lime");
 }
 
-if((my_level()) < 14 || available_choices["powerlevel"].to_boolean()){
+if((my_level()) < 14 || !available_choices["skipleveling"].to_boolean()){
   powerlevel();
   set_property("post_time_powerlevel", now_to_int());
   set_property("post_advs_powerlevel", turns_played());
