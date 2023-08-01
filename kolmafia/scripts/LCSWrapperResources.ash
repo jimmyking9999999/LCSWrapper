@@ -1,4 +1,6 @@
-// LCSWrapper Resources
+
+script "LCSWrapperResources.ash";
+// LCSWrapper Resources - Everything used in the run that isn't called in the actual run itself
 /* IoTMs currently in here (Ctrl + F to jump):
 
 --pocketmeteors
@@ -7,11 +9,12 @@
 --monkeypaw
 --bottledgenie
 --cargopants
+--augustscepter
 
 Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
 */
 
-/* Days since last effect system rework: 73 */
+/* Days since last effect system rework: 76 */
 
 void refresh() {
   visit_url("main.php");
@@ -21,9 +24,15 @@ void refresh() {
 
 boolean get_effect(effect effe){
 
+	if(get_property("lcs_excluded_buffs").to_lower_case().contains_text(effe.to_lower_case()) || get_property("lcs_excluded_buffs").contains_text(effe.to_int())){
+		print(`Skipping effect {effe} based on user preference!`, "orange");
+		return false;
+	}
+
+
 	if (have_effect(effe).to_boolean()){
 		return true;
-  }
+  	}
 
 	string default_method = effe.default;
 
@@ -210,7 +219,8 @@ boolean clip_art(item it) {
 	if(item_amount(it) > 0){
 	  return true;
   	}
-
+	
+	print(`Casting clip art for item {it}!`, "teal");
 	return retrieve_item(it);
 }
 
@@ -219,6 +229,11 @@ boolean wish_effect(effect effe){
 	print(`Trying to wish for effect: {effe}`, "teal");
 	if(have_effect(effe).to_boolean())
 		return true;
+
+	if(get_property("lcs_excluded_buffs").to_lower_case().contains_text(effe.to_lower_case()) || get_property("lcs_excluded_buffs").contains_text(effe.to_int())){
+		print(`Skipping effect {effe} based on user preference!`, "orange");
+		return false;
+	}
 
 	if(available_amount($item[Cursed Monkey's Paw]).to_boolean()){
 
@@ -295,6 +310,14 @@ boolean cargo_effect(effect eff){
 	return have_effect(eff).to_boolean();
 }
 
+//--augustscepter
+boolean august_scepter(int day){
+	visit_url(`runskillz.php?action=Skillz&whichskill={7451 + day}&targetplayer=${my_id()}&pwd=&quantity=1`);
+	// TODO fix this when mafia has support lol
+
+	return true;
+}
+
 string is_an(string it){
   if($strings[a, e, i, o, u] contains substring(it, 0, 1)){
     return "n";
@@ -312,7 +335,7 @@ boolean pull_item(item it, string condition){
 	return false;
   }
 
-  print(`Pulling a{is_an(it.to_string())} {it}!`);
+  print(`Pulling a{is_an(it.to_string())} {it}!`, "teal");
 
   if(condition == ""){
 	if(!storage_amount(it).to_boolean()){
@@ -321,7 +344,7 @@ boolean pull_item(item it, string condition){
 
 	take_storage(1,it);
   } else {
-    if(cli_execute(`ashq if({condition});`).to_boolean()){
+    if(cli_execute(`ashq if({condition});`).to_boolean()){ // Don't look >.>
 		if(!storage_amount(it).to_boolean()){
 			buy_using_storage(1, it);
 		}
@@ -513,6 +536,7 @@ string [int] powerlevel_effects = {
     "Disdain of she-who-was",
     "Blood Bond",
     "Bendin' Hell",
+    "Triple-Sized",
     "END",
 };
 
@@ -586,6 +610,7 @@ string [int] hot_res_effects = {
     "Amazing",
     "Feeling Peaceful",
     "Hot-headed",
+	"Rainbow Vaccine",
     "END",
 };
 
@@ -609,6 +634,7 @@ string [int] non_combat_effects = {
     "Feeling Sneaky",
     "Throwing Some Shade",
     "Silent Running",
+	"Invisible Avatar",
     "END",
 };
 
