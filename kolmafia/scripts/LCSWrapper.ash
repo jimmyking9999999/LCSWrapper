@@ -1200,11 +1200,6 @@ if(!have_effect($effect[Fireproof Foam Suit]).to_boolean()){
   run_combat(spit);
 }
 
-if(get_property("lcs_august_scepter") == "Offhand Remarkable After Familiar Weight Test"){
-  august_scepter(13);
-}
-
-
 maximize("hot res", false);
 
 while(test_turns(10) > get_property("lcs_turn_threshold_hot_res").to_int()){
@@ -1469,6 +1464,11 @@ if(!have_effect($effect[Mental A-cue-ity]).to_boolean()){
 }
 
 maximize("Spell damage, spell damage percent, switch left-hand man", false);
+
+
+if(get_property("lcs_august_scepter") == "Offhand Remarkable After Familiar Weight Test"){
+  august_scepter(13);
+}
 
 if(pulls_remaining() > 0 && !alice_army_snack($effect[Pisces in the Skyces])){
 
