@@ -608,9 +608,9 @@ string [int] hot_res_effects = {
     "Leash of Linguini",
     "Empathy",
     "Amazing",
-    "Feeling Peaceful",
-    "Hot-headed",
 	"Rainbow Vaccine",
+    "Hot-headed",
+	"Feeling Peaceful",
     "END",
 };
 
