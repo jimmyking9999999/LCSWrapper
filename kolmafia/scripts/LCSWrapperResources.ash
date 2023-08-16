@@ -20,7 +20,7 @@ void refresh() {
   visit_url("main.php");
 }
 
-// Following snippet from c2t //
+// Following snippet from c2t_hccs <3 //
 
 boolean get_effect(effect effe){
 
@@ -318,6 +318,23 @@ boolean august_scepter(int day){
 	return true;
 }
 
+boolean get_shadow_waters(){
+	if(item_amount($item[closed-circuit pay phone]).to_boolean() && !have_effect($effect[Shadow Waters]).to_boolean()){	
+		if(get_property("questRufus") == "step1"){
+			use(1, $item[closed-circuit pay phone]);
+			run_choice(1);
+		}
+
+		if(item_amount($item[Rufus's shadow lodestone]).to_boolean()){
+			string choicebefore = get_property("choiceAdventure1500");
+			set_property("choiceAdventure1500", "2");
+			adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, "abot");
+			set_property("choiceAdventure1500", choicebefore);
+		}
+	}
+	return have_effect($effect[Shadow Waters]).to_boolean();
+}
+
 string is_an(string it){
   if($strings[a, e, i, o, u] contains substring(it, 0, 1)){
     return "n";
@@ -433,8 +450,26 @@ int test_turns(int test){
 	}
 }
 
+// Following snippet from AutoHCCS.ash <3 // 
+int scrape_test_turns(int whichtest) {
+  buffer page = visit_url("council.php");
+  string teststr = "name=option value="+ whichtest +">";
+  if (contains_text(page, teststr)) {
+    int chars = 140; //chars to look ahead
+    string pagestr = substring(page, page.index_of(teststr)+length(teststr), page.index_of(teststr)+length(teststr)+chars);
+    string advstr = substring(pagestr, pagestr.index_of("(")+1, pagestr.index_of("(")+3);
+    advstr = replace_string(advstr, " ", ""); //removes whitespace, if the test is < 10 adv
+    return to_int(advstr);
+  } else {
+    abort(`We didn't find specified test on the council page! (Test {test_number_to_name(whichtest)})`);
+	return -1;
+  }
+}
+
+
+
 boolean gain_adventures(int advs_to_gain){
-	while(my_adventures() < advs_to_gain){
+	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards
 		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
 		if(item_amount($item[Astral Pilsner]).to_boolean()){
 			if(!have_effect($effect[Ode to Booze]).to_boolean()){
@@ -455,11 +490,16 @@ boolean gain_adventures(int advs_to_gain){
 void cs_test(int testnum){
 
 	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
-
-	gain_adventures(test_turns(testnum));
+	
+	print(`(Looking at the council.php text gives us a turn amount of {scrape_test_turns(testnum)})`, "teal");
+	if(scrape_test_turns(testnum) != test_turns(testnum) && scrape_test_turns(testnum) != 1){
+		print("Uh-oh. The estimated script turn amount and council turn amount are different! We'll continue and use the latter", "red");
+		waitq(2);
+	}
 
 	visit_url("council.php");	
-	if(test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+	if(scrape_test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+		gain_adventures(scrape_test_turns(testnum));
 		visit_url(`choice.php?whichchoice=1089&option={testnum}&pwd`);
 	} else {
 		abort("Manually do the test, see if you can optimize any further, then ping me your turn threshold (if needed) ^w^");
@@ -537,6 +577,10 @@ string [int] powerlevel_effects = {
     "Blood Bond",
     "Bendin' Hell",
     "Triple-Sized",
+	"Total Protonic Reversal",
+	"drescher's annoying noise",
+	"Astral Shell",
+	"pasta oneness",
     "END",
 };
 
@@ -616,6 +660,7 @@ string [int] hot_res_effects = {
 
 string [int] fam_weight_effects = {
     "Ode to Booze", // Hmmm...
+	"Robot Friends",
     "Empathy",
     "Leash of Linguini",
     "Blood Bond",
@@ -696,17 +741,14 @@ string  [int]    [string]         [int] test_muscle_effects = {
 
 
 
-boolean adinethonk(int test_number, string eff_to_check) {
+boolean test_test_turns(int test_number, string eff_to_check) {
 	if(eff_to_check == "END"){
 		abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test_number)} turns!`);
 	}	
 
-
 	if(have_effect(eff).to_boolean()){
 		return true;
 	}
-
-
 
 
 	if(contains_text(eff_to_check, "WISH")){
@@ -732,7 +774,7 @@ boolean adinethonk(int test_number, string eff_to_check) {
 	eff = eff_to_check.to_effect();
 		
 		if(get_effect(eff)){
-			print(`Successfully obtained effect {eff}, {test_turns(1)} turns left to save!`, "lime");
+			print(`Successfully obtained effect {eff}, {scrape_test_turns(1)} turns left to save!`, "lime");
 			print("");
 			return true;
 		} else {
@@ -744,6 +786,7 @@ boolean adinethonk(int test_number, string eff_to_check) {
 
 
 void buff_up(int test){
+
 
 switch (test) {
 		default:
@@ -759,7 +802,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(1)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(1)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -778,7 +821,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(2)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(2)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -797,7 +840,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(3)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(3)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -816,7 +859,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(4)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(4)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -837,7 +880,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(5)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(5)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -856,7 +899,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(6)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(6)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -877,7 +920,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(7)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(7)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -896,7 +939,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(8)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(8)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -915,7 +958,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(9)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(9)} turns left to save!`, "lime");
 				print("");
 				break;
 	
@@ -936,7 +979,7 @@ switch (test) {
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {test_turns(10)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(10)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
@@ -948,7 +991,7 @@ switch (test) {
 }
 }
 
-// From Panto
+// Following snippet from Pantocinchlus <3 //
 
 void get_modtrace(string mod, boolean exact) {
 	string html_output = cli_execute_output("modtrace " + mod);
