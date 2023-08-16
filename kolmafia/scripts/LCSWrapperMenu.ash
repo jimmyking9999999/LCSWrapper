@@ -21,7 +21,7 @@ string [int] preferences = {
     "lcs_clan | Which clan would you like the script to use as your VIP clan? | USER",
     "lcs_get_cyclops_eyedrops | Would you like the script to get cyclops eyedrops for the item test? | Yes/No",
     "lcs_hatter_buff | Which hatter buff would you like the script to obtain? | Weapon Damage/Spell Damage/Familiar Weight/None",
-    "lcs_rem_witchess_witch | Would you like to reminiscence a witchess witch instead of a bishop? | Yes (Before Powerleveling)/Yes (Before spell damage test)/No",
+    "lcs_rem_witchess_witch | Would you like to reminiscence a witchess witch instead of a bishop? | Yes (Before Powerleveling)/Yes (Before stpell damage test)/No",
     "lcs_get_red_eye | Would you like the script to reminisce a red skeleton for a red eye? | Yes/No",
     "lcs_speakeasy_drinks | Would you like the script to drink anything from the speakeasy? | None/Bee's Knees Only/Sockdollager Only/Hot Socks Only/Bee's Knees and Sockdollager/Bee's Knees and Hot Socks/Sockdollager and Hot Socks/Bee's Knees, Sockdollager, and Hot Socks",
     "lcs_get_warbear_potion | Would you like the script to obtain new and improved or experimental G-9 before powerleveling? | Yes/No",
@@ -29,7 +29,7 @@ string [int] preferences = {
     "lcs_vip_fortune_buff | Which fortune teller buff would you like to obtain? | Mys/Familiar/Item/None",
     "lcs_alloted_backup_uses | How many backup camera uses would you like to use for powerleveling? | USER",
     "lcs_floundry | Which floundry item do you want to get? | Codpiece/Fish Hatchet/Tunac/Carpe/None",
-    "lcs_august_scepter | Which buffs would you like for the August scepter? | Offhand Remarkable Before Powerleveling/Offhand Remarkable After Familiar Weight Test/None",
+    "lcs_august_scepter | Which buffs would you like for the August scepter? | Offhand Remarkable Before Powerleveling/Offhand Remarkable After Familiar Weight Test/Offhand Remarkable Before Non-Combat Test/None",
 
     "lcs_use_beta_version | Would you like to have the script assume you at a higher shiny level? This will have the script redirect resources into harder tests. Only enable this if you have >4 freeruns and can always 1-turn stat tests! | Yes/No",
     
@@ -41,6 +41,7 @@ string [int] manual_preferences = {
     "lcs_get_yoked",
     "lcs_start",
     "lcs_time_at_start",
+    "lcs_autopull_at_start",
 };
 
 
@@ -108,74 +109,82 @@ void script_setup(){
     }
 }
 
+string flavour_text(string stage_name){
+    switch(stage_name){	
+    default:
+        abort("You didn't enter a valid stage number");
+    case "1":
+        return "completing post-ascension tasks!";
+    case "2":
+        return "coiling some wires!";
+    case "3":
+        return "powerleveling.";
+    case "4":
+    case "mys":
+        return "building playground mazes! (Myst test)";
+    case "5":
+    case "mox":
+        return "feeding conspirators. (Mox test)";
+    case "6":
+    case "mus":
+        return "feeding children (but not too much) (Mus test)";
+    case "7":
+    case "hp":
+        return "donating blood! (HP test)";
+    case "8":
+    case "item":
+        return "making margaritas. (Item / Booze test)";
+    case "9":
+    case "hot_res":
+        return "cleaning some steam tunnels! (Hot Resistance test)";
+    case "10":
+    case "fam_weight":
+        return "...encouraging collie breeding. (Familiar weight test)";
+    case "11":
+    case "non_combat":
+        return "staying very, very still. (Non-combat test)";
+    case "12":
+    case "weapon_damage":
+        return "reducing the local wizard gazelle population. (Weapon damage test)";
+    case "13":
+    case "spell_damage":
+        return "making sausages. (Spell damage test)";
+    }
+}
 
 void summary(){
+    // TODO: Fix this. Maybe add preferences with _ in order for them to be removed at the end of the day?
 
-string flavour_text(int stage_name){
-	switch(stage_name){	
-    default:
-			abort("You didn't enter a valid stage number");
-    case 1:
-      return "completing post-ascension tasks!";
-    case 2:
-      return "coiling some wires!";
-		case 3:
-      return "powerleveling.";
-		case 4:
-      return "building playground mazes! (Myst test)";
-		case 5:
-      return "feeding conspirators. (Mox test)";
-		case 6:
-      return "feeding children (but not too much) (Mus test)";
-		case 7:
-      return "donating blood! (HP test)";
-		case 8:
-      return "making margaritas. (Item / Booze test)";
-		case 9:
-      return "cleaning some steam tunnels! (Hot Resistance test)";
-		case 10:
-      return "...encouraging collie breeding. (Familiar weight test)";
-		case 11:
-      return "staying very, very still. (Non-combat test)";
-		case 12:
-      return "reducing the local wizard gazelle population. (Weapon damage test)";
-		case 13:
-      return "making sausages. (Spell damage test) ";
-  }
-}
-  // TODO: Fix this. Maybe add preferences with _ in order for them to be removed at the end of the day?
+    boolean colourdown; int colour = 9264;  
 
-  boolean colourdown; int colour = 9000; 
+    int prev_time = get_property("lcs_time_at_start").to_int();
 
-  string prev_time = get_property("lcs_time_at_start").to_int();
-  string time_taken;
-  
-  int prev_advs;
-  int stage_number = 1;
-  
-  foreach it in $strings[post_time_oriole, post_time_wire, post_time_powerlevel, post_time_mys, post_time_mox, post_time_mus, post_time_hp, post_time_item, post_time_hot_res, post_time_fam_weight, post_time_non_combat, post_time_weapon_damage, post_time_spell_damage]{
-    time_taken = ((get_property(it).to_int() - prev_time.to_int()) / 1000);
-   
-   if(colourdown){ colour -= 88; } else { colour += 88;} if(colour == 9704){ colourdown = true; }
 
-    if((time_taken.to_int() < -1) || (time_taken.to_int() > 5000)){
-      set_property(it, prev_time.to_int() - 1000);
+    string [int] indv_tests;
+
+    if(get_property("lcs_test_order_override") != ""){ 
+        indv_tests = split_string(get_property("lcs_test_order_override"), "\\, ");
+    } else {
+        indv_tests = {"mus", "mox", "hp", "item", "hot res", "fam weight", "non combat", "weapon damage", "spell damage"};
     }
 
-    string temp = substring(it, 10);
+    print("We took "+((get_property("post_time_oriole").to_int() - get_property("lcs_time_at_start").to_int())/1000)+" seconds and "+(get_property("post_advs_oriole").to_int())+" adventure(s) completing post-ascension tasks!", 9088);
+    print("We took "+((get_property("post_time_wire").to_int() - get_property("post_time_oriole").to_int())/1000)+" seconds and "+(get_property("post_advs_wire").to_int() - get_property("post_advs_oriole").to_int())+" adventures coiling some wires!", 9176);
+    print("We took "+((get_property("post_time_powerlevel").to_int() - get_property("post_time_wire").to_int())/1000)+" seconds and "+(get_property("post_advs_powerlevel").to_int() - get_property("post_advs_wire").to_int())+" adventures powerleveling.", 9264);
 
-    int advs = to_int(get_property("post_advs_"+temp));
+    foreach num, test in indv_tests {
+        if(colourdown){ colour -= 88; } else { colour += 88;} if(colour == 9704){ colourdown = true; }
     
-    if(time_taken == "-1"){
-      time_taken = "?";
+        // Turns spaces into underscores
+        matcher space = create_matcher(" ", test);
+        string testname = replace_first(space, "_");
+        /* indiv_test_info : [0] => pre test turn amount. [1] => pre test time. [2] => post test turn amount. [3] => post test time. */
+        string [int] indiv_test_info = split_string(`{get_property(`lcs_pre_test_info_{testname}`)} | {get_property(`lcs_post_test_info_{testname}`)}`, " \\| ");
+
+        print(`We took {(indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000} seconds and {(indiv_test_info[2].to_int() - indiv_test_info[0].to_int())} adventure{is_plural((indiv_test_info[3].to_int() - indiv_test_info[1].to_int()))} {flavour_text(testname)}}`, colour);
+        
     }
-
-    print(`We took {time_taken} seconds and {advs - prev_advs} adventure{is_plural(advs - prev_advs)} {flavour_text(stage_number)}`, `{colour}`);
-
-    prev_advs = advs;
-    prev_time = get_property(it);
-    stage_number++;
-  }
+  
 
     if(my_id() == "3589231"){
         print("Oh, and you're super handsome =3", "lime");
@@ -184,8 +193,10 @@ string flavour_text(int stage_name){
   
 
 void script_req_sim(){
-
+    abort("Sorry, this doesn't quite work right now! Nag me on Discord to fix it <3");
 }
 
 
-   
+
+
+
