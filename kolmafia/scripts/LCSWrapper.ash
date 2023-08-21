@@ -63,6 +63,21 @@ if(get_property("questM05Toot") != "finished"){
 
 print("Now setting up beginning-of-ascension stuff...", "teal");
 
+if(get_property("lcs_autopull_at_start") != ""){
+  print("Now pulling some items automatically for you!", "teal");
+  newline();
+  foreach x, it in split_string(get_property("lcs_autopull_at_start"), "\\,"){
+    if(it.to_item() == $item[none]){
+      print(`Warning: {it} is not a valid item to be pulled!`, "red");
+      waitq(5);
+    } else {
+      print(`Pulling 1 {it}!`, "teal");
+      cli_execute(`hagnk {it}`);
+    }
+  }
+}
+
+
 if(!available_amount($item[Toy accordion]).to_boolean()){
   retrieve_item(1, $item[Toy accordion]);
 }
@@ -186,7 +201,7 @@ cli_execute("parka dilophosaur");
 
 set_auto_attack("none");
 
-string cs_wrapper_freerun = `if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; call freerun; sub freerun; {freerun}; endsub;`;
+string cs_wrapper_freerun = `if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; {freerun};`;
 
 if((have_familiar($familiar[Pair of Stomping Boots])) && (!have_skill($skill[Map the Monsters]))){
   cs_wrapper_freerun = "if monstername novelty tropical skeleton || monsterid 1746; skill spit jurassic acid; abort; endif; runaway";
@@ -319,7 +334,10 @@ print("Adventuring in the NEP! (Setting up bowling ball + spikes)", "teal");
 
 cli_execute("parka spikolodon");
 
-equip($item[Industrial Fire extinguisher]);
+if(item_amount($item[Industrial Fire extinguisher]).to_boolean()){
+  equip($item[Industrial Fire extinguisher]);
+}
+
 
 if((available_amount($item[red rocket]) == 0) && (have_effect($effect[Everything Looks Red]) == 0)){
   buy(1, $item[Red Rocket]);
@@ -625,7 +643,6 @@ if(item_amount($item[potted power plant]).to_boolean()){
   visit_url(`inv_use.php?pwd&whichitem=10738`);
   foreach i, x in (get_property("_pottedPowerPlant").split_string(",")){
     if(x == "1"){
-      visit_url(`inv_use.php?pwd&whichitem=10738`);
       visit_url(`choice.php?pwd&whichchoice=1448&option=1&pp={i.to_int() + 1}`);
     }
   }
@@ -896,6 +913,7 @@ int backup_uses = get_property(`lcs_alloted_backup_uses`).to_int();
 
 if(backup_uses != 0){
   print("Now backing up your fights!","teal");
+  // TODO: Only swap if not equipped
   equip($slot[acc3], $item[Backup Camera]);
 
   while(get_property("_backUpUses").to_int() < (backup_uses - 3)){
@@ -1023,7 +1041,7 @@ if(get_property("sourceTerminalEducateKnown") != ""){
   get_effect($effect[items.enh]);
 }
 
-maximize("item, booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+maximize("2 item, 3.33 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
 
 if((my_inebriety() < 7) && (item_amount($item[Sacramento Wine]) > 0)){
   use_skill(1, $skill[The Ode to Booze]);
@@ -1059,17 +1077,7 @@ cs_test(9);
 
 void fam_weight_test(){
 
-int max_familiar_weight;
-familiar max_famwt_familiar;
 
-foreach it in $familiars[]{
-  if(max_familiar_weight < familiar_weight(it) && it != $familiar[Homemade Robot]){
-    max_familiar_weight = familiar_weight(it);
-    max_famwt_familiar = it;
-  }
-}
-
-use_familiar(max_famwt_familiar);
 
 if(get_property("commaFamiliar") == "Homemade Robot"){
   use_familiar($familiar[Comma Chameleon]);
@@ -1104,14 +1112,6 @@ if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($fami
   }
 
 }
-// Property doesn't get updated on visit_url sometimes. This'll solve it, but may abort for anyone with a comma but no homemade robot. 
-if(get_property("commaFamiliar") == "Homemade Robot" || have_familiar($familiar[Comma Chameleon])){
-  use_familiar($familiar[Comma Chameleon]);
-  visit_url("charpane.php");
-}
-
-
-maximize("Familiar weight", false);
 
 foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze, Loyal as a Rock]{
   get_effect(it);
@@ -1127,6 +1127,26 @@ if(get_property("lcs_hatter_buff") == "Familiar Weight"){
 // TODO: Maybe add sparkler hat from VIP?
   
 meteor_shower();
+
+int max_familiar_weight;
+familiar max_famwt_familiar;
+
+foreach it in $familiars[]{
+  if(max_familiar_weight < familiar_weight(it) && it != $familiar[Homemade Robot]){
+    max_familiar_weight = familiar_weight(it);
+    max_famwt_familiar = it;
+  }
+}
+
+use_familiar(max_famwt_familiar);
+
+// Property doesn't get updated on visit_url sometimes. This'll solve it, but may abort for anyone with a comma but no homemade robot. 
+if(get_property("commaFamiliar") == "Homemade Robot" || have_familiar($familiar[Comma Chameleon])){
+  use_familiar($familiar[Comma Chameleon]);
+  visit_url("charpane.php");
+}
+
+maximize("Familiar weight", false);
 
 get_modtrace("Familiar Weight");
 newline();
@@ -1309,7 +1329,7 @@ if(!have_effect($effect[Billiards Belligerence]).to_boolean()){
   cli_execute("pool 1");
 }
 
-if (available_amount($item[beach comb]) > 0){
+if (available_amount($item[beach comb]) > 0 && !have_effect($effect[Lack of body-building]).to_boolean()){
 	get_effect($effect[Lack of body-building]);
 }
 
@@ -1457,7 +1477,7 @@ if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of t
   use_skill(1, $skill[Deep Dark Visions]);
 }
 
-if(available_amount($item[beach comb]) > 0){
+if(available_amount($item[beach comb]) > 0 && !have_effect($effect[We're all made of starfish]).to_boolean()){
   get_effect($effect[We're all made of starfish]);
 }
 
@@ -1644,6 +1664,7 @@ string[string] available_choices = {
   "setup":"", 
 
   "skipleveling":"", 
+  "powerlevel":"", 
 
   "test":"",
   "summary":"",
@@ -1813,7 +1834,7 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
   print("We took "+((get_property("post_time_wire").to_int() - get_property("post_time_oriole").to_int())/1000)+" seconds and "+(get_property("post_advs_wire").to_int() - get_property("post_advs_oriole").to_int())+" adventures coiling some wires!", "lime");
 }
 
-if((my_level()) < 14 && !available_choices["skipleveling"].to_boolean()){
+if(((my_level()) < 14 && !available_choices["skipleveling"].to_boolean()) || available_choices["powerlevel"].to_boolean()){
   powerlevel();
   set_property("post_time_powerlevel", now_to_int());
   set_property("post_advs_powerlevel", turns_played());
