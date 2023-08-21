@@ -492,7 +492,7 @@ void cs_test(int testnum){
 	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
 	
 	print(`(Looking at the council.php text gives us a turn amount of {scrape_test_turns(testnum)})`, "teal");
-	if(scrape_test_turns(testnum) != test_turns(testnum) && scrape_test_turns(testnum) != 1){
+	if(scrape_test_turns(testnum) != test_turns(testnum) && test_turns(testnum) != 1){
 		print("Uh-oh. The estimated script turn amount and council turn amount are different! We'll continue and use the latter", "red");
 		waitq(2);
 	}
@@ -531,7 +531,7 @@ familiar current_best_fam(){
 		return $familiar[Cookbookbat];
 	}
 
-	if(have_familiar($familiar[Melodramedary]) && !have_effect($effect[Spit Upon]).to_boolean() && get_property("camelSpit").to_int() < 100){
+	if((have_familiar($familiar[Melodramedary]) && get_property("camelSpit").to_int() < 100) || !have_effect($effect[Spit Upon]).to_boolean() ){
 		return $familiar[Melodramedary];
 	}
 
@@ -720,25 +720,37 @@ string [int] spell_damage_effects = {
 	"END",
 }; 
 
-/*
-// Name [number] [conditional] [execution] [buff amount] 
-string  [int]    [string]         [int] test_muscle_effects = {
- 
-	1:"AA-Charged", "if(true)":"buff_up(4)",50:"Mys Percent"
-
-};
-// { <key>: <value>, <key>: <value>, <key>: <value> ... }
-
-
-*/
 
 
 
 
+/// TEST ///
 
 
 
 
+string [string] test_effects = {
+	"We're all made of starfish":"",
+	"Jackasses' Symphony of Destruction":"cast Jackasses' Symphony of Destruction",
+	"Arched Eyebrow of the Archmage":"cast Arched Eyebrow of the Archmage",
+	"Carol of the Hells":"",
+	"Spirit of Peppermint":"",
+	"Song of Sauce":"",
+	"Mental A-cue-ity":"",
+	"END":"",
+}; 
+
+
+
+
+
+
+
+
+
+
+
+/// TEST END ///
 
 
 boolean test_test_turns(int test_number, string eff_to_check) {
@@ -787,209 +799,77 @@ boolean test_test_turns(int test_number, string eff_to_check) {
 
 void buff_up(int test){
 
+string[int] effects;
+	switch(test){
+		default: 
+			abort(`Test {test} is an invalid selection!`);
 
-switch (test) {
-		default:
-		abort("Invalid test number!");
+		case 1:
+			effects = hp_effects;
+		break;
 
-	case 1:
-		foreach it in hp_effects{
-			if(hp_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(1)} turns!`);
+		case 2:
+			effects = mus_effects;
+		break;
+
+		case 3:
+			effects = mys_effects;
+		break;
+
+		case 4:
+			effects = mox_effects;
+		break;
+
+		case 5:
+			effects = fam_weight_effects;
+		break;
+
+		case 6:
+			effects = weapon_damage_effects;
+		break;
+
+		case 7:
+			effects = spell_damage_effects;
+		break;
+
+		case 8:
+			effects = non_combat_effects;
+		break;
+
+		case 9:
+			effects = item_effects;
+		break;
+
+		case 10:
+			effects = hot_res_effects;
+		break;
+		
+	}
+
+	foreach it in effects{
+		if(effects[it] == "END"){
+			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test)} turns!`);
 		}
 
-		eff = hp_effects[it].to_effect();
+		eff = effects[it].to_effect();
 		if(!have_effect(eff).to_boolean()){
 
 			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(1)} turns left to save!`, "lime");
+				print(`Successfully obtained effect {eff}, {scrape_test_turns(test)} turns left to save!`, "lime");
 				print("");
 				break;
 			} else {
 				print("");
 			} 
 		}
-	} break;
-
-	case 2:
-	foreach it in mus_effects{
-		if(mus_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(2)} turns!`);
-		}
-
-		eff = mus_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(2)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 3:
-	foreach it in mys_effects{
-		if(mys_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(3)} turns!`);
-		}
-
-		eff = mys_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(3)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 4:
-	foreach it in mox_effects{
-		if(mox_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(4)} turns!`);
-		}
-
-		eff = mox_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(4)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 5:
-	foreach it in fam_weight_effects{
-		if(fam_weight_effects[it] == "END"){
-			print(`We failed to reach the target! Only managed to get the test down to {test_turns(5)} turns!`, "red");
-			no_more_buffs = true;
-			break;
-		}
-
-		eff = fam_weight_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(5)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 6:
-		foreach it in weapon_damage_effects{
-		if(weapon_damage_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(6)} turns!`);
-		}
-
-		eff = weapon_damage_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(6)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 7:
-	foreach it in spell_damage_effects{
-		if(spell_damage_effects[it] == "END"){
-			print(`We failed to reach the target! Only managed to get the test down to {test_turns(7)} turns!`, "red");
-			no_more_buffs = true;
-			break;
-		}
-
-		eff = spell_damage_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(7)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 8:
-	foreach it in non_combat_effects{
-		if(non_combat_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(8)} turns!`);
-		}
-
-		eff = non_combat_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(8)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
-
-	case 9:
-		foreach it in item_effects{
-		if(item_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(9)} turns!`);
-		}
-
-		eff = item_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(9)} turns left to save!`, "lime");
-				print("");
-				break;
-	
-			} else {
-				print("");
-
-			} 
-		}
-	} break;
-
-	case 10:
-	foreach it in hot_res_effects{
-		if(hot_res_effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(10)} turns!`);
-		}
-
-		eff = hot_res_effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
-
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(10)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
-		}
-	} break;
+	} 
 
 }
-}
+
+
+
+
+
 
 // Following snippet from Pantocinchlus <3 //
 
