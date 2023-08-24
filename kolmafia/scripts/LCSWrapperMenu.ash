@@ -182,7 +182,7 @@ void summary(){
         string [int] indiv_test_info = split_string(`{get_property(`lcs_pre_test_info_{testname}`)} | {get_property(`lcs_post_test_info_{testname}`)}`, " \\| ");
 
         if(count(indiv_test_info) == 4){
-            print(`We took {(indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000} seconds and {(indiv_test_info[2].to_int() - indiv_test_info[0].to_int())} adventure{is_plural((indiv_test_info[3].to_int() - indiv_test_info[1].to_int()))} {flavour_text(testname)}}`, colour);
+            print(`We took {(indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000} seconds and {(indiv_test_info[2].to_int() - indiv_test_info[0].to_int())} adventure{is_plural((indiv_test_info[3].to_int() - indiv_test_info[1].to_int()))} {flavour_text(testname)}`, colour);
         }
     }
   
