@@ -14,7 +14,7 @@ script "LCSWrapperResources.ash";
 Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
 */
 
-/* Days since last effect system rework: 76 */
+/* Days since last effect system rework: >80 */
 
 void refresh() {
   visit_url("main.php");
@@ -82,10 +82,11 @@ boolean get_effect(effect effe){
 	}
 	else {
 		cli_execute(default_method);
-  }
+    }
 
 	return have_effect(effe).to_boolean();
 } 
+
 
 // --pocketmeteors
 void meteor_shower(){
@@ -225,7 +226,9 @@ boolean clip_art(item it) {
 }
 
 // --bottledgenie | --monkeypaw
-boolean wish_effect(effect effe){
+boolean wish_effect(string eff){
+	effect effe = eff.to_effect();
+
 	print(`Trying to wish for effect: {effe}`, "teal");
 	if(have_effect(effe).to_boolean())
 		return true;
@@ -312,12 +315,57 @@ boolean cargo_effect(effect eff){
 
 //--augustscepter
 boolean august_scepter(int day){
+	if(!available_amount($item[august scepter]).to_boolean()){
+		return false;
+	}
+
 	visit_url(`runskillz.php?action=Skillz&whichskill={7451 + day}&targetplayer=${my_id()}&pwd=&quantity=1`);
 	// TODO fix this when mafia has support lol
 
 	return true;
 }
 
+// -catalog
+boolean catalog(string type){
+	if(!item_amount($item[2002 Mr. Store Catalog]).to_boolean()){
+		return false;
+	}
+
+	switch(type){
+		case "boots":
+			if(available_amount($item[red-soled high heels]).to_boolean()){
+				return true;
+			}
+
+			if(!item_amount($item[Letter from Carrie Bradshaw]).to_boolean()){
+				buy($coinmaster[mr. store 2002], 1, $item[Letter from Carrie Bradshaw]);
+			}
+
+			visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=11259`);
+			run_choice(3);
+
+			maximize("25 item, 15 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+
+			return available_amount($item[red-soled high heels]).to_boolean();
+
+		case "rhymes":
+			if(have_effect($effect[Spitting Rhymes]).to_boolean()){
+				return true;
+			}
+
+			buy($coinmaster[mr. store 2002], 1, $item[Loathing Idol Microphone]);
+			get_effect($effect[Spitting Rhymes]);
+
+			return have_effect($effect[Spitting Rhymes]).to_boolean();
+
+		default:
+			abort(`Invalid catalog arguments!`);
+	}
+
+	return false;
+}
+
+// -payphone
 boolean get_shadow_waters(){
 	if(item_amount($item[closed-circuit pay phone]).to_boolean() && !have_effect($effect[Shadow Waters]).to_boolean()){	
 		if(get_property("questRufus") == "step1"){
@@ -361,7 +409,7 @@ boolean pull_item(item it, string condition){
 
 	take_storage(1,it);
   } else {
-    if(cli_execute(`ashq if({condition});`).to_boolean()){ // Don't look >.>
+    if(cli_execute(`ashq if({condition});`).to_boolean()){ 
 		if(!storage_amount(it).to_boolean()){
 			buy_using_storage(1, it);
 		}
@@ -374,7 +422,6 @@ boolean pull_item(item it, string condition){
 }
 
 string test_number_to_name(int testnum){
-
 	switch(testnum){
 		default:
 			abort("Invalid test number!");
@@ -390,9 +437,7 @@ string test_number_to_name(int testnum){
 		case 10: return "hot_res"; 
 		case 11: return "coil_wire";
 		case 30: return "science_vessel";
-
 	}
-
 }
 
 int test_turns(int test){
@@ -471,10 +516,12 @@ int scrape_test_turns(int whichtest) {
 boolean gain_adventures(int advs_to_gain){
 	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards
 		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
+		if(!have_effect($effect[Ode to Booze]).to_boolean()){
+			use_skill($skill[The Ode to Booze]);
+		}
+		
 		if(item_amount($item[Astral Pilsner]).to_boolean()){
-			if(!have_effect($effect[Ode to Booze]).to_boolean()){
-				use_skill($skill[The Ode to Booze]);
-			}
+
 
 			drink(1, $item[Astral Pilsner]);
 			// drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
@@ -487,25 +534,6 @@ boolean gain_adventures(int advs_to_gain){
 	return my_adventures() > advs_to_gain;
 }
 
-void cs_test(int testnum){
-
-	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
-	
-	print(`(Looking at the council.php text gives us a turn amount of {scrape_test_turns(testnum)})`, "teal");
-	if(scrape_test_turns(testnum) != test_turns(testnum) && test_turns(testnum) != 1){
-		print("Uh-oh. The estimated script turn amount and council turn amount are different! We'll continue and use the latter", "red");
-		waitq(2);
-	}
-
-	visit_url("council.php");	
-	if(scrape_test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
-		gain_adventures(scrape_test_turns(testnum));
-		visit_url(`choice.php?whichchoice=1089&option={testnum}&pwd`);
-	} else {
-		abort("Manually do the test, see if you can optimize any further, then ping me your turn threshold (if needed) ^w^");
-	}
-}
-
 // TODO synthesis oh no
 boolean synthesis_effect(effect eff){
 	if(have_effect(eff).to_boolean()){
@@ -514,12 +542,6 @@ boolean synthesis_effect(effect eff){
 
 	if(!have_skill($skill[Sweet Synthesis])){
 		return false;
-	}
-
-
-
-	if(have_skill($skill[Summon crimbo candy])){
-		use_skill(1, $skill[Summon crimbo candy]);
 	}
 
 	return false;
@@ -531,7 +553,7 @@ familiar current_best_fam(){
 		return $familiar[Cookbookbat];
 	}
 
-	if((have_familiar($familiar[Melodramedary]) && get_property("camelSpit").to_int() < 100) || !have_effect($effect[Spit Upon]).to_boolean() ){
+	if((have_familiar($familiar[Melodramedary]) && get_property("camelSpit").to_int() < 100) && !have_effect($effect[Spit Upon]).to_boolean()){
 		return $familiar[Melodramedary];
 	}
 
@@ -623,79 +645,86 @@ string [int] mus_effects = {
 };
 
 string [int] hp_effects = {
-	"Song of starch",
-	"Reptilian fortitude",
+	"Song of starch", // 0
+	"Reptilian fortitude", // 0
 	"END",
 }; 
 
 string [int] item_effects = {
-	"Ode to Booze",
-	"Nearly All-Natural",
-	"Steely-Eyed Squint",
-	"Fat Leon's Phat Loot Lyric",
-	"Singer's Faithful Ocelot",
-	"Crunching Leaves",
-	"El Aroma de Salsa",
-	"Spice haze",
-	"Lantern-Charged",
-	"Wizard Sight",
-	"Glowing Hands",
-	"Ermine Eyes",
-	"Spitting Rhymes",
-	"Feeling Lost",
+	"Steely-Eyed Squint", // Meat/turn 0
+	"Fat Leon's Phat Loot Lyric", // 0
+	"Singer's Faithful Ocelot", // 0
+	"Spice haze", // 0
+	"Crunching Leaves",	// 369
+	"Nearly All-Natural", // 1375 
+	"FUNC catalog / boots", // 1890
+	"Ermine Eyes", // 2000
+	"FUNC catalog / rhymes", // 3150
+	"Wizard Sight", // 333 + 2 * VoA
+	"FUNC wish_effect / Infernal Thirst", // 3750
+	"El Aroma de Salsa", // 8958
+	"Glowing Hands", // 8980
+	"Feeling Lost", // Potentially 2-4 * voa
+	"Lantern-Charged", // 13750	
+	"Incredibly Well Lit", //15000
 	"END",
 }; 
 
 string [int] hot_res_effects = {
-    "Elemental Saucesphere",
-    "Astral Shell",
-    "Leash of Linguini",
-    "Empathy",
+    "Elemental Saucesphere", // 0
+    "Astral Shell", // 0
+    "Leash of Linguini", // 0
+    "Empathy", // 0
     "Amazing",
-    "Feeling Peaceful",
+    "Feeling Peaceful", // 0
     "Hot-headed",
-	"Rainbow Vaccine",
+	"Rainbow Vaccine", // 0
     "END",
 };
 
 string [int] fam_weight_effects = {
-    "Ode to Booze", // Hmmm...
-	"Robot Friends",
-    "Empathy",
-    "Leash of Linguini",
-    "Blood Bond",
-    "Billiards Belligerence",
-    "Loyal as a Rock",
-    "Party Soundtrack",
+    "Empathy", // 0
+    "Leash of Linguini", // 0
+    "Blood Bond", // 0
+	"Robot Friends", // 1525
+	"Billiards Belligerence", // 1726
+    "Loyal as a Rock", // 5193
+    "Party Soundtrack", // 6390
+	"Puzzle Champ", // 17000
     "END",
-};
+}; // TODO: Witchess puzzle
+
 string [int] non_combat_effects = {
-    "Smooth Movements",
-    "The Sonata of Sneakiness",
-    "A Rose by any Other Material",
-    "Leash of Linguini",
-    "Empathy",
-    "Feeling Lonely",
-    "Feeling Sneaky",
-    "Throwing Some Shade",
-    "Silent Running",
-	"Invisible Avatar",
+    "Smooth Movements", // 0
+    "The Sonata of Sneakiness", // 0
+	"Leash of Linguini", // 0 
+    "Empathy", // 0
+	"Feeling Lonely", // 0
+	"Silent Running", // 0
+    "Feeling Sneaky", // 83
+    "A Rose by any Other Material", // 1377
+    "Throwing Some Shade", // 1500
+	"Invisible Avatar", // Marginal embezzler turn - 6 * VoA
+	"Billiards Belligerence", // 8630
+	"Loyal as a Rock", // 25965
+	"FUNC wish_effect / Disquiet Riot", // 4166
     "END",
 };
 
 string [int] weapon_damage_effects = {
-	"Bow-Legged Swagger",
-	"Cowrruption",
-	"Billiards Belligerence",
-	"Scowl of the auk",
-	"Tenacity of the snapper",
-	"Frenzied, bloody",
-	"Disdain of the war snapper",
-	"Lack of body-building",
-	"Carol of the Bulls",
-	"Song of the North",
-	"Rage of the Reindeer",
-	"Imported Strength",
+	"Bow-Legged Swagger", // 0
+	"Scowl of the auk", // 0
+	"Tenacity of the snapper", // 0
+	"Frenzied, bloody", // 0
+	"Disdain of the war snapper", // 0
+	"Lack of body-building", // 0
+	"Carol of the Bulls", // 0
+	"Song of the North", // 0
+	"Rage of the Reindeer", // 0
+	"Cowrruption", // 35
+	"Imported Strength", // 150
+	
+	"Billiards Belligerence", // 1726
 	"Feeling punchy",
 	"Engorged weapon",
 	"Pronounced Potency",
@@ -704,100 +733,31 @@ string [int] weapon_damage_effects = {
 };
 
 string [int] spell_damage_effects = {
-	"We're all made of starfish",
-	"Jackasses' Symphony of Destruction",
-	"Cowrruption",
-	"Arched Eyebrow of the Archmage",
-	"AA-Charged",
-	"Carol of the Hells",
-	"Spirit of Peppermint",
-	"Song of Sauce",
-	"Mental A-cue-ity",
-	"Imported Strength",
+
+	"Jackasses' Symphony of Destruction", // 0
+	"Arched Eyebrow of the Archmage", // 0
+	"Carol of the Hells", // 0
+	"Spirit of Peppermint", // 0
+	"Song of Sauce", // 0
+	"Cowrruption", // 69. Nice
+	"Imported Strength", // 300
+	"We're all made of starfish", // ~700
+	"Concentration", // 850
+	"Mental A-cue-ity", // 1726
 	"AAA-Charged",
+	"AA-Charged",
 	"D-Charged",
-	"Concentration",
+
 	"END",
 }; 
 
 
 
 
-
-/// TEST ///
-
+///
 
 
-
-string [string] test_effects = {
-	"We're all made of starfish":"",
-	"Jackasses' Symphony of Destruction":"cast Jackasses' Symphony of Destruction",
-	"Arched Eyebrow of the Archmage":"cast Arched Eyebrow of the Archmage",
-	"Carol of the Hells":"",
-	"Spirit of Peppermint":"",
-	"Song of Sauce":"",
-	"Mental A-cue-ity":"",
-	"END":"",
-}; 
-
-
-
-
-
-
-
-
-
-
-
-/// TEST END ///
-
-
-boolean test_test_turns(int test_number, string eff_to_check) {
-	if(eff_to_check == "END"){
-		abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test_number)} turns!`);
-	}	
-
-	if(have_effect(eff).to_boolean()){
-		return true;
-	}
-
-
-	if(contains_text(eff_to_check, "WISH")){
-    string eff_to_wish = replace_all(create_matcher("WISH", eff_to_check), "");
-		return wish_effect(eff_to_wish.to_effect());
-	}
-
-	
-	if(contains_text(eff_to_check, "CLI_EX")){
-		eff_to_check = replace_all(create_matcher("CLI_EX", eff_to_check), "");
-		string[int] cli_command = split_string(eff_to_check, "IF_COND");
-
-		if(cli_command[1].to_boolean()){
-			cli_execute(cli_command[0]);
-			return true;
-		}
-
-	return false;
-	
-		
-	}
-
-	eff = eff_to_check.to_effect();
-		
-		if(get_effect(eff)){
-			print(`Successfully obtained effect {eff}, {scrape_test_turns(1)} turns left to save!`, "lime");
-			print("");
-			return true;
-		} else {
-			print("");
-		} 
-	
-	return false;
-}
-
-
-void buff_up(int test){
+int buff_up(int test){
 
 string[int] effects;
 	switch(test){
@@ -846,24 +806,42 @@ string[int] effects;
 		
 	}
 
-	foreach it in effects{
-		if(effects[it] == "END"){
-			abort(`We failed to reach the target! Only managed to get the test down to {test_turns(test)} turns!`);
+	foreach it in effects {
+		
+		if(effects[it] == "END"){ // Maybe effects.count()? Nah.
+			abort(`We failed to reach your target! Only managed to get the test down to {scrape_test_turns(test)} turns!`);
 		}
 
-		eff = effects[it].to_effect();
-		if(!have_effect(eff).to_boolean()){
+		if(effects[it].substring(0,4) == "FUNC"){ // Function test buff!
 
-			if(get_effect(eff)){
-				print(`Successfully obtained effect {eff}, {scrape_test_turns(test)} turns left to save!`, "lime");
-				print("");
-				break;
-			} else {
-				print("");
-			} 
+			string[int] func_effect = split_string(effects[it], " \\/ ");
+			/* func_effect[0] => function name, func_effect[1] => input to pass through, */
+			
+			string function = func_effect[0].substring(5);
+  			call boolean function(func_effect[1]);
+		
+		} else if(effects[it].substring(0,3) == "CLI"){ // CLI test buff!
+
+			cli_execute(effects[it].substring(3));
+
+		} else { // Normal effect test buff!
+
+			eff = effects[it].to_effect();
+			if(!have_effect(eff).to_boolean()){
+
+				if(get_effect(eff)){
+					print(`Successfully obtained effect {eff}, ~{test_turns(test)} turns left to save!`, "lime");
+					print("");
+					break;
+				} else {
+					print("");
+				} 
+			}		
 		}
 	} 
 
+
+	return scrape_test_turns(test);
 }
 
 
@@ -1053,8 +1031,78 @@ string [int] spell_modifiers = {
 	2: "Sauce Spell Damage"
 };
 
+string [int] weapon_modifiers = {
+	0: "Weapon Damage Percent",
+	1: "Weapon Damage",
+};
+
  
 string [int] item_modifiers = {
 	0: "Item Drop",
 	1: "Booze Drop"
 };
+
+
+
+void cs_test(int testnum){
+
+	while(scrape_test_turns(testnum) > get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+  		buff_up(testnum);
+	} 
+
+	switch(testnum){
+		case 1:
+			get_modtrace("Maximum HP Percent");
+		break;
+
+		case 2:
+			get_modtrace("Muscle percent");
+		break;
+
+		case 3:
+			get_modtrace("Mysticality percent");
+		break;
+
+		case 4:
+			get_modtrace("Moxie percent");
+		break;
+
+		case 5:
+			get_modtrace("Familiar Weight");
+		break;
+
+		case 6:
+			get_modtrace(weapon_modifiers);
+		break;
+
+		case 7:
+			get_modtrace(spell_modifiers);
+		break;
+
+		case 9:
+			get_modtrace(item_modifiers);
+		break;
+
+		case 10:
+			get_modtrace("Hot resistance");
+		break;
+
+
+	}
+
+	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
+	
+	print(`(Looking at the council.php text gives us a turn amount of {scrape_test_turns(testnum)})`, "teal");
+	if(scrape_test_turns(testnum) != test_turns(testnum) && test_turns(testnum) != 1 && scrape_test_turns(testnum) != 1){
+		print("Uh-oh. The estimated script turn amount and council turn amount are different! We'll continue and use the latter", "red");
+		waitq(2);
+	}
+
+	visit_url("council.php");	
+	if(scrape_test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+		gain_adventures(scrape_test_turns(testnum));
+		visit_url(`choice.php?whichchoice=1089&option={testnum}&pwd`);
+	} else {
+		abort("Manually do the test, see if you can optimize any further, then ping me with any effects which to be added if needed) ^w^");
+	}
+}
