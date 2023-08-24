@@ -1070,7 +1070,7 @@ if(item_amount($item[Pizza of Legend]).to_boolean()){
 }
 
 if(item_amount($item[Burning newspaper]).to_boolean()){
-  retrieve_item($item[Burning paper crane])
+  retrieve_item($item[Burning paper crane]);
 }
 
 if(get_property("commaFamiliar") == "Homemade Robot"){
