@@ -112,6 +112,22 @@ foreach fam in $familiars[Cookbookbat, Melodramedary, Shorter-Order Cook, Disgei
   }
 }
 
+if(get_property("chateauAvailable").to_boolean() && !get_property("_chateauDeskHarvested").to_boolean()){
+  visit_url("place.php?whichplace=chateau&action=chateau_desk");
+}
+
+if(!available_amount($item[your cowboy boots]).to_boolean() && get_property("telegraphOfficeAvailable").to_boolean()){
+  visit_url("place.php?whichplace=town_right&action=townright_ltt");
+}
+
+if(get_property("hasDetectiveSchool").to_boolean() && !(available_amount($item[plastic detective badge]).to_boolean() && available_amount($item[bronze detective badge]).to_boolean() && available_amount($item[silver detective badge]).to_boolean() && available_amount($item[gold detective badge]).to_boolean())){
+  visit_url("place.php?whichplace=town_wrong&action=townwrong_precinct");
+}
+
+if(!have_skill($skill[Seek out a Bird]) && item_amount($item[Bird-a-Day calendar]).to_boolean()){
+  use(1, $item[Bird-a-Day calendar]);
+}
+
 if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && familiar_equipped_equipment(my_familiar()) != $item[dromedary drinking helmet] &&available_amount($item[Tiny Stillsuit]).to_boolean()){
   equip($slot[Familiar], $item[Tiny Stillsuit]);
 }
@@ -163,10 +179,7 @@ if(available_amount($item[astral six-pack]).to_boolean()){
 
 }
 
-// (clan_viplounge.php?preaction=lovetester);
-// (choice.php?whichchoice=1278&option=1&which=-1&q1=pizza&q2=batman&q3=thick);
 
-// TODO: Cheesefax fortune tellers? I don't think it matters all that much...
 
 void coil_wire(){
 
@@ -188,12 +201,51 @@ if ((get_property("voteAlways").to_boolean()) && !(get_property("_voteToday").to
     visit_url('choice.php?pwd&option=1&whichchoice=1331&g='+(random(2) + 1)+'&local[]=2&local[]=2',true,false);
   }
   set_property("_voteToday", "true");
+
+  print(`Your local initiative gives you {get_property("_voteModifier")}.`, "teal");
 } 
 
-if (get_property('questM23Meatsmith') == 'unstarted') {
+if(get_property('questM23Meatsmith') == 'unstarted') {
 	visit_url('shop.php?whichshop=meatsmith&action=talk');
 	run_choice(1);
 }
+
+if(get_property('questM25Armorer') == 'unstarted') {
+	visit_url('shop.php?whichshop=armory&action=talk');
+	run_choice(1);
+
+  adv1($location[Madness Bakery], -1, "abort");
+}
+
+if(item_amount($item[2002 Mr. Store Catalog]).to_boolean() && !get_property("_2002MrStoreCreditsCollected").to_boolean()){
+  use(1, $item[2002 Mr. Store Catalog]);
+  refresh();
+}
+
+if(get_property("_clanFortuneConsultUses").to_int() != 3){
+
+  switch (get_clan_name()){
+
+    case "The Average Clan":
+      for i from 1 to 3 - get_property("_clanFortuneConsultUses").to_int(){
+        visit_url("clan_viplounge.php?preaction=lovetester");
+        visit_url("choice.php?pwd&whichchoice=1278&option=1&which=1&whichid=averagechat&q1=pizza&q2=thisIsNotCompatible&q3=thick");
+        wait(8);
+      }
+    break;
+
+    case "Bonus Adventures From Hell":
+      for i from 1 to 3 - get_property("_clanFortuneConsultUses").to_int(){
+        visit_url("clan_viplounge.php?preaction=lovetester");
+        visit_url("choice.php?pwd&whichchoice=1278&option=1&which=1&whichid=cheesefax&q1=pizza&q2=thisIsNotCompatible&q3=thick");
+        wait(8);
+      }
+    break;
+  }
+}
+
+
+
 
 if(available_amount($item[Cherry]) == 0){
 print("Adventuring/mapping for a novelty tropical skeleton!", "teal");
@@ -215,7 +267,7 @@ if((have_familiar($familiar[Pair of Stomping Boots])) && (!have_skill($skill[Map
 if (have_skill($skill[Map the Monsters])){
 
   if(!contains_text(get_property("lastEncounter"), "Skeletons In Store")){
-  adv1($location[The Skeleton Store], -1, cs_wrapper_freerun);
+    adv1($location[The Skeleton Store], -1, "abort");
   }
 
   use_skill($skill[Map the Monsters]);
@@ -400,6 +452,14 @@ if(!contains_text(get_property("csServicesPerformed"), "Coil Wire")){
 
 void powerlevel(){
 
+if(contains_text(get_property("csServicesPerformed"), "Build Playground Mazes")){ 
+  if(!user_confirm(`Are you sure you want to continue powerleveling, even after doing the mys test?`)){
+    abort("Run 'lcswrapper skipleveling' to skip powerleveling!");
+  }
+}
+
+
+
 print("Powerleveling!", "teal");
 
 if(have_equipped($item[Kramco Sausage-o-Matic&trade;])){
@@ -415,8 +475,6 @@ if(pulls_remaining() < 1 && !in_hardcore()){
  print("We have no pulls? Uh-oh.", "red");
  waitq(5);
 }
-
-// TODO: Mafia NC tracking change
 
 if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombatForcerActive").to_boolean() && (my_adventures() > 0)){
   visit_url("adventure.php?snarfblat=528"); // Stops on holiday wanderers. TODO
@@ -508,7 +566,6 @@ if(in_hardcore()){
   }
 }
 
-// TODO: Perhaps add Charter: Nevyville for HC?
 
 if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && have_familiar($familiar[Comma Chameleon]) && !have_effect($effect[Hulkien]).to_boolean()){
   cli_execute("pillkeeper stat");
@@ -529,6 +586,11 @@ if(available_amount($item[pebble of proud pyrite]).to_boolean()){
 
 if (!get_property('_floundryItemCreated').to_boolean() && get_property("lcs_foundry") != "None"){
   cli_execute(`acquire {get_property("lcs_floundry").to_lower_case()}`); 
+  if(item_amount($item[codpiece]).to_boolean()){
+    use(1, $item[codpiece]);
+    create(1, $item[Oil Cap]);
+    autosell(1, $item[Oil Cap]);
+  }
 }
 
 if(item_amount($item[portable pantogram]) > 0 && available_amount($item[pantogram pants]) == 0) {
@@ -566,6 +628,11 @@ if (get_property("daycareOpen").to_boolean() && !get_property("_daycareSpa").to_
     cli_execute("daycare scavenge free");
   }
 }
+
+if(get_property("lcs_use_nellyville") == "Yes"){
+  catalog("nellyville");
+}
+
 
 print("Using a ten-percent bonus! (And bastille!)", "teal");
 
@@ -626,6 +693,10 @@ foreach eff in $effects[Glittering Eyelashes, Triple-Sized, Feeling Excited, Fee
   get_effect(eff);
 }
 
+if(get_property("lcs_use_birds") == "Before Powerleveling"){
+  use_skill(1, $skill[Visit your Favorite Bird]);
+}
+
 if (get_property("_horsery") != "crazy horse"){
   cli_execute('horsery crazy');
 }
@@ -654,12 +725,18 @@ if(item_amount($item[potted power plant]).to_boolean()){
 
 visit_url("clan_viplounge.php?action=lookingglass&whichfloor=2");
 
+if(get_property("_lcs_breakfast_complete") != "true"){
 foreach it in $skills[Advanced Cocktailcrafting, Advanced Saucecrafting, Pastamastery, Perfect Freeze, Prevent Scurvy and Sobriety, Grab a Cold One, Summon Kokomo Resort Pass]{
   if(have_skill(it)){
     use_skill(it);
   }
 }
 
+// TODO: Hearts and love songs
+
+}
+
+set_property("_lcs_breakfast_complete", "true");
 if(available_amount($item[Unbreakable Umbrella]).to_boolean()){
   cli_execute("umbrella broken");
 }
@@ -733,7 +810,7 @@ if(my_familiar() == $familiar[Melodramedary] && item_amount($item[dromedary drin
 
 string speakeasy_combat = "if hasskill sing along; skill sing along; endif; if monsterid 2252; if hasskill feel envy; skill feel envy; endif; endif; attack;";
 
-if(get_property("ownsSpeakeasy").to_boolean()){
+if(get_property("ownsSpeakeasy").to_boolean() && get_property("_speakeasyFreeFights").to_int() < 3){
 
   if (have_skill($skill[Map the Monsters])){
     use_skill($skill[Map the Monsters]);
@@ -748,7 +825,7 @@ if(get_property("ownsSpeakeasy").to_boolean()){
   }
 
 
-  while(get_property("_speakeasyFreeFights") < 3){
+  while(get_property("_speakeasyFreeFights").to_int() < 3){
     adv1($location[An Unusually Quiet Barroom Brawl], -1, speakeasy_combat);
   }
 }
@@ -1014,6 +1091,10 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && availa
 
 get_shadow_waters();
 
+if(get_property("lcs_use_birds") == "During Item Test"){
+  use_skill(1, $skill[Visit your Favorite Bird]);
+}
+
 set_location($location[The Sleazy Back Alley]);
 set_property("lastAdventure", "");
 use_familiar($familiar[Mosquito]);
@@ -1039,7 +1120,8 @@ if(get_property("sourceTerminalEducateKnown") != ""){
   get_effect($effect[items.enh]);
 }
 
-maximize("25 item, 15 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+maximize("4 item, 6.67 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+
 
 if((my_inebriety() < 7) && (item_amount($item[Sacramento Wine]) > 0)){
   use_skill(1, $skill[The Ode to Booze]);
@@ -1122,6 +1204,10 @@ if(get_property("lcs_hatter_buff") == "Familiar Weight"){
   
 meteor_shower();
 
+if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && !have_familiar($familiar[Comma Chameleon]) && !have_effect($effect[Fidoxene]).to_boolean()){
+  cli_execute("pillkeeper familiar");
+}
+
 int max_familiar_weight;
 familiar max_famwt_familiar;
 
@@ -1130,6 +1216,13 @@ foreach it in $familiars[]{
     max_familiar_weight = familiar_weight(it);
     max_famwt_familiar = it;
   }
+}
+
+
+// TODO: Integrate this with the effect thing, maybe as a seperate function
+if(item_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($familiar[Mini-Trainbot])){
+  use_familiar($familiar[Mini-Trainbot]);
+  equip($item[overloaded Yule battery]);
 }
 
 use_familiar(max_famwt_familiar);
@@ -1213,8 +1306,8 @@ if(!have_effect($effect[Fireproof Foam Suit]).to_boolean()){
   if (available_amount($item[photocopied monster]) == 0 && (get_property("photocopyMonster") != "Factory Worker")){
     abort("Failed to get a Factory Worker fax. Cheesefax may be offline or another person may have been using the fax. Try manually and rerun");
   }
-  // TODO: visit_url for using a fax, use may use a default CCS
-  use(1, $item[Photocopied Monster]);
+
+  visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=4873`);
   run_combat(spit);
 }
 
@@ -1263,7 +1356,13 @@ if(available_amount($item[Songboom&trade; Boombox]) > 0 && get_property("boomBox
 	cli_execute("Boombox damage");
 }
 
-// Inner Elf
+// TODO: Inner Elf =\
+
+if(get_property("lcs_use_birds") == "During Weapon or Spell Damage Test"){
+  if(get_property("_birdOfTheDayMods").contains_text("Weapon")){
+    use_skill(1, $skill[Visit your Favorite Bird]);
+  }
+}
 
 
 if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 100) && !have_effect($effect[Spit upon]).to_boolean()){
@@ -1405,7 +1504,7 @@ if(my_inebriety() <= 13 && get_property("lcs_speakeasy_drinks").contains_text("S
   cli_execute("drink 1 Sockdollager");
 }
 
-
+// TODO: THIS.
 if(test_turns(6) >= 4){ // Threshold that pulling yeg wpdmg is better then spell dmg 
   if((pulls_remaining() > 0) && (!have_effect($effect[Rictus of Yeg]).to_boolean()) && !in_hardcore()){
 
@@ -1423,6 +1522,12 @@ cs_test(6);
 
 
 void spell_damage_test(){
+
+if(get_property("lcs_use_birds") == "During Weapon or Spell Damage Test"){
+  if(get_property("_birdOfTheDayMods").contains_text("Spell")){
+    use_skill(1, $skill[Visit your Favorite Bird]);
+  }
+}
 
 if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" && !available_amount($item[battle broom]).to_boolean()){
   print("Reminiscing that one time when you reincarnated as a witchess witch.","teal");
@@ -1603,7 +1708,7 @@ foreach it in $strings[
   sekrit,
 ] available_choices[it] = false;
 
-string current_script_ver = "v1.42";
+string current_script_ver = "v1.43";
 if(get_property("lcs_start") != current_script_ver){
 
   newline();
@@ -1646,11 +1751,15 @@ if(get_property("lcs_start") != current_script_ver){
 
   print(`Welcome back, {my_name()}! Here's what changed:`, "teal");
 
-  print("- It's the effect revamp! (Sorta)");
-  print("- 2002 catalog is supported");
-  print("- Effects are now ordered (much better) from most efficient to least");
-  print("- If you have map the monsters and oliver's, it will now map and (envy, if you have it) kill a flapper");
-  print("- Lots of rewriting/factoring going on here. It's almost like high school maths all over again!");
+  print("- Chateau desk is harvested, cowboy boots are harvested, detective badge is harvested");
+  print("- Bird-a-day is now mostly supported");
+  print("- Fortune consults are supported for those in clans 'The Average Clan' and 'Bonus Adventures from Hell'");
+  print("  If your clan has a fortune bot and isn't in the above, ping me on discord to get it added!");
+  print("- More safeguards. Always good");
+  print("- 2002 is now pretty much fully supported, I'd say?");
+  print("- Added Patriotic Eagle support, as well as Cloake support (if you have said eagle)");
+  print("- Additional forms of meat via autosell (oil cap/kokomo) are added. Will add more soon");
+
   print("- Pull revamp soon™️");
 
   // TODO: Prefrence for cookbookbat usage, trainbot support? /shrug
@@ -1701,7 +1810,7 @@ if(available_choices["help"]){
 }
 
 if(available_choices["summary"]){
-  summary();
+  summary(true);
   abort("");
 }
 
@@ -1893,6 +2002,6 @@ newline();
 print(`Organ use: {my_fullness()} fullness, {my_inebriety()} drunkeness, {my_spleen_use()} spleen`, "teal");
 newline();
 print("Summary:", "green");
-summary();
+summary(false);
 }
 
