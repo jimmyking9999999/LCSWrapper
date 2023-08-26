@@ -106,7 +106,7 @@ void meteor_shower(){
   string meteorsaber = "skill Meteor Shower; skill Use the Force";
 
   cli_execute("checkpoint");
-  maximize("mainstat, -10 damage aura, equip fourth of may cosplay saber, -equip i voted, -equip Kramco Sausage-o-Matic", false);
+  maximize("mainstat, -100 damage aura, equip fourth of may cosplay saber, -equip i voted, -equip Kramco Sausage-o-Matic", false);
 
   if(have_effect($effect[Feeling Lost]).to_boolean()){ // Tries to fight a barrel mimic if you have feeling lost 
       visit_url("barrel.php");
@@ -138,7 +138,7 @@ void meteor_shower(){
   }
 
   use_familiar(pre_shower_fam);
-  cli_execute("outfit checkpoint");
+  cli_execute("outfit checkpoint; checkpoint clear");
 
   // Uses a thrall + outfit combo to equip a stick-knife if we have one in our inventory that needs 150 musc to equip
 
@@ -209,7 +209,28 @@ int get_all_freekills(){
 	return total_freekills;
 }
 
+int get_all_freeruns(){
+	int total_freeruns;
 
+	if(have_skill($skill[Snokebomb])){
+		total_freeruns += 3 - get_property("_snokebombUsed").to_int();
+	}
+
+	if(have_skill($skill[Feel Hatred])){
+		total_freeruns += 3 - get_property("_feelHatredUsed").to_int();
+	}
+
+	if(equipped_amount($item[latte lovers member's mug]).to_boolean() && get_property("_latteBanishUsed") == "false"){
+		total_freeruns++;
+	}
+
+	if(equipped_amount($item[Lil' Doctor&trade; bag]).to_boolean()){
+		total_freeruns += 3 - get_property("_reflexHammerUsed").to_int();
+	}
+
+	return total_freeruns + available_amount($item[Cosmic Bowling Ball]);
+	
+}
 
 // --clipart
 boolean clip_art(item it) {
@@ -327,7 +348,7 @@ boolean august_scepter(int day){
 
 // -catalog
 boolean catalog(string type){
-	if(!item_amount($item[2002 Mr. Store Catalog]).to_boolean()){
+	if(!item_amount($item[2002 Mr. Store Catalog]).to_boolean() || get_property("availableMrStore2002Credits") == "0"){
 		return false;
 	}
 
@@ -344,7 +365,7 @@ boolean catalog(string type){
 			visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=11259`);
 			run_choice(3);
 
-			maximize("25 item, 15 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+			maximize("4 item, 6.67 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
 
 			return available_amount($item[red-soled high heels]).to_boolean();
 
@@ -358,6 +379,17 @@ boolean catalog(string type){
 
 			return have_effect($effect[Spitting Rhymes]).to_boolean();
 
+		case "nellyville":
+			if(have_effect($effect[Hot in Herre]).to_boolean()){
+				return true;
+			}
+			
+			buy($coinmaster[mr. store 2002], 1, $item[Charter: Nellyville]);
+			use(1, $item[charter: nellyville]);
+
+			return have_effect($effect[Hot in Herre]).to_boolean();
+
+
 		default:
 			abort(`Invalid catalog arguments!`);
 	}
@@ -367,6 +399,7 @@ boolean catalog(string type){
 
 // -payphone
 boolean get_shadow_waters(){
+	// TODO: Preference for fighting the boss, in order to get one extra fam turn
 	if(item_amount($item[closed-circuit pay phone]).to_boolean() && !have_effect($effect[Shadow Waters]).to_boolean()){	
 		if(get_property("questRufus") == "step1"){
 			use(1, $item[closed-circuit pay phone]);
@@ -381,6 +414,29 @@ boolean get_shadow_waters(){
 		}
 	}
 	return have_effect($effect[Shadow Waters]).to_boolean();
+}
+
+//-eagle
+boolean eagle_pledge(string loc){
+	if(have_effect($effect[Feeling Lost]).to_boolean() || !have_familiar($familiar[Patriotic Eagle]) || get_all_freeruns() == 0){
+		return false;
+	}
+
+	if(have_effect($effect[Citizen of a Zone]).to_boolean() && visit_url(`desc_effect.php?whicheffect={$effect[Citizen of a Zone].descid}`).to_lower_case().contains_text(loc.to_lower_case())){
+		return true;
+	}
+
+	familiar pre_pledge_fam = my_familiar();
+	cli_execute("checkpoint");
+	use_familiar($familiar[Patriotic Eagle]);
+   	maximize("100 ML, -5 familiar weight, -100 damage aura, equip fourth of may cosplay saber, -equip i voted, -equip Kramco Sausage-o-Matic", false);
+
+	adv1(loc.to_location(), -1, "if hasskill 7310 && !haseffect 2464; skill 7310; endif; skill 7449; if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill 7301; skill 7301; endif");
+
+	use_familiar(pre_pledge_fam);
+  	cli_execute("outfit checkpoint; checkpoint clear");
+
+	return have_effect($effect[Citizen of a Zone]).to_boolean() && visit_url(`desc_effect.php?whicheffect={$effect[Citizen of a Zone].descid}`).to_lower_case().contains_text(loc.to_lower_case());
 }
 
 string is_an(string it){
@@ -409,7 +465,7 @@ boolean pull_item(item it, string condition){
 
 	take_storage(1,it);
   } else {
-    if(cli_execute(`ashq if({condition});`).to_boolean()){ 
+    if(cli_execute(`ashq if({condition})`).to_boolean()){ 
 		if(!storage_amount(it).to_boolean()){
 			buy_using_storage(1, it);
 		}
@@ -602,7 +658,7 @@ string [int] powerlevel_effects = {
 	"Total Protonic Reversal",
 	"drescher's annoying noise",
 	"Astral Shell",
-	"pasta oneness",
+	"Pasta oneness",
     "END",
 };
 
@@ -647,16 +703,19 @@ string [int] mus_effects = {
 string [int] hp_effects = {
 	"Song of starch", // 0
 	"Reptilian fortitude", // 0
-	"END",
+	"Plump and Chubby",
+	"END", 
 }; 
 
 string [int] item_effects = {
-	"Steely-Eyed Squint", // Meat/turn 0
+	"FUNC eagle_pledge / Madness Bakery", // In case of failure
+	"Steely-Eyed Squint", // 0
 	"Fat Leon's Phat Loot Lyric", // 0
 	"Singer's Faithful Ocelot", // 0
 	"Spice haze", // 0
 	"Crunching Leaves",	// 369
 	"Nearly All-Natural", // 1375 
+	"Heart of Lavender",
 	"FUNC catalog / boots", // 1890
 	"Ermine Eyes", // 2000
 	"FUNC catalog / rhymes", // 3150
@@ -723,6 +782,7 @@ string [int] weapon_damage_effects = {
 	"Rage of the Reindeer", // 0
 	"Cowrruption", // 35
 	"Imported Strength", // 150
+	"Faboooo",
 	
 	"Billiards Belligerence", // 1726
 	"Feeling punchy",
@@ -740,6 +800,7 @@ string [int] spell_damage_effects = {
 	"Spirit of Peppermint", // 0
 	"Song of Sauce", // 0
 	"Cowrruption", // 69. Nice
+	"Paging Betty",
 	"Imported Strength", // 300
 	"We're all made of starfish", // ~700
 	"Concentration", // 850
