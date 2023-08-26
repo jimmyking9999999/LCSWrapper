@@ -21,17 +21,21 @@ string [int] preferences = {
     "lcs_clan | Which clan would you like the script to use as your VIP clan? | USER",
     "lcs_get_cyclops_eyedrops | Would you like the script to get cyclops eyedrops for the item test? | Yes/No",
     "lcs_hatter_buff | Which hatter buff would you like the script to obtain? | Weapon Damage/Spell Damage/Familiar Weight/None",
-    "lcs_rem_witchess_witch | Would you like to reminiscence a witchess witch instead of a bishop? | Yes (Before Powerleveling)/Yes (Before stpell damage test)/No",
+    "lcs_rem_witchess_witch | Would you like to reminiscence a witchess witch instead of a bishop? | Yes (Before Powerleveling)/Yes (Before Spell damage test)/No | available_amount($item[Combat Lover's Locket])",
     "lcs_get_red_eye | Would you like the script to reminisce a red skeleton for a red eye? | Yes/No",
     "lcs_speakeasy_drinks | Would you like the script to drink anything from the speakeasy? | None/Bee's Knees Only/Sockdollager Only/Hot Socks Only/Bee's Knees and Sockdollager/Bee's Knees and Hot Socks/Sockdollager and Hot Socks/Bee's Knees, Sockdollager, and Hot Socks",
-    "lcs_get_warbear_potion | Would you like the script to obtain new and improved or experimental G-9 before powerleveling? | Yes/No",
+    "lcs_get_warbear_potion | Would you like the script to obtain (wish or pull) new and improved or experimental G-9 before powerleveling? | Yes/No",
     "lcs_get_a_contender | What about the 'A Contender' buff? | Yes/No",
     "lcs_vip_fortune_buff | Which fortune teller buff would you like to obtain? | Mys/Familiar/Item/None",
-    "lcs_alloted_backup_uses | How many backup camera uses would you like to use for powerleveling? | USER",
+    "lcs_use_nellyville | Would you like the script to use a Charter: Nellyville for extra help during powerleveling? | Yes/No | item_amount($item[2002 Mr. Store Catalog])",
+    "lcs_alloted_backup_uses | How many backup camera uses would you like to use for powerleveling? | USER | available_amount($item[Backup Camera])",
+    "lcs_use_witchess | Would you like the script to use your witchess set? | Yes (Free Fights and Puzzle Champ)/Yes (Free Fights Only)/Yes (Puzzle Champ Only)/No | available_amount($item[Witchess Set])",
     "lcs_floundry | Which floundry item do you want to get? | Codpiece/Fish Hatchet/Tunac/Carpe/None",
-    "lcs_august_scepter | Which buffs would you like for the August scepter? | Offhand Remarkable Before Powerleveling/Offhand Remarkable After Familiar Weight Test/Offhand Remarkable Before Non-Combat Test/None",
+    "lcs_august_scepter | Which buffs would you like for the August scepter? | Offhand Remarkable Before Powerleveling/Offhand Remarkable After Familiar Weight Test/Offhand Remarkable Before Non-Combat Test/None | available_amount($item[August Scepter])",
+    "lcs_use_birds | Would you like to use your bird-a-day cast? | Before Powerleveling/During Item Test/During Weapon or Spell Damage Test/None | item_amount($item[Bird-a-Day calendar])",
+    "lcs_melf_slime_clan | Which clan would you like to use to obtain effect 'Inner elf'? | USER | have_familiar($familiar[Machine Elf])",
 
-    "lcs_use_beta_version | Would you like to have the script assume you at a higher shiny level? This will have the script redirect resources into harder tests. Only enable this if you have >4 freeruns and can always 1-turn stat tests! | Yes/No",
+    "lcs_use_beta_version | Would you like to have the script assume you at a higher shiny level? This will have the script redirect resources into harder(ish) tests. Only enable this if you have >4 freeruns and can always 1-turn stat tests! | Yes/No",
     
 };
 
@@ -44,13 +48,18 @@ string [int] manual_preferences = {
     "lcs_autopull_at_start",
 };
 
-
-
-
 ///
-void change_pref(int which_preference){
-    /* preference_details: 0 => Mafia pref, 1 => Description, 2 => Options */ 
+boolean change_pref(int which_preference){
+    /* preference_details: 0 => Mafia pref, 1 => Description, 2 => Options, 3 => Conditional (maybe) */ 
     string [int] preference_details = split_string(preferences[which_preference], "\\ \\|\\ ");
+
+    if(preference_details.count() == 4){    
+        if(cli_execute_output(`ash {preference_details[3]}.to_boolean()`).contains_text(false)){
+            print(`Skipping preference {preference_details[0]}, as you do not have the prerequisite(s). =(`);
+            return false;
+        }
+    }
+
     string [int] choices = split_string(preference_details[2], "\\/");
     string user_choice;
 
@@ -81,9 +90,11 @@ void change_pref(int which_preference){
 
     if(user_choice == "" && get_property(preference_details[0]) != ""){
         print(`Skipping! (Your last selection was '{get_property(preference_details[0])}')`, "teal");
+        return false;
       } else {
         print(`Setting perference '{preference_details[0]}' to '{user_choice.to_lower_case()}'!`, "teal");
         set_property(preference_details[0], user_choice);
+        return true;
       }
 }
 
@@ -152,9 +163,8 @@ string flavour_text(string stage_name){
     }
 }
 
-void summary(){
+void summary(boolean revisit){
     // TODO: Fix this. Maybe add preferences with _ in order for them to be removed at the end of the day?
-
     boolean colourdown; int colour = 9264;  
 
     int prev_time = get_property("lcs_time_at_start").to_int();
@@ -172,6 +182,8 @@ void summary(){
     print("We took "+((get_property("post_time_wire").to_int() - get_property("post_time_oriole").to_int())/1000)+" seconds and "+(get_property("post_advs_wire").to_int() - get_property("post_advs_oriole").to_int())+" adventures coiling some wires!", 9176);
     print("We took "+((get_property("post_time_powerlevel").to_int() - get_property("post_time_wire").to_int())/1000)+" seconds and "+(get_property("post_advs_powerlevel").to_int() - get_property("post_advs_wire").to_int())+" adventures powerleveling.", 9264);
 
+    int total_adventures = get_property("post_advs_powerlevel").to_int();
+
     foreach num, test in indv_tests {
         if(colourdown){ colour -= 88; } else { colour += 88;} if(colour == 9704){ colourdown = true; }
     
@@ -182,9 +194,18 @@ void summary(){
         string [int] indiv_test_info = split_string(`{get_property(`lcs_pre_test_info_{testname}`)} | {get_property(`lcs_post_test_info_{testname}`)}`, " \\| ");
 
         if(count(indiv_test_info) == 4){
-            print(`We took {(indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000} seconds and {(indiv_test_info[2].to_int() - indiv_test_info[0].to_int())} adventure{is_plural((indiv_test_info[3].to_int() - indiv_test_info[1].to_int()))} {flavour_text(testname)}`, colour);
-        }
+            int test_adv_amount = (indiv_test_info[2].to_int() - indiv_test_info[0].to_int());
+            int test_second_amount = (indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000;
+            
+            print(`We took {test_second_amount} seconds and {test_adv_amount} adventure{is_plural(test_adv_amount)} {flavour_text(testname)}`, colour);
+            total_adventures += test_adv_amount;
+        }   
     }
+
+    if(revisit){
+        newline();
+        print(`In total, your last CS run took {total_adventures} adventures!`, "teal");
+    }   
   
 
     if(my_id() == "3589231"){
