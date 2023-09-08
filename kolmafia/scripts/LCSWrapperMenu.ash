@@ -20,6 +20,7 @@ string [int] preferences = {
 
     "lcs_clan | Which clan would you like the script to use as your VIP clan? | USER",
     "lcs_get_cyclops_eyedrops | Would you like the script to get cyclops eyedrops for the item test? | Yes/No",
+    "lcs_use_simmer | Do you wish to cast simmer for the spell damage test to save a turn? (Note that the script will automatically not cast it if you have effects at one turn) | Yes/No | have_skill($skill[Simmer])",
     "lcs_hatter_buff | Which hatter buff would you like the script to obtain? | Weapon Damage/Spell Damage/Familiar Weight/None",
     "lcs_rem_witchess_witch | Would you like to reminiscence a witchess witch instead of a bishop? | Yes (Before Powerleveling)/Yes (Before Spell damage test)/No | available_amount($item[Combat Lover's Locket])",
     "lcs_get_red_eye | Would you like the script to reminisce a red skeleton for a red eye? | Yes/No",
@@ -34,6 +35,7 @@ string [int] preferences = {
     "lcs_august_scepter | Which buffs would you like for the August scepter? | Offhand Remarkable Before Powerleveling/Offhand Remarkable After Familiar Weight Test/Offhand Remarkable Before Non-Combat Test/None | available_amount($item[August Scepter])",
     "lcs_use_birds | Would you like to use your bird-a-day cast? | Before Powerleveling/During Item Test/During Weapon or Spell Damage Test/None | item_amount($item[Bird-a-Day calendar])",
     "lcs_melf_slime_clan | Which clan would you like to use to obtain effect 'Inner elf'? | USER | have_familiar($familiar[Machine Elf])",
+    "lcs_prof_lecture | Do you want to use all your pocket professor lectures on sausage goblins? | Yes/No | have_familiar($familiar[Pocket Professor])",
 
     "lcs_use_beta_version | Would you like to have the script assume you at a higher shiny level? This will have the script redirect resources into harder(ish) tests. Only enable this if you have >4 freeruns and can always 1-turn stat tests! | Yes/No",
     
@@ -99,7 +101,7 @@ boolean change_pref(int which_preference){
 }
 
 void script_setup(){
-    print("Setting up your script!");
+    print("Setting up your script! Press ESC or Cancel to use your previous settings.");
     if(user_confirm("Would you like to set this script's turn threshold settings?")){
         newline();
         print("Setting turn thresholds! (How many turns do you want to complete each test in, at minimum)", "teal");
@@ -197,7 +199,7 @@ void summary(boolean revisit){
             int test_adv_amount = (indiv_test_info[2].to_int() - indiv_test_info[0].to_int());
             int test_second_amount = (indiv_test_info[3].to_int() - indiv_test_info[1].to_int())/1000;
             
-            print(`We took {test_second_amount} seconds and {test_adv_amount} adventure{is_plural(test_adv_amount)} {flavour_text(testname)}`, colour);
+            print(`We took {test_second_amount > 0 ? test_second_amount.to_string() : "?"} seconds and {test_adv_amount} adventure{is_plural(test_adv_amount)} {flavour_text(testname)}`, colour);
             total_adventures += test_adv_amount;
         }   
     }
