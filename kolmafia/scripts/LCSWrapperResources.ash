@@ -365,7 +365,7 @@ boolean catalog(string type){
 			visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=11259`);
 			run_choice(3);
 
-			maximize("4 item, 6.67 booze drop, -equip broken champagne bottle, switch left-hand man", false); 
+			maximize("item, booze drop, -equip broken champagne bottle, switch left-hand man", false); 
 
 			return available_amount($item[red-soled high heels]).to_boolean();
 
@@ -447,7 +447,13 @@ string is_an(string it){
   return "";
 }
 
-boolean pull_item(item it, string condition){
+boolean pull_item(string it){
+
+	it = it.to_item();
+	return pull_item(it);
+}
+
+boolean pull_item(item it){
   if(available_amount(it).to_boolean()){
     return true;
   }
@@ -458,21 +464,11 @@ boolean pull_item(item it, string condition){
 
   print(`Pulling a{is_an(it.to_string())} {it}!`, "teal");
 
-  if(condition == ""){
 	if(!storage_amount(it).to_boolean()){
 		buy_using_storage(1, it);
 	}
 
 	take_storage(1,it);
-  } else {
-    if(cli_execute(`ashq if({condition})`).to_boolean()){ 
-		if(!storage_amount(it).to_boolean()){
-			buy_using_storage(1, it);
-		}
-
-		take_storage(1,it);
-    }
-  }
 
   return available_amount(it).to_boolean();
 }
@@ -629,16 +625,55 @@ familiar current_best_fam(){
 
 }
 
+// Todo: Roaring hearth?
+boolean equip_stick_knife(){
+
+	if(!available_amount($item[Stick-knife of loathing]).to_boolean() || (my_class() != $class[Pastamancer] && my_basestat($stat[Muscle]) < 150)){
+		return false;
+	}
+
+	use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+
+    foreach i, o_name in get_custom_outfits(){
+        if(o_name.to_lower_case() == "stick-knife"){
+        	outfit(o_name);
+
+			return equipped_amount($item[Stick-knife of Loathing]).to_boolean();
+        }
+    }
+
+    foreach x, outfit_name in get_custom_outfits(){
+
+		foreach x,piece in outfit_pieces(outfit_name)
+
+		if(piece.contains_text("Stick-Knife of Loathing")){
+			print(`Outfit '{outfit_name}' has a {piece} in it! Trying to equip that outfit...`, "teal");
+			outfit(outfit_name);
+		} 
+		
+		if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+			print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
+			waitq(5);
+			return false;
+		}
+	}
+
+	return equipped_amount($item[Stick-knife of Loathing]).to_boolean();
+}
+
+
+
+
+
 effect eff;
 boolean no_more_buffs = false;
 /* Effects go here, numbered by priority */
-
 string [int] powerlevel_effects = {
     "Glittering Eyelashes",
     "Inscrutable Gaze",
     "Ode to Booze",
     "Saucemastery",
-    "Big",
+    "Big ",
     "Carol of the Thrills",
     "Spirit of Cayenne",
     "Ur-Kel's Aria of Annoyance",
@@ -656,18 +691,18 @@ string [int] powerlevel_effects = {
     "Bendin' Hell",
     "Triple-Sized",
 	"Total Protonic Reversal",
-	"drescher's annoying noise",
+	"Drescher's annoying noise",
 	"Astral Shell",
 	"Pasta oneness",
-    "END",
+    "END ",
 };
 
 string [int] mys_effects = {
 	"Glittering Eyelashes",
-	"Big",
+	"Big ",
 	"Quiet Judgement",
-	"Shanty of Superiority",
-	"END",
+	"Stevedave's Shanty of Superiority",
+	"END ",
 }; 
 
 string [int] mox_effects = {
@@ -683,7 +718,7 @@ string [int] mox_effects = {
     "Stevedave's Shanty of Superiority",
     "The Moxious Madrigal",
     "aMAZing",
-    "END",
+    "END ",
 };
 
 string [int] mus_effects = {
@@ -697,7 +732,7 @@ string [int] mus_effects = {
     "Quiet determination",
     "Feeling excited",
     "Phorcefullness",
-    "END",
+    "END ",
 };
 
 string [int] hp_effects = {
@@ -709,6 +744,7 @@ string [int] hp_effects = {
 
 string [int] item_effects = {
 	"FUNC eagle_pledge / Madness Bakery", // In case of failure
+	"Empathy",
 	"Steely-Eyed Squint", // 0
 	"Fat Leon's Phat Loot Lyric", // 0
 	"Singer's Faithful Ocelot", // 0
@@ -721,12 +757,13 @@ string [int] item_effects = {
 	"FUNC catalog / rhymes", // 3150
 	"Wizard Sight", // 333 + 2 * VoA
 	"FUNC wish_effect / Infernal Thirst", // 3750
+	"Empathy",
 	"El Aroma de Salsa", // 8958
 	"Glowing Hands", // 8980
+	"Incredibly Well Lit", //15000
 	"Feeling Lost", // Potentially 2-4 * voa
 	"Lantern-Charged", // 13750	
-	"Incredibly Well Lit", //15000
-	"END",
+	"END ",
 }; 
 
 string [int] hot_res_effects = {
@@ -738,7 +775,7 @@ string [int] hot_res_effects = {
     "Feeling Peaceful", // 0
     "Hot-headed",
 	"Rainbow Vaccine", // 0
-    "END",
+    "END ",
 };
 
 string [int] fam_weight_effects = {
@@ -747,16 +784,18 @@ string [int] fam_weight_effects = {
     "Blood Bond", // 0
 	"Robot Friends", // 1525
 	"Billiards Belligerence", // 1726
+	"Shortly Stacked", // 3889
     "Loyal as a Rock", // 5193
-    "Party Soundtrack", // 6390
+	"Party Soundtrack", // 6390
 	"Puzzle Champ", // 17000
-    "END",
-}; // TODO: Witchess puzzle
+    "END ",
+}; 
 
 string [int] non_combat_effects = {
     "Smooth Movements", // 0
     "The Sonata of Sneakiness", // 0
 	"Leash of Linguini", // 0 
+	"Blood Bond",
     "Empathy", // 0
 	"Feeling Lonely", // 0
 	"Silent Running", // 0
@@ -767,7 +806,8 @@ string [int] non_combat_effects = {
 	"Billiards Belligerence", // 8630
 	"Loyal as a Rock", // 25965
 	"FUNC wish_effect / Disquiet Riot", // 4166
-    "END",
+	"Empathy",
+    "END ",
 };
 
 string [int] weapon_damage_effects = {
@@ -776,20 +816,28 @@ string [int] weapon_damage_effects = {
 	"Tenacity of the snapper", // 0
 	"Frenzied, bloody", // 0
 	"Disdain of the war snapper", // 0
+	"Jackasses' Symphony of Destruction", // 0
 	"Lack of body-building", // 0
 	"Carol of the Bulls", // 0
 	"Song of the North", // 0
 	"Rage of the Reindeer", // 0
 	"Cowrruption", // 35
+	"Feeling punchy", // 100
 	"Imported Strength", // 150
-	"Faboooo",
+	"Engorged weapon", // 750
+	"Pronounced Potency", // 758
+	"Ham-fisted", // 1136
+	"Faboooo", // 1750
 	
 	"Billiards Belligerence", // 1726
-	"Feeling punchy",
-	"Engorged weapon",
-	"Pronounced Potency",
-	"Ham-fisted",
-	"END",
+	
+	"FUNC pull_item / Yeg's Motel toothbrush", // 2437.5
+	"Empathy",
+	"FUNC wish_effect / Outer Wolf", //6250
+	"Empathy",
+	
+	
+	"END ",
 };
 
 string [int] spell_damage_effects = {
@@ -809,7 +857,7 @@ string [int] spell_damage_effects = {
 	"AA-Charged",
 	"D-Charged",
 
-	"END",
+	"END ",
 }; 
 
 
@@ -869,7 +917,10 @@ string[int] effects;
 
 	foreach it in effects {
 		
-		if(effects[it] == "END"){ // Maybe effects.count()? Nah.
+		if(effects[it].substring(0,3) == "END"){ // Maybe effects.count()? Nah.
+			if(scrape_test_turns(test) == 1){
+				return 1;
+			}
 			abort(`We failed to reach your target! Only managed to get the test down to {scrape_test_turns(test)} turns!`);
 		}
 
@@ -880,10 +931,12 @@ string[int] effects;
 			
 			string function = func_effect[0].substring(5);
   			call boolean function(func_effect[1]);
+
 		
 		} else if(effects[it].substring(0,3) == "CLI"){ // CLI test buff!
 
 			cli_execute(effects[it].substring(3));
+			break;
 
 		} else { // Normal effect test buff!
 
@@ -1151,7 +1204,10 @@ void cs_test(int testnum){
 
 	}
 
-	print(`Expected turns for test {test_number_to_name(testnum)}: {test_turns(testnum)} turns`, "lime");
+	matcher remove_underscores = create_matcher(" ", test_number_to_name(testnum));
+    string test_name = replace_first(remove_underscores, "_");
+
+	print(`Expected turns for test {test_name}: {test_turns(testnum)} turns`, "lime");
 	
 	print(`(Looking at the council.php text gives us a turn amount of {scrape_test_turns(testnum)})`, "teal");
 	if(scrape_test_turns(testnum) != test_turns(testnum) && test_turns(testnum) != 1 && scrape_test_turns(testnum) != 1){
