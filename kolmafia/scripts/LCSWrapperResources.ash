@@ -447,10 +447,26 @@ string is_an(string it){
   return "";
 }
 
-boolean pull_item(string it){
+boolean pull_item(string ite){
 
-	it = it.to_item();
-	return pull_item(it);
+	item it = ite.to_item();
+	  if(available_amount(it).to_boolean()){
+    return true;
+  }
+
+  if(pulls_remaining() == 0){
+	return false;
+  }
+
+  print(`Pulling a{is_an(it.to_string())} {it}!`, "teal");
+
+	if(!storage_amount(it).to_boolean()){
+		buy_using_storage(1, it);
+	}
+
+	take_storage(1,it);
+
+  return available_amount(it).to_boolean();
 }
 
 boolean pull_item(item it){
@@ -599,29 +615,43 @@ boolean synthesis_effect(effect eff){
 	return false;
 }
 
-familiar current_best_fam(){
+boolean use_current_best_fam(){
 	// CS Optimal familiars: CBB (6.6 turns on item%) -> Camel (4 turns on weapon damage, 2 on spell damage) -> Shortest-Order Cook (2 turns on familiar weight) -> Garbage Fire (1-2 turns on familiar weight) -> Sombrero (Stats)
 	if(have_familiar($familiar[Cookbookbat]) && !get_property("lcs_skip_cbb").to_boolean() && item_amount($item[Vegetable of Jarlsberg]) < 2){
-		return $familiar[Cookbookbat];
+		use_familiar($familiar[Cookbookbat]);
+		return true;
 	}
 
 	if((have_familiar($familiar[Melodramedary]) && get_property("camelSpit").to_int() < 100) && !have_effect($effect[Spit Upon]).to_boolean()){
-		return $familiar[Melodramedary];
+		use_familiar($familiar[Melodramedary]);
+		if(item_amount($item[dromedary drinking helmet]).to_boolean()){
+			equip($item[dromedary drinking helmet]);
+		}
+		return true;
 	}
 
 	if(have_familiar($familiar[Garbage Fire]) && (!available_amount($item[burning paper crane]).to_boolean() || item_amount($item[burning newspaper]).to_boolean())){
-		return $familiar[Garbage Fire];
+		use_familiar($familiar[Garbage Fire]);
+		return true;
 	}
 
 	if(have_familiar($familiar[Shorter-Order Cook]) && !item_amount($item[short stack of pancakes]).to_boolean() && !have_effect($effect[Shortly Stacked]).to_boolean()){
-		return $familiar[Shorter-Order Cook];
+		use_familiar($familiar[Shorter-Order Cook]);
+		return true;
 	}
 
 	if(have_familiar($familiar[Artistic Goth Kid])){
-		return $familiar[Artistic Goth Kid];
+		use_familiar($familiar[Artistic Goth Kid]);
+		return true;
 	}
 
-	return $familiar[Hovering Sombrero];
+	if(have_familiar($familiar[Hovering Sombrero])){
+		use_familiar($familiar[Hovering Sombrero]);
+		return true;
+	}
+	
+	return false;
+
 
 }
 
