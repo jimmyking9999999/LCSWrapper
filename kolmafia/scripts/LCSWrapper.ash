@@ -63,7 +63,8 @@ if(get_property("questM05Toot") != "finished"){
 
 print("Now setting up beginning-of-ascension stuff...", "teal");
 
-if(get_property("lcs_autopull_at_start") != ""){
+if(get_property("lcs_autopull_at_start") != "" && pulls_remaining() == 5){
+
   print("Now pulling some items automatically for you!", "teal");
   newline();
   foreach x, it in split_string(get_property("lcs_autopull_at_start"), "\\,"){
@@ -75,6 +76,7 @@ if(get_property("lcs_autopull_at_start") != ""){
       cli_execute(`hagnk {it}`);
     }
   }
+
 }
 
 
@@ -425,7 +427,9 @@ if((available_amount($item[Kramco Sausage-o-Matic&trade;]).to_boolean()) && (!ge
   if(available_amount($item[Industrial Fire Extinguisher]).to_boolean()){
   equip($item[Industrial Fire Extinguisher]); }
 
-  use_familiar(current_best_fam());
+  use_current_best_fam();
+
+  // TODO: Melodram hump
 
   if(my_hp() < my_maxhp()){
     cli_execute("hottub");
@@ -806,7 +810,7 @@ if(available_amount($item[January's Garbage Tote]).to_boolean()){
   equip($item[Makeshift Garbage Shirt]);
 }
 
-use_familiar(current_best_fam());
+use_current_best_fam();
 
 if(my_familiar() == $familiar[Melodramedary] && item_amount($item[dromedary drinking helmet]).to_boolean()){
   equip($slot[Familiar], $item[dromedary drinking helmet]);
@@ -868,7 +872,7 @@ if(get_property("snojoAvailable").to_boolean()){
   visit_url("place.php?whichplace=snojo&action=snojo_controller");
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
   while(get_property("_snojoFreeFights").to_int() < 10){
-    use_familiar(current_best_fam());
+    use_current_best_fam();
     adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
   }
 }
@@ -887,7 +891,7 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 
     boolean break_flag;
 
-    use_familiar(current_best_fam());
+    use_current_best_fam();
     adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
 
     if(handling_choice()){
@@ -946,7 +950,7 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   }
 
   if(yoked_obtained || !have_familiar($familiar[Ghost of Crimbo Carols])){
-    use_familiar(current_best_fam());
+    use_current_best_fam();
   }
 
   if(my_familiar() == $familiar[Melodramedary] && available_amount($item[dromedary drinking helmet]).to_boolean() && equipped_item($slot[Familiar]) != $item[dromedary drinking helmet]){
@@ -1000,7 +1004,7 @@ while(freekills > 0){
   }
   
   adv1($location[The Neverending Party], -1, nep_powerlevel_freekills);
-  use_familiar(current_best_fam());
+  use_current_best_fam();
 
   if(get_property("garbageShirtCharge") < 2 && equipped_amount($item[Makeshift Garbage Shirt]).to_boolean()){
     equip($slot[Shirt], $item[none]);
@@ -1033,7 +1037,7 @@ if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
 
       adv1($location[The Neverending Party], -1, `if hasskill lecture on relativity; skill lecture on relativity; endif; {nep_powerlevel}`);
       while(in_multi_fight()){
-        run_combat(`if hasskill lecture on relativity; skill lecture on relativity; endif; {nep_powerlevel}`);
+        run_combat(`if hasskill micrometeorite; skill micrometeorite; endif; if hasskill lecture on relativity; skill lecture on relativity; endif; {nep_powerlevel}`);
       }
     } else {
       adv1($location[The Neverending Party], -1, nep_powerlevel);
@@ -1045,7 +1049,7 @@ if(!contains_text(get_property("lastEncounter"), "sausage goblin")){
 
 
 
-use_familiar(current_best_fam());
+use_current_best_fam();
 int backup_uses = get_property(`lcs_alloted_backup_uses`).to_int();
 
 if(backup_uses != 0){
@@ -1058,7 +1062,7 @@ if(backup_uses != 0){
 
   while(get_property("_backUpUses").to_int() < (backup_uses - 3)){
     adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
-    use_familiar(current_best_fam());
+    use_current_best_fam();
 
   }
 
@@ -1076,7 +1080,7 @@ if(backup_uses != 0){
 
   while(get_property("_backUpUses").to_int() < backup_uses){
     adv1($location[The Neverending Party], -1, nep_powerlevel_backup);
-    use_familiar(current_best_fam());
+    use_current_best_fam();
   }
 }
 
@@ -1301,6 +1305,8 @@ if((available_amount($item[Industrial Fire Extinguisher]).to_boolean()) && (avai
   equip($slot[Off-hand], $item[Fourth of May Cosplay Saber]);
 
   refresh();
+  use_current_best_fam();
+
 
   if(my_adventures() == 0){
     gain_adventures(0); // this works since I add a +1 in the function itself =\
@@ -1546,7 +1552,7 @@ if(have_familiar($familiar[Left-hand Man])){
 }
 
 // Maximizer not knowing what to do with a stick-knife fix
-foreach it in $slots[weapon, off-hand]{
+foreach it in $slots[weapon, off-hand, familiar]{
   equip(it, $item[none]);
 }
 meteor_shower();
@@ -1650,14 +1656,6 @@ if(pulls_remaining() > 0){ // TODO: Priority for spell damage stuff if pulls are
   abort("We still have some pulls remaining! Consider setting preference `lcs_autopull_at_start` to pull extra items automatically at the start!");
 }
 
-if(have_familiar($familiar[Left-hand Man])){
-  use_familiar($familiar[Left-hand Man]);
-}
-
-foreach it in $slots[weapon, off-hand]{
-  equip(it, $item[none]);
-}
-
 maximize("Spell damage, spell damage percent, switch left-hand man", false);
 
 
@@ -1689,7 +1687,8 @@ void donate_body_to_science(){
   }
 
   if(available_amount($item[designer sweatpants]).to_boolean()){
-    cli_execute(`cast {min(3, min(my_inebriety(), floor(get_property("sweat").to_int() / 25)))} sweat out some booze`);
+    int booze_casts = min(3, min(my_inebriety(), floor(get_property("sweat").to_int() / 25)));
+    cli_execute(`{(booze_casts) == 0 ? "" : "cast {booze_casts} sweat out some booze"}`);
   }
 
   if(have_skill($skill[Lock Picking]).to_boolean()){
@@ -1699,13 +1698,6 @@ void donate_body_to_science(){
 
   
   cli_execute("breakfast");
-  
-
-  if(item_amount($item[genie bottle]).to_boolean() && get_property("_genieWishesUsed") < 3){
-    for(int i; i < get_property("_genieWishesUsed").to_int(); i++){
-      cli_execute("genie wish wish");
-    }
-  }
 
   if(get_property("autumnatonUpgrades") == "" && item_amount($item[autumn-aton]).to_boolean()){
     cli_execute("autumnaton upgrade");
