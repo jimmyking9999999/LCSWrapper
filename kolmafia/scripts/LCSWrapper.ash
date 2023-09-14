@@ -1084,6 +1084,16 @@ if(backup_uses != 0){
   }
 }
 
+
+if(my_id() == 3272033 && get_property("_shortOrderCookCharge").to_int() >= 9){
+  foreach num in $strings[8, 22]{
+    if(!get_property(`_aug{num}Cast`).to_boolean()){
+	    visit_url(`runskillz.php?action=Skillz&whichskill={7451 + num.to_int()}&targetplayer=${my_id()}&pwd=&quantity=1`);
+      run_combat("skill saucegeyser; repeat !times 2; attack; repeat !times 3;");
+    }
+  }
+}
+
 }
 
 void mys_test(){
@@ -1688,7 +1698,7 @@ void donate_body_to_science(){
 
   if(available_amount($item[designer sweatpants]).to_boolean()){
     int booze_casts = min(3, min(my_inebriety(), floor(get_property("sweat").to_int() / 25)));
-    cli_execute(`{(booze_casts) == 0 ? "" : "cast {booze_casts} sweat out some booze"}`);
+    cli_execute(`{(booze_casts) == 0 ? "" : `cast {booze_casts} sweat out some booze`}`);
   }
 
   if(have_skill($skill[Lock Picking]).to_boolean()){
