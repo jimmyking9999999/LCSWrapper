@@ -72,8 +72,9 @@ if(get_property("lcs_autopull_at_start") != "" && pulls_remaining() == 5){
       print(`Warning: {it} is not a valid item to be pulled!`, "red");
       waitq(5);
     } else {
-      print(`Pulling 1 {it}!`, "teal");
-      cli_execute(`hagnk {it}`);
+      string ite = it.to_item().to_string();
+      print(`Pulling 1 {ite}!`, "teal");
+      cli_execute(`hagnk {ite}`);
     }
   }
 
@@ -496,6 +497,9 @@ if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombat
   }
 
   visit_url("adventure.php?snarfblat=528"); // Stops on holiday wanderers. TODO
+  if(current_round() == 1){
+    run_combat(freerun);
+  }
   run_choice(1); run_choice(2);
 }
 
@@ -1259,15 +1263,7 @@ if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && !have_
   cli_execute("pillkeeper familiar");
 }
 
-int max_familiar_weight;
-familiar max_famwt_familiar;
 
-foreach it in $familiars[]{
-  if(max_familiar_weight < familiar_weight(it) && it != $familiar[Homemade Robot]){
-    max_familiar_weight = familiar_weight(it);
-    max_famwt_familiar = it;
-  }
-}
 
 if(!item_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($familiar[Mini-Trainbot]) && have_skill($skill[Summon Clip Art]) && !have_familiar($familiar[Comma Chameleon])){
   clip_art($item[Box of Familiar Jacks]);
@@ -1279,9 +1275,21 @@ if(!item_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($f
 if(item_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($familiar[Mini-Trainbot])){
   use_familiar($familiar[Mini-Trainbot]);
   equip($item[overloaded Yule battery]);
+} else {
+  int max_familiar_weight;
+  familiar max_famwt_familiar;
+
+  foreach it in $familiars[]{
+    if(max_familiar_weight < familiar_weight(it) && it != $familiar[Homemade Robot]){
+      max_familiar_weight = familiar_weight(it);
+      max_famwt_familiar = it;
+    }
+  }
+
+  use_familiar(max_famwt_familiar);
 }
 
-use_familiar(max_famwt_familiar);
+
 
 // Property doesn't get updated on visit_url sometimes. This'll solve it, but may induce trouble later on =(
 if(get_property("commaFamiliar") == "Homemade Robot" || (have_familiar($familiar[Comma Chameleon]) && have_familiar($familiar[Homemade Robot]))){
