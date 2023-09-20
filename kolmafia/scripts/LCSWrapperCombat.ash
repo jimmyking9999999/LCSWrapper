@@ -1,7 +1,7 @@
 
 script "LCSWrapperCombat.ash";
 
-// lmao
+// LCSWrapperCombat - Uh, wanderer fix?
 string main(int round, monster encounter, string page) {
 
     string loc = my_location();
@@ -21,6 +21,9 @@ string main(int round, monster encounter, string page) {
 		case $monster[novio cad&aacute;ver]:
 		case $monster[padre cad&aacute;ver]:
 		case $monster[persona inocente cad&aacute;ver]:
+        case $monster[migratory pirate]:
+        case $monster[peripatetic pirate]:
+        case $monster[ambulatory pirate]:
 
         if(item_amount($item[cosmic bowling ball]).to_boolean() && my_level() > 14){
             return "skill bowl a curveball";
