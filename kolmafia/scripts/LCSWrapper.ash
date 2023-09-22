@@ -531,7 +531,7 @@ if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Powerlevelin
 
 if(!available_amount($item[Cincho de Mayo]).to_boolean() && !in_hardcore()){
 
-  if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 1) && !wish_effect("Different Way of Seeing Things")){
+  if((have_effect($effect[Different Way of Seeing Things]) == 0) && (pulls_remaining() > 0) && !wish_effect("Different Way of Seeing Things")){
 
     // Saves us a pull, which is more useful later!
 
@@ -559,7 +559,7 @@ refresh();
 
 // TODO: Most of these properties have been moved over to wish_effect, so this area needs some cleaning
 if(get_property("lcs_get_warbear_potion") == "Yes"){
-  if((get_property("_g9Effect").to_int() >= 200) && (have_effect($effect[Experimental Effect G-9]) == 0) && (pulls_remaining() > 1)){
+  if((get_property("_g9Effect").to_int() >= 200) && (have_effect($effect[Experimental Effect G-9]) == 0) && (pulls_remaining() > 0)){
     print("Getting experimental effect G-9...", "teal");
 
     if(!wish_effect("Experimental Effect G-9")){
@@ -567,7 +567,7 @@ if(get_property("lcs_get_warbear_potion") == "Yes"){
       use(1, $item[experimental serum G-9]);
     }
 
-  } else if((have_effect($effect[New and Improved]) == 0) && (get_property("_g9Effect").to_int() <= 200) && (pulls_remaining() > 1) && !wish_effect("New and Improved")){
+  } else if((have_effect($effect[New and Improved]) == 0) && (get_property("_g9Effect").to_int() <= 200) && (pulls_remaining() > 0) && !wish_effect("New and Improved")){
 
     pull_item($item[warbear rejuvenation potion]);
     use(1, $item[warbear rejuvenation potion]);
@@ -1479,7 +1479,7 @@ if (available_amount($item[beach comb]) > 0 && !have_effect($effect[Lack of body
 
 // TODO: Kung fu hustler lmao? +45 flat
 
-if(pulls_remaining() > 1 && my_class() == $class[Pastamancer] && storage_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
+if(pulls_remaining() > 0 && my_class() == $class[Pastamancer] && storage_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
   
   foreach i, o_name in get_custom_outfits(){
     if(o_name.to_lower_case() == "stick-knife"){
@@ -1547,6 +1547,7 @@ if((!get_property('moonTuned').to_boolean()) && (my_sign() == "Wallaby") && (ava
   foreach sl in $slots[acc1, acc2, acc3]{
     if(equipped_item(sl) == $item[Hewn moon-rune spoon]){
       equip(sl, $item[none]);
+      break;
     }
   }
 	visit_url("inv_use.php?whichitem=10254&doit=96&whichsign=8");
