@@ -1530,10 +1530,11 @@ if(pulls_remaining() > 0 && my_class() == $class[Pastamancer] && storage_amount(
         take_storage(1, $item[Stick-knife of Loathing]);
         use_skill(1, $skill[Bind Undead Elbow Macaroni]);
         outfit(o_name);
+        break;
     }
   }
   
-  if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean() && storage_amount($item[Stick-knife of Loathing]).to_boolean()){
+  if(storage_amount($item[Stick-knife of Loathing]).to_boolean() && available_amount($item[Stick-knife of Loathing]) == 0){
   
   foreach x, outfit_name in get_custom_outfits()
 
@@ -1545,10 +1546,11 @@ if(pulls_remaining() > 0 && my_class() == $class[Pastamancer] && storage_amount(
         take_storage(1, $item[Stick-knife of Loathing]);
         use_skill(1, $skill[Bind Undead Elbow Macaroni]);
         outfit(outfit_name);
+        break;
       } 
       
       if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-        print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!");
+        print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
       }
   }
 
