@@ -493,7 +493,51 @@ if(pulls_remaining() < 1 && !in_hardcore()){
 if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombatForcerActive").to_boolean() && (my_adventures() > 0)){
 
   if(holiday() != ""){
-    print(`It's {holiday()}! This may affect the script in unforseen ways.`);
+
+    switch(holiday().split_string(" \\/ ")[0]){
+      default:
+        print(`It's {holiday()}! This may affect the script in unforseen ways.`, "teal");
+      break;
+
+      case "Crimbo":
+        print("Happy Crimbo!", "teal");
+      break;
+
+      case "Festival of Jarlsberg":
+        print("Happy Festival of Jarlsberg! This script will be ever so slightly more profitable today~", "teal");
+      break;
+
+      case "Halloween":
+        print("Happy Halloween! This script won't Trick-or-Treat for you, unfortunately. Maybe next time, hehe.");
+
+      case "Dependence Day":
+        print("Happy Dependence Day! Let's buy a sparkler to celebrate!", "teal");
+        buy(1, $item[Sparkler]);
+        use(1, $item[Sparkler]);
+      break;
+
+      case "Generic Summer Holiday":
+        print("It's a generic summer holiday! Don't forget to take a dip in the fountain after this script finishes!", "teal");
+      break;
+
+      case "Yuletide":
+        print("Happy Yuletide! Don't forget to have some marshmallows around a campfire later!", "teal");
+      break;
+
+      case "Talk Like a Pirate Day":
+        print("It be talk like a pirate day, matey! Let's make the wanderer walk the plank, mhmm?", "teal");
+        visit_url("adventure.php?snarfblat=528");
+        run_combat(freerun);
+      break;
+
+      case "El Dia de Los Muertos Borrachos":
+      case "Feast of Boris":
+        print(`It's {holiday()}! Let's get rid of the starting wanderer now, and hope another one doesn't come~`, "teal");
+        
+        visit_url("adventure.php?snarfblat=528");
+        run_combat(freerun);
+      break;
+    }
   }
 
   visit_url("adventure.php?snarfblat=528"); // Stops on holiday wanderers. TODO
