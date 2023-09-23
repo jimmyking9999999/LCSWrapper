@@ -196,7 +196,7 @@ int get_all_freekills(){
 
 	total_freekills += available_amount($item[Groveling Gravel]).to_int();
 
-	if(have_skill($skill[Gingerbread Mob Hit]) && get_property("_gingerbreadMobHitUsed").to_boolean()){
+	if(have_skill($skill[Gingerbread Mob Hit]) && !get_property("_gingerbreadMobHitUsed").to_boolean()){
 		total_freekills++;
 	}
 
