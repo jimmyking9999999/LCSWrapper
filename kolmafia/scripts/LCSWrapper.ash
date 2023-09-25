@@ -1216,7 +1216,7 @@ if(!have_effect($effect[One Very Clear Eye]).to_boolean() && get_property("lcs_g
 }
 
 if(get_property("sourceTerminalEducateKnown") != ""){
-  get_effect($effect[items.enh]);
+  cli_execute("try; terminal enhance items.enh");
 }
 
 maximize("item, booze drop, -equip broken champagne bottle, switch left-hand man", false); 
