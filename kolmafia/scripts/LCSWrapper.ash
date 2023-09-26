@@ -2091,7 +2091,7 @@ switch(indv_tests[i]){
 
 cli_execute(`/whitelist {clan_at_start}`);
 
-if(get_property("csServicesPerformed").split_string(",").count() == 11){
+if(get_property("csServicesPerformed").split_string(",").count() == 11 && get_property("lcs_break_prism").to_lower_case() != "false"){
   donate_body_to_science();
 }
 
