@@ -1,6 +1,6 @@
 # kolmafia-LCSWrapper
 
-KoL Script to handle a softcore Community Service ascension as a mysticallity class. This script is medium shiny, with a few higher-end IOTMs supported! Contrary to the name, **this is not a wrapper, and will only complete the community service path and nothing else.**
+KoL Script to handle a softcore Community Service ascension as any class (Ideally SA > PM > SC > TT > AT > DB). This script is medium shiny, with a good chunk of higher-end IOTM support! Contrary to the name, **this is not a wrapper, and will only complete the community service path and nothing else.**
 
 ## Installation:
 
@@ -28,17 +28,23 @@ To run, simply type `lcswrapper` into the CGLI.
 
 *With enough leveling IotMs, this may be skipped
 
-Note that these are the script's hard requirements. If you only have said seven iotms, there will simply be too little turngen/turncut to complete the entire CS ascension. 
+Note that these are the script's hard requirements. If you only have said ~~seven~~ six iotms, there will simply be too little turngen/turncut to complete the entire CS ascension. 
 
 ## Other requirements:
 Your locket should have the following monsters in it: 
 
-[Red Skeleton](https://kol.coldfront.net/thekolwiki/index.php/Red_skeleton) - 100% weapon damage drop
-
-[Witchess Bishop](https://kol.coldfront.net/thekolwiki/index.php/Witchess_Bishop) - 50% item EPIC booze, gives extra turngen when needed
-
 [Ungulith](https://kol.coldfront.net/thekolwiki/index.php/Ungulith) - 200% weapon and spell damage. 
 
+### Ideally, have these too:
+
+[Red Skeleton](https://kol.coldfront.net/thekolwiki/index.php/Red_skeleton) - 100% weapon damage drop
+
+[Witchess Bishop](https://kol.coldfront.net/thekolwiki/index.php/Witchess_Bishop) - 50% item EPIC booze, gives extra turngen when needed*
+
+[Witchess Witch](https://kol.coldfront.net/thekolwiki/index.php/Witchess_Witch) - 100% spell damage and 50% mys*
+*Can be substituted with a witchess set, since I know all of you out there have hundreds of those.
+
+### What else?
 
 A fully suited out VIP clan - You can set this clan by typing `lcswrapper help` in the GCLI.
 If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/thekolwiki/index.php/Fourth_of_May_Cosplay_Saber) and an [Industrial Fire Extinguisher](https://kol.coldfront.net/thekolwiki/index.php/Packaged_industrial_fire_extinguisher), you'll need a Faxbot whitelisted into your clan, for a [Factory Worker](https://kol.coldfront.net/thekolwiki/index.php/Factory_worker_\(female\)) fax.
@@ -46,20 +52,22 @@ If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/the
 
 [Saucegeyser](https://kol.coldfront.net/thekolwiki/index.php/Saucegeyser), [Curse of Weaksauce](https://kol.coldfront.net/thekolwiki/index.php/Curse_of_Weaksauce), and [Itchy Curse Finger](https://kol.coldfront.net/thekolwiki/index.php/Itchy_Curse_Finger) permed. This trivializes most combat encounters we'll be facing, the latter two helping to regulate survivability and MP usage. If you have a saber and a fire extinguisher, you'll want [Double-Fisted Skull Smashing](https://kol.coldfront.net/thekolwiki/index.php/Double-Fisted_Skull_Smashing) permed as well. 
 
-A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in your inventory when you ascend - The 300% myst buff is invaluable to our powerleveling needs. The script will function without one if you're in a run, and will instead pull a pressurized potion instead.
+A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend)/[Deep Dish of Legend](https://kol.coldfront.net/thekolwiki/index.php/Deep_dish_of_legend)/[Pizza of Legend](https://kol.coldfront.net/thekolwiki/index.php/Pizza_of_Legend) in your inventory when you ascend, depending on class - The 300% mainstat buff is invaluable to our powerleveling needs. The script will function without one if you're in a run, and will instead pull a pressurized potion instead.
 
 
-If you're running the script as a Pastamancer and have a [Stick-Knife of Loathing](https://kol.coldfront.net/thekolwiki/index.php/Stick-Knife_of_Loathing) as well as [Bind Undead Elbow Macaroni](https://kol.coldfront.net/thekolwiki/index.php/Bind_Undead_Elbow_Macaroni) permed, an outfit of any name with a singular stick-knife in it will allow the stick-knife to be pulled for turnsave.
+If you're running the script as a Pastamancer and have a [Stick-Knife of Loathing](https://kol.coldfront.net/thekolwiki/index.php/Stick-Knife_of_Loathing) as well as [Bind Undead Elbow Macaroni](https://kol.coldfront.net/thekolwiki/index.php/Bind_Undead_Elbow_Macaroni) permed, an **outfit of any name with a singular stick-knife** in it will allow the stick-knife to be pulled for turnsave.
 
 ## Ascending into CS:
 
-This script only works for myst classes at the current moment, both softcore and hardcore. Most moon signs should be fine.
+This script works for any class, both softcore and hardcore, any moon sign.
 However, If you have a [rune-strewn spoon cocoon](https://kol.coldfront.net/thekolwiki/index.php/Rune-strewn_spoon_cocoon), ascending Wallaby is best as we'll be able to get cheap beach access for [baconstoned](https://kol.coldfront.net/thekolwiki/index.php/Baconstoned). If you prefer aftercore profits/turns, ascending Blender for an extra 5 adventures is also recommended.
 
-An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is required due to the much larger turngen, and will be used as the primary source of adventures in the run. All astral pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred, for an extra 1-2 turns saved.
-If you have a comma chameleon or choose to value the karma over the turns, you may run the script without a pet.
+An [astral six-pack](https://kol.coldfront.net/thekolwiki/index.php/Astral_pilsner) is required due to the much larger turngen, and will be used as the primary source of adventures in the run. All astral pets are fine, but an [astral pet sweater](https://kol.coldfront.net/thekolwiki/index.php/Astral_pet_sweater) is preferred, for an extra 1-2 turns saved. 
+If you have a comma chameleon or choose to value the karma over the turns, you may run the script without a pet!
 
-A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend) in Hagnk's, if you're ascending softcore. The script will continue without it, but you will lose the turngen and spell damage. If you have a [Cookbookbat](https://kol.coldfront.net/thekolwiki/index.php/Cookbookbat) and cannot cap the item test, you should have the [roasted vegetable of Jarlsberg](https://kol.coldfront.net/thekolwiki/index.php/Roasted_vegetable_of_Jarlsberg) recipe unlocked. 
+A [Calzone of Legend](https://kol.coldfront.net/thekolwiki/index.php/Calzone_of_Legend)/[Deep Dish of Legend](https://kol.coldfront.net/thekolwiki/index.php/Deep_dish_of_legend)/[Pizza of Legend](https://kol.coldfront.net/thekolwiki/index.php/Pizza_of_Legend) in Hagnk's. This can't be stressed enough. If you're ascending softcore without one, you will lose the turngen massive buff to powerleveling.
+
+If you have a [Cookbookbat](https://kol.coldfront.net/thekolwiki/index.php/Cookbookbat) and cannot cap the item test, you should have the [roasted vegetable of Jarlsberg](https://kol.coldfront.net/thekolwiki/index.php/Roasted_vegetable_of_Jarlsberg) recipe unlocked. 
 
 ## IoTM Support:
 
@@ -74,6 +82,9 @@ My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking#a4) includes m
 - Chateau Mantegna room key*
 - Tome of Clip Art
 - Apathargic Bandersnatch
+- LOV Tunnel
+- Deck of Every Card
+- Machine Elf
 
 \* Due to the introduction of the Cincho de Mayo, this IoTM is no longer fully used.
 
