@@ -1394,7 +1394,7 @@ if(have_familiar($familiar[Trick-or-Treating Tot]) && have_skill($skill[Map the 
   use_skill($skill[Map the Monsters]);
 
 
-  visit_url("adventure.php?snarfblat=716");
+  visit_url("adventure.php?snarfblat=138");
     if (handling_choice() && last_choice() == 1435){
       run_choice(1, false, `heyscriptswhatsupwinkwink={$monster[Amateur ninja].to_int()}`);
       run_combat("if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;");
