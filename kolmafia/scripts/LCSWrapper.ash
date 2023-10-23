@@ -678,26 +678,6 @@ if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Powerlevelin
   august_scepter(13);
 }
 
-if(!available_amount($item[Cincho de Mayo]).to_boolean() && !in_hardcore()){
-
-  if(!have_effect($effect[Different Way of Seeing Things]).to_boolean() && pulls_remaining() > 0 && !wish_effect("Different Way of Seeing Things")){
-
-    // Saves us a pull, which is more useful later!
-
-    if(mall_price($item[Non-Euclidean angle]) > (50000 + 1.88 * get_property("valueOfAdventure").to_float())){
-      print("Pulling a wish, as the angle is worth more ...", "teal");
-
-      pull_item($item[Pocket Wish]);
-      cli_execute("genie effect Different Way of Seeing Things");
-          
-    } else { 
-      pull_item($item[non-Euclidean angle]);
-      use(1, $item[non-Euclidean angle]);
-    }
-  }
-
-}
-
 if(get_property("tomeSummons") == "0" && !have_effect($effect[Purity of Spirit]).to_boolean() && !get_property("lcs_skip_filtered_water").to_boolean()){
   if(clip_art($item[cold-filtered water])){
     use(1, $item[cold-filtered water]);
@@ -1504,8 +1484,10 @@ if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && !have_
 
 
 
-if(!item_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($familiar[Mini-Trainbot]) && have_skill($skill[Summon Clip Art]) && !have_familiar($familiar[Comma Chameleon])){
-  clip_art($item[Box of Familiar Jacks]);
+if(!available_amount($item[overloaded Yule battery]).to_boolean() && have_familiar($familiar[Mini-Trainbot]) && have_skill($skill[Summon Clip Art]) && !have_familiar($familiar[Comma Chameleon])){
+  if(!item_amount($item[Box of Familiar Jacks]).to_boolean()){
+    clip_art($item[Box of Familiar Jacks]);
+  }
   use_familiar($familiar[Mini-Trainbot]);
   use(1, $item[Box of Familiar Jacks]);
 }
@@ -1691,7 +1673,13 @@ if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of t
 	get_effect($effect[Elemental saucesphere]);
 	get_effect($effect[Astral shell]);
 	maximize("1000 spooky res, hp, mp, switch left-hand man", false);
-  cli_execute("hottub");
+  
+  if(get_property("_hotTubSoaks").to_int() < 5){
+    cli_execute("hottub");
+  } else if(have_skill($skill[Cannelloni Cocoon])){
+    use_skill(ceil((my_maxhp() - my_hp()) / 1000));
+  }
+
   use_skill(1, $skill[Deep Dark Visions]);
 }
 
@@ -1710,11 +1698,18 @@ if (available_amount($item[beach comb]) > 0 && !have_effect($effect[Lack of body
 
 // TODO: Kung fu hustler lmao? +45 flat
 
+
+
 if(available_amount($item[Stick-knife of Loathing]) == 0 && pulls_remaining() > 0 && storage_amount($item[Stick-knife of Loathing]).to_boolean() && (my_basestat($stat[Muscle]) >= 150 || (my_class() == $class[Pastamancer] && have_skill($skill[Bind Undead Elbow Macaroni]))) ){
   
+  if(my_basestat($stat[Muscle]) >= 150){
+    take_storage(1, $item[Stick-knife of Loathing]);
+    equip($item[Stick-knife of Loathing]);
+  }
+
   foreach x, outfit_name in get_custom_outfits(){
 
-    if(outfit_pieces(outfit_name).count() == 1){
+    if(outfit_pieces(outfit_name).count() == 1 && !have_equipped($item[Stick-knife of Loathing])){
 
       if(outfit_pieces(outfit_name)[0] == $item[Stick-knife of Loathing]){
         print(`Outfit '{outfit_name}' has a stick-knife in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
@@ -1949,12 +1944,6 @@ void donate_body_to_science(){
     cli_execute(`{(booze_casts) == 0 ? "" : `cast {booze_casts} sweat out some booze`}`);
   }
 
-  if(have_skill($skill[Lock Picking]).to_boolean()){
-    use_skill($skill[Lock Picking]); 
-    run_choice(1);
-  }
-
-  
   cli_execute("breakfast");
 
   if(get_property("autumnatonUpgrades") == "" && item_amount($item[autumn-aton]).to_boolean()){
@@ -2050,7 +2039,7 @@ try {
     if(get_property("lcs_start") == ''){ // No property
       print("Hello! Thanks for running this script for the first time!");
       print("Since this is your first and only time you'll see this screen, we've set a couple of settings for you.");
-      print("If you ever want to adjust these changes, please run the help command!");
+      print("If you ever want to adjust these changes, please run the `setup` command!");
 
       newline();
 
