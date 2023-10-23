@@ -10,11 +10,29 @@ script "LCSWrapperResources.ash";
 --bottledgenie
 --cargopants
 --augustscepter
+--lovetunnel
+--eagle
+--camel
+--melf
+--witchess
 
 Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
 */
 
-/* Days since last effect system rework: >80 */
+/* Days since last effect system rework: >120 */
+
+location scaler_zone = 
+  get_property("neverendingPartyAlways").to_boolean() ? $location[The Neverending Party]: 
+  get_property("stenchAirportAlways").to_boolean() ? $location[Uncle Gator's Country Fun-Time Liquid Waste Sluice]:
+  get_property("spookyAirportAlways").to_boolean() ? $location[The Deep Dark Jungle]:
+  get_property("hotAirportAlways").to_boolean() ? $location[The SMOOCH Army HQ]:
+  get_property("coldAirportAlways").to_boolean() ? $location[VYKEA]:
+  get_property("sleazeAirportAlways").to_boolean() ? $location[Sloppy Seconds Diner]:
+  $location[Uncle Gator's Country Fun-Time Liquid Waste Sluice];
+
+
+// Freerun macro to call back on in other macros
+string freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill 7301; skill 7301; endif";
 
 void refresh() {
   visit_url("main.php");
@@ -46,12 +64,10 @@ boolean get_effect(effect effe){
 		spl = default_method.split_string(" ");
 
 		for i from 2 to spl.count() - 1{
-			temp += i == 2?spl[i]:` {spl[i]}`;
+			temp += i == 2 ? spl[i] : ` {spl[i]}`;
     }
     
 		ski = temp.to_skill();
-
-
 
 		if (!have_skill(ski)) {
 			print(`We can't get effect {effe}, as we lack {ski}`);
@@ -81,6 +97,9 @@ boolean get_effect(effect effe){
 
 	}
 	else {
+		if(default_method.contains_text('cargo')){
+			return false;
+		}
 		cli_execute(default_method);
     }
 
@@ -108,7 +127,7 @@ void meteor_shower(){
   cli_execute("checkpoint");
   maximize("mainstat, -100 damage aura, equip fourth of may cosplay saber, -equip i voted, -equip Kramco Sausage-o-Matic", false);
 
-  if(have_effect($effect[Feeling Lost]).to_boolean()){ // Tries to fight a barrel mimic if you have feeling lost 
+  if(have_effect($effect[Feeling Lost]).to_boolean()){ // Tries to fight a barrel mimic if you have feeling lost TODO: Scepter/witcess
       visit_url("barrel.php");
       foreach slotnum in $strings[00, 01, 02, 10, 11, 12, 20, 21, 22]{
         if(!have_effect($effect[Meteor Showered]).to_boolean()){
@@ -202,11 +221,7 @@ int get_all_freekills(){
 
 	total_freekills += get_property("shockingLickCharges").to_int();
 
-	if(total_freekills == 0){
-		total_freekills++;
-	}
-
-	return total_freekills;
+	return (have_familiar($familiar[Trick-or-Treating Tot]) && have_skill($skill[Map the monsters])) ? total_freekills : total_freekills - 1;
 }
 
 int get_all_freeruns(){
@@ -336,14 +351,16 @@ boolean cargo_effect(effect eff){
 
 //--augustscepter
 boolean august_scepter(int day){
-	if(!available_amount($item[august scepter]).to_boolean()){
+
+	if(!available_amount($item[august scepter]).to_boolean() || get_property("_augSkillsCast") == "5"){
 		return false;
 	}
 
-	visit_url(`runskillz.php?action=Skillz&whichskill={7451 + day}&targetplayer=${my_id()}&pwd=&quantity=1`);
-	// TODO fix this when mafia has support lol
+	if(get_property(`_aug{day}Cast`).to_boolean()){
+		return false;
+	}
 
-	return true;
+	return use_skill(1, (7451 + day).to_skill());
 }
 
 // -catalog
@@ -439,24 +456,133 @@ boolean eagle_pledge(string loc){
 	return have_effect($effect[Citizen of a Zone]).to_boolean() && visit_url(`desc_effect.php?whicheffect={$effect[Citizen of a Zone].descid}`).to_lower_case().contains_text(loc.to_lower_case());
 }
 
-string is_an(string it){
-  if($strings[a, e, i, o, u] contains substring(it, 0, 1)){
-    return "n";
-  }
+//--camel
+boolean camel_spit(){
+	if(have_effect($effect[Spit Upon]).to_boolean()){
+		return true;
+	}
 
-  return "";
+	if((have_familiar($familiar[Melodramedary])) && (get_property("camelSpit") == 100) && !have_effect($effect[Spit upon]).to_boolean()){
+
+		print("Getting spit on!", "teal");
+		use_familiar($familiar[Melodramedary]);
+
+		adv1(scaler_zone, -1, `skill 7340; endif; if hasskill bowl a curveball; skill bowl a curveball; endif; {freerun}`);
+	}
+
+	return have_effect($effect[Spit Upon]).to_boolean();
+}
+
+
+//--melf
+boolean melf_buff(){
+	if(get_property("lcs_melf_slime_clan") == "" || !have_familiar($familiar[Machine Elf])){
+		return false;
+	}
+
+	if(have_effect($effect[Inner Elf]).to_boolean()){
+		return true;
+	}
+
+	print("Acquring your inner elf buff!", "teal");
+	use_familiar($familiar[Machine Elf]);
+
+	string prev_clan = get_clan_name();
+
+	cli_execute(`try; /whitelist {get_property("lcs_melf_slime_clan")}`);
+
+	if(prev_clan == get_clan_name()){
+		print("Something went wrong with whitelisting!", "red");
+		waitq(5);
+
+		return false;
+	}
+	
+	if(!visit_url("adventure.php?snarfblat=203").contains_text("Showdown")){
+		abort("Uh-oh! Your slime clan isn't at mother slime!");
+	} else {
+		if(run_choice(1).to_string().contains_text("You can't pick a fight with Mother Slime right now")){
+			abort("Oh, someone else is fighting mother slime. Haha.");
+		}
+	}
+
+	run_combat("if hasskill bowl a curveball; skill bowl a curveball; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill KGB tranquilizer dart; skill KGB tranquilizer dart; endif; abort \"No banish to use!\"");
+
+	cli_execute(`/whitelist {prev_clan}`);
+
+	return have_effect($effect[Inner Elf]).to_boolean();
+}
+
+
+//--lovetunnel
+void love_tunnel(){
+	if(!visit_url("place.php?whichplace=town_wrong").to_lower_case().contains_text("tunnel of") || item_amount($item[LOV Extraterrestrial Chocolate]).to_boolean()){
+       	return;
+    }
+
+    /* TODO Check item%? Remove ML?*/
+	foreach it in $items[June Cleaver, Fourth Of May Cosplay Saber]{
+		if(item_amount(it).to_boolean()){
+			equip(it);
+			break;
+		}
+	}
+
+    string love_combat = "if monsterid 2009; attack; repeat; endif; if monsterid 2010; if hasskill toynado; skill toynado; repeat !times 3; endif; skill saucegeyser; repeat; endif; if monsterid 2011; attack; repeat; endif; abort;";
+    
+    
+    int[int] loveNCs = { 1, 1, my_primestat() == $stat[Mysticality] ? 2 : my_primestat() == $stat[Muscle] ? 1 : 3 , 1, 2, 1, 3};
+
+    foreach it in loveNCs {
+        int temp = get_property(`choiceAdventure{1222 + it}`).to_int();
+        set_property(`choiceAdventure{1222 + it}`, loveNCs[it].to_string());
+        loveNCs[it] = temp;
+    }
+
+    while(!get_property("_loveTunnelUsed").to_boolean() || !item_amount($item[LOV Extraterrestrial Chocolate]).to_boolean()){ 
+        adv1($location[the Tunnel of L.O.V.E.], -1, love_combat);
+        
+    }
+
+    foreach it, x in loveNCs {
+        set_property(`choiceAdventure{1467 + it}`, x.to_string());
+    }
+
+}
+
+//--witchess
+boolean witchess_fight(monster piece, string combat_filter){
+
+	if(!get_campground()[$item[Witchess Set]].to_boolean() || get_property("_witchessFights").to_int() >= 5){
+		return false;
+	}
+
+	visit_url("campground.php?action=witchess");
+	run_choice(1);
+
+	visit_url(`choice.php?option=1&pwd={my_hash()}&whichchoice=1182&piece={piece.to_int()}`, false, false);
+	run_combat(combat_filter);
+
+	return true;
+}
+
+
+/// /// /// /// ///
+string is_an(string it){
+    return $strings[a, e, i, o, u] contains substring(it, 0, 1) ? "n" : "";
 }
 
 boolean pull_item(string ite){
 
 	item it = ite.to_item();
-	  if(available_amount(it).to_boolean()){
-    return true;
-  }
 
-  if(pulls_remaining() == 0){
-	return false;
-  }
+	if(available_amount(it).to_boolean()){
+		return true;
+	}
+
+	if(pulls_remaining() == 0){
+		return false;
+	}
 
   print(`Pulling a{is_an(it.to_string())} {it}!`, "teal");
 
@@ -465,6 +591,8 @@ boolean pull_item(string ite){
 	}
 
 	take_storage(1,it);
+
+	// weird case of yeg's motel toothbrush not working here? 
 
   return available_amount(it).to_boolean();
 }
@@ -488,6 +616,27 @@ boolean pull_item(item it){
 
   return available_amount(it).to_boolean();
 }
+
+void equalize_stats(){
+
+
+	switch(my_primestat()){
+		case $stat[Mysticality]:
+			get_effect($effect[Expert Oiliness]);
+		break;
+
+		case $stat[Moxie]: // TODO Fax this
+			get_effect($effect[Slippery Oiliness]);
+
+		break;
+		case $stat[Muscle]:
+			get_effect($effect[Stabilizing Oiliness]);
+
+		break;
+	}
+}
+
+
 
 string test_number_to_name(int testnum){
 	switch(testnum){
@@ -617,7 +766,7 @@ boolean synthesis_effect(effect eff){
 
 boolean use_current_best_fam(){
 	// CS Optimal familiars: CBB (6.6 turns on item%) -> Camel (4 turns on weapon damage, 2 on spell damage) -> Shortest-Order Cook (2 turns on familiar weight) -> Garbage Fire (1-2 turns on familiar weight) -> Sombrero (Stats)
-	if(have_familiar($familiar[Cookbookbat]) && !get_property("lcs_skip_cbb").to_boolean() && item_amount($item[Vegetable of Jarlsberg]) < 2){
+	if((my_primestat() == $stat[Mysticality] || my_class() == $class[Accordion Thief]) && have_familiar($familiar[Cookbookbat]) && get_property("lcs_get_cbb_vegetable") != "No" && item_amount($item[Vegetable of Jarlsberg]) < 2){
 		use_familiar($familiar[Cookbookbat]);
 		return true;
 	}
@@ -640,8 +789,13 @@ boolean use_current_best_fam(){
 		return true;
 	}
 
-	if(have_familiar($familiar[Artistic Goth Kid])){
+	if(have_familiar($familiar[Artistic Goth Kid])){ // Free occasional wanderers, which probably won't screw up the script
 		use_familiar($familiar[Artistic Goth Kid]);
+		return true;
+	}
+
+	if(have_familiar($familiar[Jill-of-All-Trades])){
+		use_familiar($familiar[Jill-of-All-Trades]);
 		return true;
 	}
 
@@ -658,9 +812,15 @@ boolean use_current_best_fam(){
 // Todo: Roaring hearth?
 boolean equip_stick_knife(){
 
-	if(!available_amount($item[Stick-knife of loathing]).to_boolean() || (my_class() != $class[Pastamancer] && my_basestat($stat[Muscle]) < 150)){
+	if(!available_amount($item[Stick-knife of loathing]).to_boolean() || (my_basestat($stat[Muscle]) < 150 && my_class() != $class[Pastamancer])){
 		return false;
 	}
+
+	if(my_basestat($stat[Muscle]) >= 150){
+		equip($item[Stick-knife of Loathing]);
+		return have_equipped($item[Stick-knife of Loathing]);
+	}
+
 
 	use_skill(1, $skill[Bind Undead Elbow Macaroni]);
 
@@ -688,27 +848,39 @@ boolean equip_stick_knife(){
 		}
 	}
 
-	return equipped_amount($item[Stick-knife of Loathing]).to_boolean();
+	return have_equipped($item[Stick-knife of Loathing]);
 }
 
+
+record reffect {
+	int price;
+	string item_name;
+	effect eff;
+	modifier mod;
+	boolean function;
+	boolean tried;
+
+	/* Use numeric_modifier((test_eyelashes.eff, test_eyelashes.mod) for potency */
+
+};
+
+
+// reffect test_eyelashes = new rEffect(100, "Glittery Mascara", $effect[Glittering Eyelashes], $modifier[Mysticality Percent], false, false);
 
 
 
 
 effect eff;
-boolean no_more_buffs = false;
+
 /* Effects go here, numbered by priority */
 string [int] powerlevel_effects = {
-    "Glittering Eyelashes",
-    "Inscrutable Gaze",
     "Ode to Booze",
-    "Saucemastery",
     "Big ",
     "Carol of the Thrills",
-    "Spirit of Cayenne",
     "Ur-Kel's Aria of Annoyance",
     "Shanty of Superiority",
     "Leash of Linguini",
+	"Confidence of the Votive",
     "Empathy",
     "Pride of the Puffin",
     "Feeling Nervous",
@@ -716,16 +888,43 @@ string [int] powerlevel_effects = {
     "Feeling Peaceful",
     "Blood Bubble",
     "Song of Bravado",
-    "Disdain of she-who-was",
     "Blood Bond",
     "Bendin' Hell",
     "Triple-Sized",
 	"Total Protonic Reversal",
 	"Drescher's annoying noise",
 	"Astral Shell",
-	"Pasta oneness",
-    "END ",
 };
+
+
+string [int] powerlevel_mys_effects = {
+    "Glittering Eyelashes",
+    "Inscrutable Gaze",
+    "Saucemastery",
+    "Spirit of Cayenne",
+    "Disdain of she-who-was",
+	"Mystically Oiled",
+};
+
+string [int] powerlevel_mus_effects = {
+	"Seal Clubbing Frenzy",
+	"Patience of the Tortoise",
+	"Disdain of the War Snapper",
+	"Go Get 'Em, Tiger!",
+	"Carol of the Bulls",
+	"Phorcefullness",
+};
+
+string [int] powerlevel_mox_effects = {
+	
+};
+
+//
+
+
+
+
+
 
 string [int] mys_effects = {
 	"Glittering Eyelashes",
@@ -785,6 +984,7 @@ string [int] item_effects = {
 	"FUNC catalog / boots", // 1890
 	"Ermine Eyes", // 2000
 	"FUNC catalog / rhymes", // 3150
+	"Fortune of the Wheel", // 3200
 	"Wizard Sight", // 333 + 2 * VoA
 	"FUNC wish_effect / Infernal Thirst", // 3750
 	"Empathy",
@@ -795,6 +995,8 @@ string [int] item_effects = {
 	"Lantern-Charged", // 13750	
 	"END ",
 }; 
+
+
 
 string [int] hot_res_effects = {
     "Elemental Saucesphere", // 0
@@ -832,6 +1034,7 @@ string [int] non_combat_effects = {
     "Feeling Sneaky", // 83
     "A Rose by any Other Material", // 1377
     "Throwing Some Shade", // 1500
+	"Shortly Buttered",
 	"Invisible Avatar", // Marginal embezzler turn - 6 * VoA
 	"Billiards Belligerence", // 8630
 	"Loyal as a Rock", // 25965
