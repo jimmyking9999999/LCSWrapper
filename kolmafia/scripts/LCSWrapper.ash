@@ -729,26 +729,17 @@ if(my_id() == 3272033){
 }
 
 
-if(in_hardcore()){
-  if(get_property("_g9Effect").to_int() >= 200){
-    wish_effect("Experimental Effect G-9");
-  } else { 
-    wish_effect("New and Improved");
-  }
-
-  foreach eff in $strings[A Contender, Different Way of Seeing Things]{
-    wish_effect(eff);
-  }
-}
-
-
 if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && have_familiar($familiar[Comma Chameleon]) && !have_effect($effect[Hulkien]).to_boolean()){
   cli_execute("pillkeeper stat");
 }
 
-
 if(!have_effect($effect[A Contender]).to_boolean() && get_property("lcs_get_a_contender") == "Yes"){
   wish_effect("A contender");
+}
+
+effect mainstat_experience_effect = my_primestat() == $stat[Mysticality] ? $effect[Different Way Of Seeing Things] : my_primestat() == $stat[Moxie] ? $effect[Thou Shant Not Sing] : $effect[HGH-charged];
+if(get_property("lcs_wish_mainstat_percent") == "Yes" && !have_effect(mainstat_experience_effect).to_boolean()){
+  wish_effect(mainstat_experience_effect);
 }
 
 if(!get_property('_clanFortuneBuffUsed').to_boolean() && get_property("lcs_vip_fortune_buff") != "None"){
@@ -823,9 +814,9 @@ if((available_amount($item[Bastille Battalion control rig]).to_boolean()) && (!g
   cli_execute("bastille mainstat brutalist");
 }
 
-string no_space_mainstat_pizza = replace_all(create_matcher("\\ ", mainstat_pizza.to_string()), "");
+string mainstat_pizza_eaten = (mainstat_pizza == $item[Deep Dish of Legend]) ? "deepDishOfLegendEaten" : (mainstat_pizza == $item[Calzone Of Legend]) ? "calzoneOfLegendEaten" : "pizzaOfLegendEaten";
 
-if(storage_amount(mainstat_pizza).to_int() == 0 && !get_property(`{no_space_mainstat_pizza}Eaten`).to_boolean() && !in_hardcore()){
+if(storage_amount(mainstat_pizza).to_int() == 0 && !get_property(mainstat_pizza_eaten).to_boolean() && !in_hardcore()){
   print(`You don't have a {mainstat_pizza} in your Hagnk's. That's... not good.`, "red");
   print("We're going to attempt to continue, after 10 seconds. This may fail for a variety of reasons.", "red");
   waitq(10);
@@ -846,7 +837,7 @@ if(storage_amount(mainstat_pizza).to_int() == 0 && !get_property(`{no_space_main
     break;
   }
 
-} else if(!get_property(`{no_space_mainstat_pizza}Eaten`).to_boolean() && !in_hardcore()){
+} else if(!get_property(mainstat_pizza_eaten).to_boolean() && !in_hardcore()){
 
   if(have_effect($effect[Ready to eat]) == 0){
     print("Huh? We don't have ready to eat?", "red");
@@ -1858,7 +1849,8 @@ if(my_adventures() < 2){
   gain_adventures(1);
 }
 
-if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) && (have_effect($effect[Spit upon]) != 1)){
+//TODO iterate over all of these and not use simmer if the sum of all of them is > 100% spell damage
+if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) && have_effect($effect[Spit upon]) != 1 && get_property("lcs_use_simmer") != "No"){
   use_skill(1, $skill[Simmer]);
 }
 
@@ -2017,7 +2009,6 @@ string[string] script_preferences = {
 };
 
 try {
-
   string[int] options = settings.join_strings(" ").split_string(" ");
 
   boolean[string] available_choices;
@@ -2353,14 +2344,14 @@ try {
     print(x.to_item(), "teal");
   }
   newline();
-  print(`Organ use: {my_fullness()} fullness, {my_inebriety()} drunkeness{available_amount($item[Designer Sweatpants]).to_boolean() ?  " (" + get_property("_sweatOutSomeBoozeUsed").to_string() + "/3 sweat out some booze used)" : ""}, {my_spleen_use()} spleen`, "lime");
+  print(`Organ use: {my_fullness()} fullness, {my_inebriety()} drunkeness{available_amount($item[Designer Sweatpants]).to_boolean() ?  " (" + get_property("_sweatOutSomeBoozeUsed") + "/3 sweat out some booze used)" : ""}, {my_spleen_use()} spleen`, "lime");
   newline();
   print("Summary:", "green");
   summary(false);
 }
 
 finally {
-  print(get_property("csServicesPerformed").split_string(",").count() == 11 ? "" : "Early abort! Uh-oh.", "red");
+  print(get_property("csServicesPerformed").split_string(",").count() == 11 || !prefs_changed ? "" : "Early abort! Uh-oh.", "red");
 
   if(prefs_changed) {
     cli_execute(`/whitelist {clan_at_start}`);  
