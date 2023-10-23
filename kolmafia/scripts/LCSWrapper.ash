@@ -1677,7 +1677,7 @@ if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of t
   if(get_property("_hotTubSoaks").to_int() < 5){
     cli_execute("hottub");
   } else if(have_skill($skill[Cannelloni Cocoon])){
-    use_skill(ceil((my_maxhp() - my_hp()) / 1000));
+    use_skill(ceil((my_maxhp() - my_hp()) / 1000), $skill[Cannelloni Cocoon]);
   }
 
   use_skill(1, $skill[Deep Dark Visions]);
