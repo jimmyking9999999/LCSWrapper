@@ -2228,7 +2228,7 @@ try {
 
   if(get_property("lcs_test_order_override") == ""){
 
-    foreach service, test_name in default_cs_test_order {
+    foreach test_name, service in default_cs_test_order {
       if (!contains_text(get_property("csServicesPerformed"), service)){ 
         test(test_name);
       }
