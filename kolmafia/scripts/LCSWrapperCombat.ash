@@ -10,8 +10,6 @@ string main(int round, monster encounter, string page) {
 
         case $monster[novelty tropical skeleton]:
             return "skill spit jurassic acid";
-        break;
-
 
         case $monster[candied yam golem]:
 		case $monster[malevolent tofurkey]:
@@ -42,12 +40,16 @@ string main(int round, monster encounter, string page) {
         }
 
         abort("Encountered a holiday monster with no freeruns left.");
-
-
-
-
         break;
 
+
+        case $monster[Witchess Knight]:
+        case $monster[Witchess Bishop]:
+            return "attack; repeat";
+
+
+
+            
 
         default:
             abort("We encoutered a monster not supported, whoops!");
