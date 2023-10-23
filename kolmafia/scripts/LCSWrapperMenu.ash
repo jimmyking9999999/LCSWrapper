@@ -26,6 +26,7 @@ string [int] preferences = {
     "lcs_speakeasy_drinks | Would you like the script to drink anything from the speakeasy? | None/Bee's Knees Only/Sockdollager Only/Hot Socks Only/Bee's Knees and Sockdollager/Bee's Knees and Hot Socks/Sockdollager and Hot Socks/Bee's Knees, Sockdollager, and Hot Socks",
     "lcs_get_warbear_potion | Would you like the script to obtain (wish or pull) new and improved or experimental G-9 before powerleveling? | Yes/No",
     "lcs_get_a_contender | What about the 'A Contender' buff? | Yes/No",
+    `lcs_wish_mainstat_percent | Would you like to wish for a 50 {my_primestat()} experience percent buff? | Yes/No`,
     "lcs_vip_fortune_buff | Which fortune teller buff would you like to obtain? | Mys/Mus/Mox/Familiar/Item/None",
     "lcs_use_nellyville | Would you like the script to use a Charter: Nellyville for extra help during powerleveling? | Yes/No | item_amount($item[2002 Mr. Store Catalog])",
     "lcs_alloted_backup_uses | How many backup camera uses would you like to use for powerleveling? | USER | available_amount($item[Backup Camera])",
@@ -176,7 +177,7 @@ string flavour_text(string stage_name){
 }
 
 void summary(boolean revisit){
-    // TODO: Fix this. Maybe add preferences with _ in order for them to be removed at the end of the day?
+    // TODO: Fix this. Maybe add preferences with _ in order for     them to be removed at the end of the day?
     boolean colourdown; int colour = 9264;  
 
     int prev_time = get_property("lcs_time_at_start").to_int();
@@ -197,9 +198,12 @@ void summary(boolean revisit){
     int total_adventures = get_property("post_advs_powerlevel").to_int();
 
     foreach num, test in indv_tests {
-        if(colourdown){ colour -= 88; } else { colour += 88;} if(colour == 9704){ colourdown = true; }
+        colour += colourdown ? 88 : -88; 
+        if(colour == 9704) { 
+            colourdown = true; 
+        }
     
-        // Turns spaces into underscores
+        /* Turns spaces into underscores */
         matcher space = create_matcher(" ", test);
         string testname = replace_first(space, "_");
         /* indiv_test_info : [0] => pre test turn amount. [1] => pre test time. [2] => post test turn amount. [3] => post test time. */
