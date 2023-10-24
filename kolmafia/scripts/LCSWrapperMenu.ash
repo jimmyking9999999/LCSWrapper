@@ -199,7 +199,9 @@ void summary(boolean revisit){
     int total_adventures = get_property("post_advs_powerlevel").to_int();
 
     foreach num, test in indv_tests {
-        colour += colourdown ? 88 : -88; 
+
+        colour = colourdown ? colour - 88 : colour + 88; 
+
         if(colour == 9704) { 
             colourdown = true; 
         }
