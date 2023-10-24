@@ -38,7 +38,7 @@ string [int] preferences = {
     "lcs_prof_lecture | Do you want to use all your pocket professor lectures on sausage goblins? | Yes/No | have_familiar($familiar[Pocket Professor])",
     "lcs_get_cbb_vegetable | Would you like to spend 11 familiar turns with the Cookbookbat for a Vegetable of Jarlsberg? (Myst class exclusive) | Yes/No | have_familiar($familiar[Cookbookbat])",
     "lcs_skip_filtered_water | Would you like to skip creating a cold-filtered water? | Yes/No | have_skill($skill[Summon Clip Art])",
-    "lcs_deck_usage | What do you want to cheat with your deck? | Green Mana/Rope/Mickey Mantle/Green Mana + Rope/Mickey Mantle + Rope/Mickey Mantle + Green Mana | available_amount($item[Deck of Every Card])",
+    "lcs_deck_usage | What do you want to cheat with your deck? | Green Mana/Rope/Mickey Mantle/Green Mana + Rope/Mickey Mantle + Rope/Mickey Mantle + Green Mana/None | available_amount($item[Deck of Every Card])",
 
     "lcs_skip_borrowed_time | Would you like to have the script skip pulling/creating borrowed time? (Will pull your mainstat CBB legend dish or make a perfect drink!) Only enable this if you have >4 freeruns! | Yes/No",
     
@@ -53,6 +53,7 @@ string [int] manual_preferences = {
     "lcs_autopull_at_start | Names of items to be automatically pulled at the start, seperated by comma",
     "lcs_break_prism | Avoids breaking the prism when set to 'false', for PVP or trophy reasons",
     "lcs_wish_limit | Wish limit",
+    "lcs_test_order_override | Test order override, seperated by comma. E.g 'mys, mox, mus, hp, hot res, non combat, item, fam weight, weapon damage, spell damage'", 
     
 };
 
