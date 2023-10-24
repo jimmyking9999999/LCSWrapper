@@ -678,7 +678,7 @@ if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Powerlevelin
   august_scepter(13);
 }
 
-if(get_property("tomeSummons") == "0" && !have_effect($effect[Purity of Spirit]).to_boolean() && !get_property("lcs_skip_filtered_water").to_boolean()){
+if(get_property("tomeSummons") == "0" && !have_effect($effect[Purity of Spirit]).to_boolean() && get_property("lcs_skip_filtered_water") != "Yes"){
   if(clip_art($item[cold-filtered water])){
     use(1, $item[cold-filtered water]);
   }
