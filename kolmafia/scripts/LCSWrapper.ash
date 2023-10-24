@@ -2202,24 +2202,24 @@ try {
     print("We took "+((get_property("post_time_powerlevel").to_int() - get_property("post_time_wire").to_int())/1000)+" seconds and "+(get_property("post_advs_powerlevel").to_int() - get_property("post_advs_wire").to_int())+" adventure(s) powerleveling.", "lime");
   }
 
-  string[string] default_cs_test_order = {
-      "mys": "Build Playground Mazes",
-      "mox": "Feed Conspirators",
-      "mus": "Feed The Children",
-      "hp": "Donate Blood",
-      "item": "Make Margaritas",
-      "hot_res": "Clean Steam Tunnels",
-      "fam_weight": "Breed More Collies",
-      "non_combat": "Be a Living Statue",
-      "weapon_damage": "Reduce Gazelle Population",
-      "spell_damage": "Make Sausage"
+  string[int] default_cs_test_order = {
+      "mys / Build Playground Mazes",
+      "mox / Feed Conspirators",
+      "mus / Feed The Children",
+      "hp / Donate Blood",
+      "item / Make Margaritas",
+      "hot_res / Clean Steam Tunnels",
+      "fam_weight / Breed More Collies",
+      "non_combat / Be a Living Statue",
+      "weapon_damage / Reduce Gazelle Population",
+      "spell_damage / Make Sausage"
     };
 
   if(get_property("lcs_test_order_override") == ""){
 
-    foreach test_name, service in default_cs_test_order {
-      if (!contains_text(get_property("csServicesPerformed"), service)){ 
-        test(test_name);
+    foreach num, cs_test in default_cs_test_order {
+      if (!contains_text(get_property("csServicesPerformed"), cs_test.split_string("\\ \\/\\ ")[1])){ 
+        test(cs_test.split_string("\\ \\/\\ ")[0]);
       }
     }
     
