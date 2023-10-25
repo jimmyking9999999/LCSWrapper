@@ -46,7 +46,8 @@ Your locket should have the following monsters in it:
 
 ### What else?
 
-A fully suited out VIP clan - You can set this clan by typing `lcswrapper help` in the GCLI.
+A fully suited out VIP clan - You can set this clan by typing `lcswrapper setup` in the GCLI.
+
 If you do not have a [Fourth of May Cosplay Saber](https://kol.coldfront.net/thekolwiki/index.php/Fourth_of_May_Cosplay_Saber) and an [Industrial Fire Extinguisher](https://kol.coldfront.net/thekolwiki/index.php/Packaged_industrial_fire_extinguisher), you'll need a Faxbot whitelisted into your clan, for a [Factory Worker](https://kol.coldfront.net/thekolwiki/index.php/Factory_worker_\(female\)) fax.
 
 
@@ -90,7 +91,14 @@ My [snapshot](https://api.aventuristo.net/av-snapshot?u=Jimmyking#a4) includes m
 
 ## Additional Information:
 
-When first starting the script, you will be prompted to run the `help` option in the popup. This will prompt you to set certain settings within the script, allowing for flexibility. 
+When first starting the script, you will be prompted to run the `help` option in the popup. This will prompt you to set certain settings within the script, allowing for flexibility:
+
+![image](https://github.com/jimmyking9999999/LCSWrapper/assets/20020902/386aa848-6b6a-49f4-8914-c80829fd735a)
+
+You will then be redirected to a page where you can personalize your script experience. Note: A popup screen will appear, allowing you to choose a selection for each of the choices if they are applicable to your account:
+
+![image](https://github.com/jimmyking9999999/LCSWrapper/assets/20020902/97e8411a-47ee-4085-ad6c-b88c20376709)
+
 
 In the menu, you will be asked for your minimum turncount for tests. It is a good idea to set everything to 1, and manually buff up what the script does not for your tests. This will fine tune your minimum turncount, so that you may optimize your CS loops. 
 
