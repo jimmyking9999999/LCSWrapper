@@ -667,7 +667,7 @@ if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombat
     }
   }
 
-  visit_url("adventure.php?snarfblat=528"); // Stops on holiday wanderers. TODO
+  visit_url("adventure.php?snarfblat=528");
   if(current_round() == 1){
     run_combat(freerun);
   }
@@ -730,8 +730,9 @@ if(available_amount($item[pebble of proud pyrite]).to_boolean()){
   use(1, $item[pebble of proud pyrite]);
 }
 
-if (!get_property('_floundryItemCreated').to_boolean() && get_property("lcs_foundry") != "None"){
-  cli_execute(`acquire {get_property("lcs_floundry").to_lower_case()}`); 
+if (!get_property('_floundryItemCreated').to_boolean()){
+  cli_execute(`try; acquire {get_property("lcs_floundry").to_lower_case() != "none" ? get_property("lcs_floundry") : ""}`); 
+
   if(item_amount($item[codpiece]).to_boolean()){
     use(1, $item[codpiece]);
     create(1, $item[Oil Cap]);
@@ -975,16 +976,12 @@ if(have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]
 }
 
 
-maximize(`{my_primestat()}, 4 ML, 3 {my_primestat()} exp, 1.33 exp, 30 {my_primestat()} experience percent, 3 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, 100 bonus Cincho de Mayo`, false); 
+maximize(`{my_primestat()}, 4 ML, 3 {my_primestat()} exp, 1.33 exp, 30 {my_primestat()} experience percent, 3 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, -equip makeshift garbage shirt, 100 bonus Cincho de Mayo`, false); 
 
 if(my_hp() < my_maxhp()){
   cli_execute("hottub");
 }
 
-if(available_amount($item[January's Garbage Tote]).to_boolean()){
-  cli_execute("fold makeshift garbage shirt");
-  equip($item[Makeshift Garbage Shirt]);
-}
 
 use_current_best_fam();
 
@@ -1079,18 +1076,21 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
 }
 
 
-
-if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" && !available_amount($item[battle broom]).to_boolean()){
+if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !available_amount($item[battle broom]).to_boolean()){
   print("Recalling that one time when you were reincarnated as a witchess witch.","teal");
 
   if(my_hp() * 1.3 > my_maxhp()){
     cli_execute("hottub");
   }
+  
+  if(have_skill($skill[Feel Nervous])){ 
+    use_skill($skill[Feel Nervous]);
+  }
 
-  maximize("10 weapon damage, -1 moxie, -1 muscle, -10 ml, 1000 bonus fourth of may cosplay saber, -equip combat lover's locket", false);
+  maximize("100 weapon damage, mys, -1 moxie, -1 muscle, -10 ml, 1000 bonus fourth of may cosplay saber, -equip combat lover's locket", false);
   refresh();
 
-  string combat_filter = "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+  string combat_filter = "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 20; attack; repeat !times 9";
   if(!witchess_fight($monster[Witchess Witch], combat_filter)){
     visit_url("inventory.php?reminisce=1", false);
     visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1941");
@@ -1098,28 +1098,18 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" &&
     run_combat(combat_filter);
   } 
 
-  if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" && !available_amount($item[battle broom]).to_boolean()){
-  print("Recalling that one time when you were reincarnated as a witchess witch.","teal");
-
-  if(my_hp() * 1.3 > my_maxhp()){
-    cli_execute("hottub");
-  }
-
-  maximize("10 weapon damage, -1 moxie, -1 muscle, -10 ml, 1000 bonus fourth of may cosplay saber, -equip combat lover's locket", false);
-  refresh();
-
-  string combat_filter = "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
-  if(!witchess_fight($monster[Witchess Witch], combat_filter)){
-    visit_url("inventory.php?reminisce=1", false);
-    visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1941");
-
-    run_combat(combat_filter);
-  } 
+  maximize(`{my_primestat()}, 4 ML, 3 {my_primestat()} exp, 1.33 exp, 30 {my_primestat()} experience percent, 3 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, 100 bonus Cincho de Mayo`, false); 
 }
 
-}
+
 
 love_tunnel();
+maximize(`{my_primestat()} experience percent, -tie`, false);
+
+if(available_amount($item[January's Garbage Tote]).to_boolean()){
+  cli_execute("fold makeshift garbage shirt");
+  equip($item[Makeshift Garbage Shirt]);
+}
 
 // ghost yoked
 if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Holiday Yoked]).to_boolean() && !get_property("lcs_skip_yoked").to_boolean()){
@@ -1171,7 +1161,6 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
     adv1($location[The Neverending Party], -1, nep_freerun_sideways);
   }
 }
-
 
 // Saves one just in case
 
@@ -1790,10 +1779,11 @@ if(have_familiar($familiar[Left-hand Man])){
 }
 
 // Maximizer not knowing what to do with a stick-knife fix
-foreach it in $slots[weapon, off-hand, familiar]{
+/*foreach it in $slots[weapon, off-hand, familiar]{
   if(equipped_item(it) == $item[Stick-knife of Loathing])
   equip(it, $item[none]);
-}
+}*/
+
 meteor_shower();
 
 refresh();
@@ -1994,7 +1984,9 @@ string[string] script_preferences = {
   "manaBurningThreshold":"-0.05",
   "mpAutoRecovery":"-0.05",
   "currentMood":"apathetic",
-  "customCombatScript":"lcswrapper_combat_script"
+  "customCombatScript":"lcswrapper_combat_script",
+  "betweenBattleScript":"",
+  "afterAdventureScript":"",
 };
 
 try {
