@@ -107,6 +107,49 @@ boolean get_effect(effect effe){
 } 
 
 
+// Todo: Roaring hearth?
+boolean equip_stick_knife(){
+
+	if(!available_amount($item[Stick-knife of loathing]).to_boolean() || (my_basestat($stat[Muscle]) < 150 && my_class() != $class[Pastamancer])){
+		return false;
+	}
+
+	if(equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+		return true;
+	}
+
+	if(my_basestat($stat[Muscle]) >= 150){
+		equip($slot[Weapon], $item[Stick-knife of Loathing]);
+		return have_equipped($item[Stick-knife of Loathing]);
+	}
+
+	foreach x, outfit_name in get_custom_outfits(){
+
+		if(outfit_pieces(outfit_name).count() == 1 && !have_equipped($item[Stick-knife of Loathing])){
+
+			if(outfit_pieces(outfit_name)[0] == $item[Stick-knife of Loathing]){
+				print(`Outfit '{outfit_name}' has a stick-knife in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
+				if(!item_amount($item[Stick-knife of Loathing]).to_boolean()){
+					take_storage(1, $item[Stick-knife of Loathing]);
+				}
+				use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+				outfit(outfit_name);
+				break;
+			} 
+		}
+	}
+
+	if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+		print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
+		waitq(5);
+		return false;
+	}
+
+	return have_equipped($item[Stick-knife of Loathing]);
+}
+
+
+
 // --pocketmeteors
 void meteor_shower(){
   // If we have the skill but not the meteor showered effect, as well as saber/shower uses remaining
@@ -137,6 +180,9 @@ void meteor_shower(){
             run_choice(1);
           }
       }
+
+	  if(!have_effect($effect[Meteor Showered]).to_boolean()){
+		print("We don't have meteor showered after barrels! Try witchess/scepter!", "red");	  }
     }
   } else {
 
@@ -156,29 +202,10 @@ void meteor_shower(){
     }
   }
 
-  use_familiar(pre_shower_fam);
-  cli_execute("outfit checkpoint; checkpoint clear");
+  	use_familiar(pre_shower_fam);
+	cli_execute("outfit checkpoint; checkpoint clear");
 
-  // Uses a thrall + outfit combo to equip a stick-knife if we have one in our inventory that needs 150 musc to equip
-
-  if(item_amount($item[Stick-knife of Loathing]).to_boolean() && have_skill($skill[Bind Undead Elbow Macaroni])){
-    use_skill(1, $skill[Bind Undead Elbow Macaroni]);
-
-    foreach i, o_name in get_custom_outfits(){
-      if(o_name.to_lower_case() == "stick-knife"){
-          outfit(o_name);
-      }
-    }
-    
-    if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-    foreach x, outfit_name in get_custom_outfits()
-      foreach x,piece in outfit_pieces(outfit_name)
-
-        if(piece.contains_text("Stick-Knife of Loathing")){
-          outfit(outfit_name);
-        } 
-    }
-  }
+	equip_stick_knife();
 
     if(prev_adv != turns_played()){
       abort("Acquiring meteor showered took a turn, which isn't supposed to happen. Please DM Jimmyking with a log <3");
@@ -806,45 +833,6 @@ boolean use_current_best_fam(){
 
 
 }
-
-// Todo: Roaring hearth?
-boolean equip_stick_knife(){
-
-	if(!available_amount($item[Stick-knife of loathing]).to_boolean() || (my_basestat($stat[Muscle]) < 150 && my_class() != $class[Pastamancer])){
-		return false;
-	}
-
-	if(my_basestat($stat[Muscle]) >= 150){
-		equip($slot[Weapon], $item[Stick-knife of Loathing]);
-		return have_equipped($item[Stick-knife of Loathing]);
-	}
-
-	use_skill(1, $skill[Bind Undead Elbow Macaroni]);
-
-	foreach x, outfit_name in get_custom_outfits(){
-
-		if(outfit_pieces(outfit_name).count() == 1 && !have_equipped($item[Stick-knife of Loathing])){
-
-			if(outfit_pieces(outfit_name)[0] == $item[Stick-knife of Loathing]){
-				print(`Outfit '{outfit_name}' has a stick-knife in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
-
-				take_storage(1, $item[Stick-knife of Loathing]);
-				use_skill(1, $skill[Bind Undead Elbow Macaroni]);
-				outfit(outfit_name);
-				break;
-			} 
-		}
-	}
-
-	if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-		print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
-		waitq(5);
-		return false;
-	}
-
-	return have_equipped($item[Stick-knife of Loathing]);
-}
-
 
 record reffect {
 	int price;
