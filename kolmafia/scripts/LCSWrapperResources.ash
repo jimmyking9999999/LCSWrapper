@@ -490,15 +490,13 @@ boolean melf_buff(){
 	string prev_clan = get_clan_name();
 
 	cli_execute(`try; /whitelist {get_property("lcs_melf_slime_clan")}`);
-
-	if(prev_clan == get_clan_name()){
-		print("Something went wrong with whitelisting!", "red");
-		waitq(5);
-
-		return false;
+	string slime_url = visit_url("adventure.php?snarfblat=203");
+    
+	if(current_round() != 0){
+		run_combat("if hasskill bowl a curveball; skill bowl a curveball; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill KGB tranquilizer dart; skill KGB tranquilizer dart; endif; abort \"No banish to use!\"");
 	}
-	
-	if(!visit_url("adventure.php?snarfblat=203").contains_text("Showdown")){
+
+	if(!slime_url.contains_text("Showdown")){
 		abort("Uh-oh! Your slime clan isn't at mother slime!");
 	} else {
 		if(run_choice(1).to_string().contains_text("You can't pick a fight with Mother Slime right now")){
@@ -506,7 +504,6 @@ boolean melf_buff(){
 		}
 	}
 
-	run_combat("if hasskill bowl a curveball; skill bowl a curveball; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill KGB tranquilizer dart; skill KGB tranquilizer dart; endif; abort \"No banish to use!\"");
 
 	cli_execute(`/whitelist {prev_clan}`);
 
@@ -557,6 +554,7 @@ boolean witchess_fight(monster piece, string combat_filter){
 		return false;
 	}
 
+	visit_url("campground.php");
 	visit_url("campground.php?action=witchess");
 	run_choice(1);
 
@@ -817,35 +815,31 @@ boolean equip_stick_knife(){
 	}
 
 	if(my_basestat($stat[Muscle]) >= 150){
-		equip($item[Stick-knife of Loathing]);
+		equip($slot[Weapon], $item[Stick-knife of Loathing]);
 		return have_equipped($item[Stick-knife of Loathing]);
 	}
 
-
 	use_skill(1, $skill[Bind Undead Elbow Macaroni]);
 
-    foreach i, o_name in get_custom_outfits(){
-        if(o_name.to_lower_case() == "stick-knife"){
-        	outfit(o_name);
+	foreach x, outfit_name in get_custom_outfits(){
 
-			return equipped_amount($item[Stick-knife of Loathing]).to_boolean();
-        }
-    }
+		if(outfit_pieces(outfit_name).count() == 1 && !have_equipped($item[Stick-knife of Loathing])){
 
-    foreach x, outfit_name in get_custom_outfits(){
+			if(outfit_pieces(outfit_name)[0] == $item[Stick-knife of Loathing]){
+				print(`Outfit '{outfit_name}' has a stick-knife in it! Pulling a stick-knife and trying to equip that outfit...`, "teal");
 
-		foreach x,piece in outfit_pieces(outfit_name)
-
-		if(piece.contains_text("Stick-Knife of Loathing")){
-			print(`Outfit '{outfit_name}' has a {piece} in it! Trying to equip that outfit...`, "teal");
-			outfit(outfit_name);
-		} 
-		
-		if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
-			print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
-			waitq(5);
-			return false;
+				take_storage(1, $item[Stick-knife of Loathing]);
+				use_skill(1, $skill[Bind Undead Elbow Macaroni]);
+				outfit(outfit_name);
+				break;
+			} 
 		}
+	}
+
+	if(!equipped_amount($item[Stick-knife of Loathing]).to_boolean()){
+		print("Uh-oh, you don't have an outfit with a knife in it! Make one after the run finishes!", "red");
+		waitq(5);
+		return false;
 	}
 
 	return have_equipped($item[Stick-knife of Loathing]);
@@ -1063,8 +1057,10 @@ string [int] weapon_damage_effects = {
 	"Faboooo", // 1750
 	
 	"Billiards Belligerence", // 1726
+	"The Power of LOV", // 2500
 	
-	"FUNC pull_item / Yeg's Motel toothbrush", // 2437.5
+	"FUNC pull_item / Yeg's Motel toothbrush", // 2437.
+	"CLI if(have_item($item[Yeg's Motel Toothbrush])){use(1, $item[Yeg's Motel Toothbrush]); }", // :pensive:
 	"Empathy",
 	"FUNC wish_effect / Outer Wolf", //6250
 	"Empathy",
@@ -1080,15 +1076,16 @@ string [int] spell_damage_effects = {
 	"Carol of the Hells", // 0
 	"Spirit of Peppermint", // 0
 	"Song of Sauce", // 0
-	"Cowrruption", // 69. Nice
+	"Cowrruption", // 69. nice.
 	"Paging Betty",
 	"Imported Strength", // 300
 	"We're all made of starfish", // ~700
 	"Concentration", // 850
 	"Mental A-cue-ity", // 1726
-	"AAA-Charged",
-	"AA-Charged",
-	"D-Charged",
+	"The Magic of LOV", //2620
+	"AAA-Charged", // 9000
+	"AA-Charged", // 18000
+	"D-Charged", // 27000
 
 	"END ",
 }; 
@@ -1148,7 +1145,7 @@ string[int] effects;
 		
 	}
 
-	foreach it in effects {
+	foreach it in effects { // I neede to revamp this wtf 
 		
 		if(effects[it].substring(0,3) == "END"){ // Maybe effects.count()? Nah.
 			if(scrape_test_turns(test) == 1){
@@ -1164,12 +1161,16 @@ string[int] effects;
 			
 			string function = func_effect[0].substring(5);
   			call boolean function(func_effect[1]);
+			
+			print(`~{test_turns(test)} turns left to save!`, "lime");
 
 		
 		} else if(effects[it].substring(0,3) == "CLI"){ // CLI test buff!
 
 			cli_execute(effects[it].substring(3));
-			break;
+
+			print(`~{test_turns(test)} turns left to save!`, "lime");
+
 
 		} else { // Normal effect test buff!
 
