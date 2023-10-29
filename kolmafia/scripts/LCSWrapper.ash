@@ -1633,9 +1633,12 @@ if(get_property("lcs_use_birds") == "During Weapon or Spell Damage Test"){
   }
 }
 
+// TODO Equip KGE + Bowling ball check 
+if(get_property("_snokebombUsed").to_int() <= 2){
+  melf_buff();
+}
 
 camel_spit();
-melf_buff();
 
 if(have_effect($effect[Holiday Yoked]).to_boolean()){
   set_property("lcs_skip_yoked", "true");
@@ -2166,7 +2169,6 @@ try {
     set_property("lcs_time_at_start", now_to_int());
   }
 
-  string prev_ccs = get_property('customCombatScript');
   string clan_at_start = get_clan_name();
 
   if(get_property("lcs_clan") != ""){
@@ -2340,8 +2342,6 @@ finally {
     foreach pref, setting in script_preferences {
       set_property(pref, setting);
     }
-
-    set_property("customCombatScript", "default");
   }
 }
 
