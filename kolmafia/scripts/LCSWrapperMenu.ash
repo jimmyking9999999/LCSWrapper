@@ -28,6 +28,7 @@ string [int] preferences = {
     "lcs_get_a_contender | What about the 'A Contender' buff? | Yes/No",
     `lcs_wish_mainstat_percent | Would you like to wish for a 50 {my_primestat()} experience percent buff? | Yes/No`,
     "lcs_vip_fortune_buff | Which fortune teller buff would you like to obtain? | Mys/Mus/Mox/Familiar/Item/None",
+    "lcs_make_camel_equip | Would you like to use a clip art cast for your melodramedary's familiar equipment? | Yes/No | (have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]))",
     "lcs_use_nellyville | Would you like the script to use a Charter: Nellyville for extra help during powerleveling? | Yes/No | item_amount($item[2002 Mr. Store Catalog])",
     "lcs_alloted_backup_uses | How many backup camera uses would you like to use for powerleveling? | USER | available_amount($item[Backup Camera])",
     "lcs_use_witchess | How many witchess fights would you like the script to use? | 5/4/3/2/1/0 | get_campground()[$item[Witchess Set]]",
