@@ -512,25 +512,20 @@ boolean melf_buff(){
 	}
 
 	print("Acquring your inner elf buff!", "teal");
+
+	
+
 	use_familiar($familiar[Machine Elf]);
 
 	string prev_clan = get_clan_name();
-
 	cli_execute(`try; /whitelist {get_property("lcs_melf_slime_clan")}`);
-	string slime_url = visit_url("adventure.php?snarfblat=203");
-    
-	if(current_round() != 0){
-		run_combat("if hasskill bowl a curveball; skill bowl a curveball; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill KGB tranquilizer dart; skill KGB tranquilizer dart; endif; abort \"No banish to use!\"");
-	}
 
-	if(!slime_url.contains_text("Showdown")){
+	if(!visit_url("clan_slimetube.php").contains_text("[boss exposed]")){
 		abort("Uh-oh! Your slime clan isn't at mother slime!");
-	} else {
-		if(run_choice(1).to_string().contains_text("You can't pick a fight with Mother Slime right now")){
-			abort("Oh, someone else is fighting mother slime. Haha.");
-		}
-	}
+	} // TODO: Two people at slime tube at the same time?
 
+	set_property("choiceAdventure326", "1");
+	adv1($location[The Slime Tube], -1, "if hasskill bowl a curveball; skill bowl a curveball; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill KGB tranquilizer dart; skill KGB tranquilizer dart; endif; abort \"No banish to use!\"");
 
 	cli_execute(`/whitelist {prev_clan}`);
 
@@ -601,7 +596,7 @@ boolean pull_item(string ite){
 
 	item it = ite.to_item();
 
-	if(available_amount(it).to_boolean()){
+	if(available_amount(it).to_boolean() || get_property("_roninStoragePulls").split_string(",") contains (it.to_int())){
 		return true;
 	}
 
@@ -618,6 +613,9 @@ boolean pull_item(string ite){
 	take_storage(1,it);
 
 	// weird case of yeg's motel toothbrush not working here? 
+	if(it == $item[Yeg's Motel Toothbrush]){
+		use(1, it);
+	}
 
   return available_amount(it).to_boolean();
 }
@@ -1047,8 +1045,7 @@ string [int] weapon_damage_effects = {
 	"Billiards Belligerence", // 1726
 	"The Power of LOV", // 2500
 	
-	"FUNC pull_item / Yeg's Motel toothbrush", // 2437.
-	"CLI if(have_item($item[Yeg's Motel Toothbrush])){use(1, $item[Yeg's Motel Toothbrush]); }", // :pensive:
+	"FUNC pull_item / Yeg's Motel toothbrush", // 2437
 	"Empathy",
 	"FUNC wish_effect / Outer Wolf", //6250
 	"Empathy",
