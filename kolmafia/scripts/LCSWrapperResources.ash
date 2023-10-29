@@ -19,7 +19,7 @@ script "LCSWrapperResources.ash";
 Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
 */
 
-/* Days since last effect system rework: >120 */
+/* Days since last effect system rework: 0 holy crap */
 
 location scaler_zone = 
   get_property("neverendingPartyAlways").to_boolean() ? $location[The Neverending Party]: 
@@ -641,8 +641,6 @@ boolean pull_item(item it){
 }
 
 void equalize_stats(){
-
-
 	switch(my_primestat()){
 		case $stat[Mysticality]:
 			get_effect($effect[Expert Oiliness]);
@@ -650,11 +648,10 @@ void equalize_stats(){
 
 		case $stat[Moxie]: // TODO Fax this
 			get_effect($effect[Slippery Oiliness]);
-
 		break;
+
 		case $stat[Muscle]:
 			get_effect($effect[Stabilizing Oiliness]);
-
 		break;
 	}
 }
@@ -754,15 +751,13 @@ int scrape_test_turns(int whichtest) {
 
 
 boolean gain_adventures(int advs_to_gain){
-	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards
+	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards TODO
 		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
 		if(!have_effect($effect[Ode to Booze]).to_boolean()){
 			use_skill($skill[The Ode to Booze]);
 		}
 		
 		if(item_amount($item[Astral Pilsner]).to_boolean()){
-
-
 			drink(1, $item[Astral Pilsner]);
 			// drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
 		}
@@ -852,10 +847,9 @@ record reffect {
 
 effect eff;
 
-/* Effects go here, numbered by priority */
 string [int] powerlevel_effects = {
     "Ode to Booze",
-    "Big ",
+    "Big",
     "Carol of the Thrills",
     "Ur-Kel's Aria of Annoyance",
     "Shanty of Superiority",
@@ -896,198 +890,170 @@ string [int] powerlevel_mus_effects = {
 };
 
 string [int] powerlevel_mox_effects = {
-	
+	// ¯\_(ツ)_/¯
 };
 
-//
+/* Effects go here, numbered by priority */
 
-
-
-
-
-
-string [int] mys_effects = {
-	"Glittering Eyelashes",
-	"Big ",
-	"Quiet Judgement",
-	"Stevedave's Shanty of Superiority",
-	"END ",
-}; 
-
-string [int] mox_effects = {
-    "Expert Oiliness",
-    "Song of bravado",
-    "Blubbered up",
-    "Disco state of mind",
-    "Mariachi mood",
-    "Butt-rock hair",
-    "Unrunnable face",
-    "Feeling Excited",
-    "Quiet Desperation",
-    "Stevedave's Shanty of Superiority",
-    "The Moxious Madrigal",
-    "aMAZing",
-    "END ",
+string[int] mys_effects = {
+    0: "Glittering Eyelashes",
+    1: "Big",
+    2: "Quiet Judgement",
+    3: "Stevedave's Shanty of Superiority",
 };
 
-string [int] mus_effects = {
-    "Expert Oiliness",
-    "Go get 'em, tiger!",
-    "Seal clubbing frenzy",
-    "Rage of the reindeer",
-    "Patience of the tortoise",
-    "Disdain of the war snapper",
-    "Song of bravado",
-    "Quiet determination",
-    "Feeling excited",
-    "Phorcefullness",
-    "END ",
+string[int] mus_effects = {
+    0: "Expert Oiliness",
+    1: "Song of bravado",
+    2: "Blubbered up",
+    3: "Disco state of mind",
+    4: "Mariachi mood",
+    5: "Butt-rock hair",
+    6: "Unrunnable face",
+    7: "Feeling Excited",
+    8: "Quiet Desperation",
+    9: "Stevedave's Shanty of Superiority",
+    10: "The Moxious Madrigal",
+    11: "aMAZing",
+    12: "Lack of Body-Building",
+    13: "The Power of LOV",
+};
+string[int] mox_effects = {
+    0: "Expert Oiliness",
+    1: "Go get 'em, tiger!",
+    2: "Seal clubbing frenzy",
+    3: "Rage of the reindeer",
+    4: "Patience of the tortoise",
+    5: "Disdain of the war snapper",
+    6: "Song of bravado",
+    7: "Quiet determination",
+    8: "Feeling excited",
+    9: "Phorcefullness",
 };
 
-string [int] hp_effects = {
-	"Song of starch", // 0
-	"Reptilian fortitude", // 0
-	"Plump and Chubby",
-	"END", 
-}; 
-
-string [int] item_effects = {
-	"FUNC eagle_pledge / Madness Bakery", // In case of failure
-	"Empathy",
-	"Steely-Eyed Squint", // 0
-	"Fat Leon's Phat Loot Lyric", // 0
-	"Singer's Faithful Ocelot", // 0
-	"Spice haze", // 0
-	"Crunching Leaves",	// 369
-	"Nearly All-Natural", // 1375 
-	"Heart of Lavender",
-	"FUNC catalog / boots", // 1890
-	"Ermine Eyes", // 2000
-	"FUNC catalog / rhymes", // 3150
-	"Fortune of the Wheel", // 3200
-	"Wizard Sight", // 333 + 2 * VoA
-	"FUNC wish_effect / Infernal Thirst", // 3750
-	"Empathy",
-	"El Aroma de Salsa", // 8958
-	"Glowing Hands", // 8980
-	"Incredibly Well Lit", //15000
-	"Feeling Lost", // Potentially 2-4 * voa
-	"Lantern-Charged", // 13750	
-	"END ",
-}; 
-
-
-
-string [int] hot_res_effects = {
-    "Elemental Saucesphere", // 0
-    "Astral Shell", // 0
-    "Leash of Linguini", // 0
-    "Empathy", // 0
-    "Amazing",
-    "Feeling Peaceful", // 0
-    "Hot-headed",
-	"Rainbow Vaccine", // 0
-    "END ",
+string[int] hp_effects = {
+    0: "Song of starch", // 0
+    1: "Reptilian fortitude", // 0
+    2: "Plump and Chubby",
 };
 
-string [int] fam_weight_effects = {
-    "Empathy", // 0
-    "Leash of Linguini", // 0
-    "Blood Bond", // 0
-	"Robot Friends", // 1525
-	"Billiards Belligerence", // 1726
-	"Shortly Stacked", // 3889
-    "Loyal as a Rock", // 5193
-	"Party Soundtrack", // 6390
-	"Puzzle Champ", // 17000
-    "END ",
-}; 
 
-string [int] non_combat_effects = {
-    "Smooth Movements", // 0
-    "The Sonata of Sneakiness", // 0
-	"Leash of Linguini", // 0 
-	"Blood Bond",
-    "Empathy", // 0
-	"Feeling Lonely", // 0
-	"Silent Running", // 0
-    "Feeling Sneaky", // 83
-    "A Rose by any Other Material", // 1377
-    "Throwing Some Shade", // 1500
-	"Shortly Buttered",
-	"Invisible Avatar", // Marginal embezzler turn - 6 * VoA
-	"Billiards Belligerence", // 8630
-	"Loyal as a Rock", // 25965
-	"FUNC wish_effect / Disquiet Riot", // 4166
-	"Empathy",
-    "END ",
+string[int] item_effects = {
+    0: "FUNC eagle_pledge / Madness Bakery", // In case of failure
+    1: "Empathy",
+    2: "Steely-Eyed Squint", // 0
+    3: "Fat Leon's Phat Loot Lyric", // 0
+    4: "Singer's Faithful Ocelot", // 0
+    40: "Spice haze", // 0
+    369: "Crunching Leaves", // 369
+    1375: "Nearly All-Natural", // 1375
+    1000: "Heart of Lavender",
+    1890: "FUNC catalog / boots", // 1890
+    2000: "Ermine Eyes", // 2000
+    3150: "FUNC catalog / rhymes", // 3150
+    3200: "Fortune of the Wheel", // 3200
+    3000: "Wizard Sight", // 333 + 2 * VoA
+    3750: "FUNC wish_effect / Infernal Thirst", // 3750
+    8958: "El Aroma de Salsa", // 8958
+    8980: "Glowing Hands", // 8980
+    15000: "Incredibly Well Lit", // 15000
+    18000: "Feeling Lost", // Potentially 2-4 * voa
+    13750: "Lantern-Charged", // 13750
 };
 
-string [int] weapon_damage_effects = {
-	"Bow-Legged Swagger", // 0
-	"Scowl of the auk", // 0
-	"Tenacity of the snapper", // 0
-	"Frenzied, bloody", // 0
-	"Disdain of the war snapper", // 0
-	"Jackasses' Symphony of Destruction", // 0
-	"Lack of body-building", // 0
-	"Carol of the Bulls", // 0
-	"Song of the North", // 0
-	"Rage of the Reindeer", // 0
-	"Cowrruption", // 35
-	"Feeling punchy", // 100
-	"Imported Strength", // 150
-	"Engorged weapon", // 750
-	"Pronounced Potency", // 758
-	"Ham-fisted", // 1136
-	"Faboooo", // 1750
-	
-	"Billiards Belligerence", // 1726
-	"The Power of LOV", // 2500
-	
-	"FUNC pull_item / Yeg's Motel toothbrush", // 2437
-	"Empathy",
-	"FUNC wish_effect / Outer Wolf", //6250
-	"Empathy",
-	
-	
-	"END ",
+
+string[int] hot_res_effects = {
+    0: "Elemental Saucesphere", // 0
+    1: "Astral Shell", // 0
+    2: "Leash of Linguini", // 0
+    3: "Empathy", // 0
+    4: "Amazing",
+    5: "Feeling Peaceful", // 0
+    6: "Hot-headed",
+    7: "Rainbow Vaccine", // 0
 };
 
-string [int] spell_damage_effects = {
 
-	"Jackasses' Symphony of Destruction", // 0
-	"Arched Eyebrow of the Archmage", // 0
-	"Carol of the Hells", // 0
-	"Spirit of Peppermint", // 0
-	"Song of Sauce", // 0
-	"Cowrruption", // 69. nice.
-	"Paging Betty",
-	"Imported Strength", // 300
-	"We're all made of starfish", // ~700
-	"Concentration", // 850
-	"Mental A-cue-ity", // 1726
-	"The Magic of LOV", //2620
-	"AAA-Charged", // 9000
-	"AA-Charged", // 18000
-	"D-Charged", // 27000
+string[int] fam_weight_effects = {
+    0: "Empathy", // 0
+    1: "Leash of Linguini", // 0
+    2: "Blood Bond", // 0
+    1525: "Robot Friends", // 1525
+    1726: "Billiards Belligerence", // 1726
+    3889: "Shortly Stacked", // 3889
+    5193: "Loyal as a Rock", // 5193
+    6390: "Party Soundtrack", // 6390
+    17000: "Puzzle Champ", // 17000
+};
 
-	"END ",
-}; 
+string[int] non_combat_effects = {
+    0: "Smooth Movements", // 0
+    1: "The Sonata of Sneakiness", // 0
+    2: "Leash of Linguini", // 0
+    3: "Blood Bond",
+    4: "Empathy", // 0
+    5: "Feeling Lonely", // 0
+    6: "Silent Running", // 0
+    83: "Feeling Sneaky", // 83
+    1377: "A Rose by any Other Material", // 1377
+    1500: "Throwing Some Shade", // 1500
+    149: "Shortly Buttered",
+    6969: "Invisible Avatar", // Marginal embezzler turn - 6 * VoA
+    8630: "Billiards Belligerence", // 8630
+    25965: "Loyal as a Rock", // 25965
+    4166: "FUNC wish_effect / Disquiet Riot", // 4166
+};
 
+string[int] weapon_damage_effects = {
+    0: "Bow-Legged Swagger", // 0
+    1: "Scowl of the auk", // 0
+    2: "Tenacity of the snapper", // 0
+    3: "Frenzied, bloody", // 0
+    4: "Disdain of the war snapper", // 0
+    5: "Jackasses' Symphony of Destruction", // 0
+    6: "Lack of body-building", // 0
+    7: "Carol of the Bulls", // 0
+	8: "Song of the North", // 0
+    9: "Rage of the Reindeer", // 0
+    35: "Cowrruption", // 35
+    100: "Feeling punchy", // 100
+    150: "Imported Strength", // 150
+    750: "Engorged weapon", // 750
+    758: "Pronounced Potency", // 758
+    1136: "Ham-fisted", // 1136
+    1750: "Faboooo", // 1750
+    1726: "Billiards Belligerence", // 1726
+    2500: "The Power of LOV", // 2500
+    2437: "FUNC pull_item / Yeg's Motel toothbrush", // 2437
+    6250: "FUNC wish_effect / Outer Wolf", // 6250
+};
 
-
-
-///
+string[int] spell_damage_effects = {
+    0: "Jackasses' Symphony of Destruction", // 0
+    1: "Arched Eyebrow of the Archmage", // 0
+    2: "Carol of the Hells", // 0
+    3: "Spirit of Peppermint", // 0
+    4: "Song of Sauce", // 0
+    69: "Cowrruption", // 69. nice.
+    500: "Paging Betty", // @9k in the mall, but I don't think these sell. TODO use coldfront mall data?
+    300: "Imported Strength", // 300
+    700: "We're all made of starfish", // ~700
+    850: "Concentration", // 850
+    1726: "Mental A-cue-ity", // 1726
+    2620: "The Magic of LOV", // 2620
+    9000: "AAA-Charged", // 9000
+    18000: "AA-Charged", // 18000
+    27000: "D-Charged", // 27000
+};
 
 
 int buff_up(int test){
 
-string[int] effects;
+string [int] effects;
+// TODO Sort this by value/turn save
+// Makes a copy of the map to effects
 	switch(test){
-		default: 
-			abort(`Test {test} is an invalid selection!`);
-
+	
 		case 1:
 			effects = hp_effects;
 		break;
@@ -1130,50 +1096,46 @@ string[int] effects;
 		
 	}
 
-	foreach it in effects { // I neede to revamp this wtf 
+	// effects[eff] == value. If it's 0, it's unlimited and/or free! -1 means used. Otherwise, it's cost in meat per turn saved.
+	// TODO: Re-entry via preference?
+	int i;
+
+	foreach value, eff in effects{
 		
-		if(effects[it].substring(0,3) == "END"){ // Maybe effects.count()? Nah.
-			if(scrape_test_turns(test) == 1){
-				return 1;
-			}
-			abort(`We failed to reach your target! Only managed to get the test down to {scrape_test_turns(test)} turns!`);
-		}
+		if(eff != -1){
+			effects[value] = -1;
 
-		if(effects[it].substring(0,4) == "FUNC"){ // Function test buff!
+			if(eff.substring(0,4) == "FUNC"){
+				string[int] func_effect = split_string(eff, " \\/ ");
+				// func_effect[0] => function name, func_effect[1] => input to pass through, 
+				
+				string function = func_effect[0].substring(5);
+				call boolean function(func_effect[1]);
+				
+				print(`~{test_turns(test)} turns left to save!`, "lime");
+				break;
+			} 
 
-			string[int] func_effect = split_string(effects[it], " \\/ ");
-			/* func_effect[0] => function name, func_effect[1] => input to pass through, */
-			
-			string function = func_effect[0].substring(5);
-  			call boolean function(func_effect[1]);
-			
-			print(`~{test_turns(test)} turns left to save!`, "lime");
+			effect effe = eff.to_effect();
 
-		
-		} else if(effects[it].substring(0,3) == "CLI"){ // CLI test buff!
+			if(!have_effect(effe).to_boolean()){
 
-			cli_execute(effects[it].substring(3));
-
-			print(`~{test_turns(test)} turns left to save!`, "lime");
-
-
-		} else { // Normal effect test buff!
-
-			eff = effects[it].to_effect();
-			if(!have_effect(eff).to_boolean()){
-
-				if(get_effect(eff)){
-					print(`Successfully obtained effect {eff}, ~{test_turns(test)} turns left to save!`, "lime");
-					print("");
+				if(get_effect(effe)){
+					print(`Successfully obtained effect {effe}, ~{test_turns(test)} turns left to save!`, "lime");
 					break;
-				} else {
-					print("");
 				} 
-			}		
+
+			} 
+		} else {
+			i++;
+
+			if(effects.count() == i){
+				abort(`We couldn't reach your turn treshold with all your resources. ({scrape_test_turns(test)} turns left)`);
+			}
 		}
-	} 
 
-
+	}
+		
 	return scrape_test_turns(test);
 }
 
