@@ -969,7 +969,7 @@ if(my_sign() == "Blender" && !have_effect($effect[Baconstoned]).to_boolean() && 
   }
 }
 
-if(have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]) && !available_amount($item[dromedary drinking helmet]).to_boolean()){
+if(have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]) && !available_amount($item[dromedary drinking helmet]).to_boolean() && get_property("lcs_make_camel_equip") == "Yes"){
   clip_art($item[Box of Familiar Jacks]);
   use_familiar($familiar[Melodramedary]);
   use(1, $item[Box of Familiar Jacks]);
