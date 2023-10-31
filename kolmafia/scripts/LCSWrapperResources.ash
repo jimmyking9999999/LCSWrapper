@@ -836,7 +836,6 @@ record reffect {
 	boolean tried;
 
 	/* Use numeric_modifier((test_eyelashes.eff, test_eyelashes.mod) for potency */
-
 };
 
 
@@ -897,12 +896,11 @@ string [int] powerlevel_mox_effects = {
 
 string[int] mys_effects = {
     0: "Glittering Eyelashes",
-    1: "Big",
-    2: "Quiet Judgement",
-    3: "Stevedave's Shanty of Superiority",
+    1: "Quiet Judgement",
+    2: "Stevedave's Shanty of Superiority",
 };
 
-string[int] mus_effects = {
+string[int] mox_effects = {
     0: "Expert Oiliness",
     1: "Song of bravado",
     2: "Blubbered up",
@@ -915,10 +913,10 @@ string[int] mus_effects = {
     9: "Stevedave's Shanty of Superiority",
     10: "The Moxious Madrigal",
     11: "aMAZing",
-    12: "Lack of Body-Building",
-    13: "The Power of LOV",
+    
 };
-string[int] mox_effects = {
+
+string[int] mus_effects = {
     0: "Expert Oiliness",
     1: "Go get 'em, tiger!",
     2: "Seal clubbing frenzy",
@@ -929,6 +927,8 @@ string[int] mox_effects = {
     7: "Quiet determination",
     8: "Feeling excited",
     9: "Phorcefullness",
+	10: "Lack of Body-Building",	
+    11: "The Power of LOV",
 };
 
 string[int] hp_effects = {
