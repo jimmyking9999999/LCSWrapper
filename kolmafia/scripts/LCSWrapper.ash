@@ -1102,6 +1102,7 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !av
 }
 
 
+use_current_best_fam();
 
 love_tunnel();
 maximize(`{my_primestat()} experience percent, -tie`, false);
@@ -1154,7 +1155,13 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   }
 
   if(have_effect($effect[Beaten Up]).to_boolean()){
-    abort("We got beaten up =(");
+    string [int] cleaverQueue = get_property("juneCleaverQueue").split_string(","); 
+
+    if(cleaverQueue[cleaverQueue.count() - 1] == "1467" || cleaverQueue[cleaverQueue.count() - 1] == "1471"){ 
+      use_skill($skill[Tongue of the Walrus]);
+    } else {
+      abort("We got beaten up =(");
+    }
   }
   
   if(get_property("cosmicBowlingBallReturnCombats") == 0){
@@ -1450,6 +1457,28 @@ if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($fami
     refresh();
   }
 
+}
+
+
+if(my_id() == 3272033 && get_property("_locketMonstersFought").split_string(",").count() < 2){
+  visit_url("inventory.php?reminisce=1", false);
+  visit_url(`choice.php?whichchoice=1463&pwd&option=1&mid={$monster[Cocktail Shrimp].id}`);
+
+  refresh();
+  run_combat(freerun);
+
+  visit_url("inventory.php?reminisce=1", false);
+  visit_url(`choice.php?whichchoice=1463&pwd&option=1&mid={$monster[Toothless Mastiff Bitch].id}`);
+  
+  refresh();
+  run_combat("skill feel nostalgic; skill feel envy; skill gingerbread mob hit");
+
+  if(11 > get_property("_shortOrderCookCharge").to_int() > 6){
+    use_familiar($familiar[Short ]);
+    for i from 1 to 11 - get_property("_shortOrderCookCharge").to_int(){
+      print(i);
+    }
+  }
 }
 
 foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze, Loyal as a Rock]{
