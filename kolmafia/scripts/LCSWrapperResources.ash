@@ -283,6 +283,10 @@ boolean clip_art(item it) {
 	if(item_amount(it) > 0){
 	  return true;
   	}
+
+	if(it == $item[Borrowed Time] && get_property("_borrowedTimeUsed") == "true"){
+		return false;
+	}
 	
 	print(`Casting clip art for item {it}!`, "teal");
 	return retrieve_item(it);
@@ -979,7 +983,10 @@ string[int] fam_weight_effects = {
     1: "Leash of Linguini", // 0
     2: "Blood Bond", // 0
     1525: "Robot Friends", // 1525
+    2200: "Heart of Green", 
     1726: "Billiards Belligerence", // 1726
+	2500: "Man's Worst Enemy",
+	3250: "Shrimpin' Ain't Easy",
     3889: "Shortly Stacked", // 3889
     5193: "Loyal as a Rock", // 5193
     6390: "Party Soundtrack", // 6390
