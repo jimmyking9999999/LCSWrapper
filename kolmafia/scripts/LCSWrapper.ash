@@ -1473,8 +1473,8 @@ if(my_id() == 3272033 && get_property("_locketMonstersFought").split_string(",")
   refresh();
   run_combat("skill feel nostalgic; skill feel envy; skill gingerbread mob hit");
 
-  if(11 > get_property("_shortOrderCookCharge").to_int() > 6){
-    use_familiar($familiar[Short ]);
+  if(11 > get_property("_shortOrderCookCharge").to_int() && get_property("_shortOrderCookCharge").to_int() > 6){
+    use_familiar($familiar[Shorter-Order Cook]);
     for i from 1 to 11 - get_property("_shortOrderCookCharge").to_int(){
       print(i);
     }
