@@ -1331,10 +1331,6 @@ void hp_test(){
 
 void item_test(){
 
-if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && available_amount($item[Tiny Stillsuit]).to_boolean()){
-  equip($slot[Familiar], $item[Tiny Stillsuit]);
-}
-
 get_shadow_waters();
 
 if(get_property("lcs_use_birds") == "During Item Test"){
@@ -1642,7 +1638,7 @@ if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Non-Combat T
   august_scepter(13);
 }
 
-maximize('-100 combat, familiar weight', false);
+maximize('maximize -combat, 0.04 familiar weight 75 max, switch disgeist, switch left-hand man, switch disembodied hand, -tie', false);
 
 
 // For list of effects, look at LCSWrapperResources.ash
