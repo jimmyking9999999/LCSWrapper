@@ -1638,7 +1638,7 @@ if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Non-Combat T
   august_scepter(13);
 }
 
-maximize('maximize -combat, 0.04 familiar weight 75 max, switch disgeist, switch left-hand man, switch disembodied hand, -tie', false);
+maximize('-combat, 0.04 familiar weight 75 max, switch disgeist, switch left-hand man, switch disembodied hand, -tie', false);
 
 
 // For list of effects, look at LCSWrapperResources.ash
