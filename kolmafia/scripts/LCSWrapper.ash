@@ -1940,6 +1940,15 @@ void donate_body_to_science(){
   visit_url("storage.php");
   cli_execute("hagnk all");
 
+  //This is just to prevent self-clubbing, primarily with the August Scepter, but also otherwise to prevent random weapons/off-hands from potentially getting lost in your terrarium
+  if(have_familiar($familiar[Left-hand Man])){
+  use_familiar($familiar[Left-hand Man]);
+  cli_execute("unequip familiar");
+
+  if(have_familiar($familiar[Disembodied Hand])){
+  use_familiar($familiar[Disembodied Hand]);
+  cli_execute("unequip familiar");
+
   refresh();
   if(available_amount($item[Beach Comb]).to_boolean()){
     cli_execute(`try; combo {11 - get_property("_freeBeachWalksUsed").to_int()}`);
