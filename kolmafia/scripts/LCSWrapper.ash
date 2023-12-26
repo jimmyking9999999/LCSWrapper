@@ -278,7 +278,7 @@ if(get_property("_clanFortuneConsultUses").to_int() != 3){
     break;
 
     case "Bonus Adventures From Hell":
-      chatbot = "cheesefax";
+      chatbot = "onlyfax";
     break;
 
     case "Cool Guy Crew":
@@ -359,35 +359,34 @@ if(available_amount($item[Cherry]) == 0){
 }
 
 if(get_property("_juneCleaverFightsLeft") == 0 && have_equipped($item[June Cleaver])){
-  // NCs 1467-1475
-  int[int] cleaverNCs = { 3, 2, 3, ((my_primestat() == $stat[Muscle]) ? 3 : 2), 1, 1, 1, ((my_primestat() == $stat[Muscle]) ? 3 : 1) };
-  foreach it in cleaverNCs {
-    int temp = get_property(`choiceAdventure{1467 + it}`).to_int();
-    set_property(`choiceAdventure{1467 + it}`, cleaverNCs[it].to_string());
-    cleaverNCs[it] = temp;
-  }
-
   adv1($location[Noob Cave]); 
-
-  foreach it, x in cleaverNCs {
-    set_property(`choiceAdventure{1467 + it}`, x.to_string());
-  }
 }
 
 // This chunk below will attempt to skip borrowed time via level with 4 freeruns and a trainset + swap.
-if((have_familiar($familiar[Pair of Stomping Boots]) || get_property("lcs_skip_borrowed_time") != "" || have_familiar($familiar[Frumious Bandersnatch])) && !in_hardcore() && get_property("trainsetConfiguration") != ""){
+
+// [                              Have familiars or skip time pref                                                                                     ] + [             Not in hardcore or train already set               ]
+if( (have_familiar($familiar[Pair of Stomping Boots]) || get_property("lcs_skip_borrowed_time") != "" || have_familiar($familiar[Frumious Bandersnatch]))  && !in_hardcore() && get_property("trainsetConfiguration") != ""){
     string shadow_freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
     
     if(have_familiar($familiar[Pair of Stomping Boots])){
       get_effect($effect[Leash Of Linguini]);
       use_familiar($familiar[Pair of Stomping Boots]);
-      shadow_freerun = "runaway; abort";
+      shadow_freerun = "runaway; repeat !times 5; abort";
 
     } else if (have_familiar($familiar[Frumious Bandersnatch])){
+
+      if(my_maxmp() < 50){
+        maximize("mp 50 min 50 max, -tie", false);
+      } 
+
+      if(my_mp() < 50){
+        restore_mp(50);
+      }
+
       get_effect($effect[Ode to Booze]);
       get_effect($effect[Leash Of Linguini]);
       use_familiar($familiar[Frumious Bandersnatch]);
-      shadow_freerun = "runaway; abort";
+      shadow_freerun = "runaway; repeat !times 5; abort";
     }
     
     
@@ -704,7 +703,7 @@ if(get_property("lcs_get_warbear_potion") == "Yes"){
   } 
 }
 
-if(my_id() == 3272033){
+if(get_property("lcs_seventy").to_boolean()){
   wish_effect("Witch Breaded");
 }
 
@@ -1456,7 +1455,7 @@ if(have_familiar($familiar[Comma Chameleon]).to_boolean() && have_familiar($fami
 }
 
 
-if(my_id() == 3272033 && get_property("_locketMonstersFought").split_string(",").count() < 2){
+if(get_property("lcs_seventy").to_boolean() && get_property("_locketMonstersFought").split_string(",").count() < 2){
   visit_url("inventory.php?reminisce=1", false);
   visit_url(`choice.php?whichchoice=1463&pwd&option=1&mid={$monster[Cocktail Shrimp].id}`);
 
@@ -1619,7 +1618,7 @@ cs_test(10);
 void non_combat_test(){
 
 // Don't pay attention to this ;3
-if(my_id() == 3272033){
+if(get_property("lcs_seventy").to_boolean()){
   equip($item[Cincho de Mayo]);
   get_effect($effect[Party Soundtrack]);
 }
@@ -2005,17 +2004,35 @@ write_ccs(ccs, "lcswrapper_combat_script");
 
 boolean prefs_changed = false;
 string[string] script_preferences = { 
+  // Buying Borrowed time from the Mall/other pulls
   "autoSatisfyWithNPCs":"true",
   "autoSatisfyWithCoinmasters":"true",
   "autoSatisfyWithMall":"true",
+
+  // Removing automatic HP restores
   "hpAutoRecovery":"-0.05",
   "manaBurningThreshold":"-0.05",
   "mpAutoRecovery":"-0.05",
+
+  // Reset moods and custom combat/afteradventure scripts
   "currentMood":"apathetic",
   "customCombatScript":"lcswrapper_combat_script",
   "betweenBattleScript":"",
   "afterAdventureScript":"",
+
+  // June cleaver preferences
+  "choiceAdventure1467":"3",
+  "choiceAdventure1468":"2",
+  "choiceAdventure1469":"3",
+  "choiceAdventure1470": my_primestat() == $stat[Muscle] ? "3" : "2",
+  "choiceAdventure1471":"1",
+  "choiceAdventure1472":"1",
+  "choiceAdventure1473":"1",
+  "choiceAdventure1474": my_primestat() == $stat[Muscle] ? "3" : "1",
+  "choiceAdventure1475":"1" 
 };
+
+
 
 try {
   string[int] options = settings.join_strings(" ").split_string(" ");
