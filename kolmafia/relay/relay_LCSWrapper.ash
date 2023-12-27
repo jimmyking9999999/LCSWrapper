@@ -5,19 +5,28 @@ import <lcswrappermenu.ash>;
 buffer page;
 boolean[string] all_pref_availability;
 
-foreach it in preferences {
-    if(it.split_string("\\ \\|\\ ").count() >= 3){
-        // This hides it from showing on the GCLI for some reason, so I won't question it
-        all_pref_availability[it.to_string()] = cli_execute(`ash {it.split_string("\\ \\|\\ ")[3]}`).to_boolean();
+foreach x, it in preferences {
+    all_pref_availability[it] = true;
+
+
+    if(it.split_string("\\ \\|\\ ").count() >= 4){
+        // Really weird workaround. "0".to_boolean() and "false".to_boolean() *should* return false, but it doesn't, so we have to use .contains_text() instead =/
+
+        string execute = cli_execute(`ash {it.split_string("\\ \\|\\ ")[3]}`);
+        boolean usable = execute.contains_text('0').to_int() + execute.contains_text("false").to_int() > 0 ? true : false;
+        
+        all_pref_availability[it] = usable;
     }
 }
 
 
-void rawr(string preference){
+void display_pref_as_selector(string preference){
     string [int] preference_details = split_string(preference, "\\ \\|\\ ");
     /* preference_details: 0 => Mafia pref, 1 => Description, 2 => Options, 3 => Conditional (maybe) */ 
-    
-    if(preference_details.count() < 4 || (preference_details[3] != "") && all_pref_availability[preference_details[0]]) {
+    // [ Less than four options      ] OR [Options IS NOT ""            AND      Preference availability == true]
+
+    //print(`{preference_details[0]} -------- {all_pref_availability[preference]}`);
+    if(all_pref_availability[preference]){
         page.append('</tr>');
             page.append('<tr>');
                 page.append(`<td>{preference_details[0]}</td>`);
@@ -30,7 +39,7 @@ void rawr(string preference){
                         page.append(`<input type="text" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);
                     } else { 
 
-                        page.append(`<select name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);
+                        page.append(`<select name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);  
                         for (int i = 0; i < min(choices.count(), 11); i++) {
                             if (choices[i] == get_property(preference_details[0])) {
                                 page.append(`<option value="{choices[i]}" selected>{choices[i]}</option>`);
@@ -42,7 +51,22 @@ void rawr(string preference){
                     }
                     
         page.append('</select>');
+  
+
     }
+
+}
+
+void display_experimental_prefs(string preference){
+    string [int] preference_details = split_string(preference, "\\ \\|\\ ");
+    page.append('</tr>');
+    page.append('<tr>');
+    page.append(`<td>{preference_details[0]}</td>`);
+    page.append(`<td>{preference_details[1]}</td>`);
+    page.append('<td>');
+    page.append(`<input type="text" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);        
+    page.append('</select>');
+  
 }
 
 void main() {
@@ -168,7 +192,7 @@ page.append('<table> <tr>');
     page.append('<th>Selection</th>');
 
     foreach x, pref in preferences {
-        rawr(pref);    
+        display_pref_as_selector(pref);    
     }
 page.append('</td> </tr> </table>');
 
@@ -181,8 +205,9 @@ page.append('<p><b><center>Experimental Settings:</center></p></b>');
     page.append('<th>Selection</th>');
 
     foreach x, pref in manual_preferences {
-        rawr(pref);    
+        display_experimental_prefs(pref);    
     }
+
 page.append('</td> </tr> </table>');
 
 page.append('<center><input type="submit" value="Save Changes"></center>');
