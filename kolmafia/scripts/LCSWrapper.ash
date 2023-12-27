@@ -365,7 +365,7 @@ if(get_property("_juneCleaverFightsLeft") == 0 && have_equipped($item[June Cleav
 // This chunk below will attempt to skip borrowed time via level with 4 freeruns and a trainset + swap.
 
 // [                              Have familiars or skip time pref                                                                                     ] + [             Not in hardcore or train already set               ]
-if( (have_familiar($familiar[Pair of Stomping Boots]) || get_property("lcs_skip_borrowed_time") != "" || have_familiar($familiar[Frumious Bandersnatch]))  && !in_hardcore() && get_property("trainsetConfiguration") != ""){
+if( (have_familiar($familiar[Pair of Stomping Boots]) || get_property("lcs_skip_borrowed_time") == "Yes" || have_familiar($familiar[Frumious Bandersnatch]))  && !in_hardcore() && get_property("trainsetConfiguration") != ""){
     string shadow_freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill Throw Latte on Opponent; skill Throw Latte on Opponent; endif; abort;";
     
     if(have_familiar($familiar[Pair of Stomping Boots])){
@@ -1476,6 +1476,12 @@ if(get_property("lcs_seventy").to_boolean() && get_property("_locketMonstersFoug
   }
 }
 
+
+
+// TODO OnlyFax a Pterodactyl 
+
+
+
 foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze, Loyal as a Rock]{
   get_effect(it);
 }
@@ -1815,10 +1821,15 @@ meteor_shower();
 
 refresh();
 
-maximize(`Weapon damage percent, weapon damage, switch left-hand man, {(my_basestat($stat[muscle]) >= 150) ? "" : "-equip stick-knife of loathing"}`, false);
+matcher weapon_damage_matcher = create_matcher("<br>Weapon Damage \\+(\\d+)<br>", visit_url(`desc_item.php?whichitem=113452664`));
+string candy_cane_weapon_damage;
+
+if(weapon_damage_matcher.find()){
+  candy_cane_weapon_damage = weapon_damage_matcher.group(1);
+}
+
+maximize(`Weapon damage percent, weapon damage, switch left-hand man, {candy_cane_weapon_damage} bonus Candy Cane Sword Cane, {(my_basestat($stat[muscle]) >= 150) ? "" : "-equip stick-knife of loathing"}`, false);
 equip_stick_knife();
-
-
 
 cs_test(6);
 }
@@ -1940,6 +1951,18 @@ void donate_body_to_science(){
   cli_execute("hagnk all");
 
   refresh();
+
+
+  foreach fam in $familiars[Left-hand Man, Disembodied Hand]{
+    if(have_familiar(fam)){
+      use_familiar(fam);
+      if(equipped_item($slot[Familiar]) != $item[none]){
+        equip($slot[Familiar], $item[none]);
+      }
+    }
+  }
+
+
   if(available_amount($item[Beach Comb]).to_boolean()){
     cli_execute(`try; combo {11 - get_property("_freeBeachWalksUsed").to_int()}`);
   }
@@ -2066,7 +2089,7 @@ try {
 
   newline();
 
-  string current_script_ver = "v1.5";
+  string current_script_ver = "v1.51";
 
 
   if(get_property("lcs_start") != current_script_ver || available_choices["changelog"]){
@@ -2081,7 +2104,7 @@ try {
       newline();
 
       if(have_familiar($familiar[Pair of Stomping Boots])){
-        set_property("lcs_skip_borrowed_time", "true");
+        set_property("lcs_skip_borrowed_time", "Yes");
       }
 
       if(get_property("goorbo_clan") != ""){
@@ -2111,17 +2134,14 @@ try {
   
 
     print(`Welcome back, {my_name()}! Here's what changed:`, "teal");
+    print(`We fixed the relay script!`, "teal");
+    // Fix previous invalid pref naming
+    
+    if(get_property("lcs_skip_borrowed_time") == "true"){
+      set_property("lcs_skip_borrowed_time", "Yes");
+    }
 
-    print("- SC/Muscle Class support. Maybe mox. I'm not testing that.");
-    print("- Melf support");
-    print("- Witchess support");
-    print("- Deck support.");
-    print("- LOV support.");
-    print("- Tot support.");
-    print("- Refactoring. Introducing bugs to fix later. The usual.");
-    print("- If any of the above affect you, it's a good idea to run `lcswrapper setup` again!");
 
-    print("- Pull revamp still soon™️");
     newline();
 
     if(get_property("lcs_use_beta_version").to_lower_case() == "yes"){
