@@ -8,7 +8,7 @@ print_html("<center><font color=66b2b2><font size=3><i>Running LCSWrapper!</i></
 
 boolean sekrit;
 item mainstat_pizza = my_primestat() == $stat[Mysticality] ? $item[Calzone of Legend] : my_primestat() == $stat[Muscle] ? $item[Deep Dish of Legend] : $item[Pizza of Legend];
-
+string COMBAT_freefight = "if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort";
 
 void ascend() {
   // Ascends pastamancer, path blender. Buys astral pilsners & a pet sweater 
@@ -975,7 +975,7 @@ if(have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]
 }
 
 
-maximize(`{my_primestat()}, 4 ML, 3 {my_primestat()} exp, 1.33 exp, 30 {my_primestat()} experience percent, 3 familiar exp, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, -equip makeshift garbage shirt, 100 bonus Cincho de Mayo`, false); 
+maximize(`{my_primestat()}, 4 ML, 3 {my_primestat()} exp, 1.33 exp, 30 {my_primestat()} experience percent, 3 familiar exp, 160 bonus candy cane sword cane, 8000 bonus designer sweatpants, 690 bonus tiny stillsuit, 90 bonus unbreakable umbrella, -equip i voted, -equip Kramco Sausage-o-Matic, -equip makeshift garbage shirt, 100 bonus Cincho de Mayo`, false); 
 
 if(my_hp() < my_maxhp()){
   cli_execute("hottub");
@@ -1041,7 +1041,7 @@ if(get_property("snojoAvailable").to_boolean()){
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
   while(get_property("_snojoFreeFights").to_int() < 10){
     use_current_best_fam();
-    adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; skill saucegeyser; skill saucegeyser; attack;");
+    adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill micrometeorite; skill micrometeorite; endif; if hasskill Surprisingly Sweet Slash; skill Surprisingly Sweet Slash; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if haskill Surprisingly Sweet Stab; skill Surprisingly Sweet Stab; endif; skill saucegeyser; skill saucegeyser; attack;");
   }
 }
 
@@ -1104,7 +1104,7 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !av
 use_current_best_fam();
 
 love_tunnel();
-maximize(`{my_primestat()} experience percent, -tie`, false);
+maximize(`100 {my_primestat()} experience percent, -tie`, false);
 
 if(available_amount($item[January's Garbage Tote]).to_boolean()){
   cli_execute("fold makeshift garbage shirt");
@@ -1121,9 +1121,10 @@ if(available_amount($item[Autumn-aton]).to_boolean()){
 }
 
 boolean yoked_obtained = false;
-string nep_powerlevel = "if hasskill 7486; skill 7486; endif; if hascombatitem green mana && hasskill giant growth; skill giant growth; endif; if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser; attack; repeat !times 10; abort;";
+string nep_powerlevel = "if hasskill Micrometeorite; skill Micrometeorite; endif; if hasskill Surprisingly Sweet Slash; skill Surprisingly Sweet Slash; endif; if hasskill 7486; skill 7486; endif; if hascombatitem green mana && hasskill giant growth; skill giant growth; endif; if hasskill feel pride; skill feel pride; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill 7444; if hasskill Stuffed Mortar Shell; if hasskill Surprisingly Sweet Stab; skill Surprisingly Sweet Stab; endif; if hasskill shadow noodles; skill shadow noodles; endif; skill Stuffed Mortar Shell; skill 7444; endif; endif; skill saucegeyser; skill saucegeyser; attack; repeat !times 10; abort;";
 string nep_freerun_sideways = `skill bowl sideways; {freerun}; {nep_powerlevel}`;
 string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; endif; if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;";
+
 set_property("choiceAdventure1324", 5);
 while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   adv1($location[The Neverending Party], -1, nep_powerlevel);
@@ -1179,6 +1180,11 @@ if(item_amount($item[Lil' Doctor&trade; bag]).to_boolean()){
 }
 
 int freekills = get_all_freekills() >= 1 ? get_all_freekills() - 1 : get_all_freekills();
+// Saves two freekills for Fax/Lockets when running a 1/70 attempt
+if(get_property("lcs_seventy") == "true"){
+  freekills = freekills >= 2 ? freekills - 2 : freekills;
+}
+
 print(`Running {freekills} freekill{is_plural(freekills)} in the NEP!`,"teal");
 
 while(freekills > 0){
@@ -1281,7 +1287,7 @@ if(backup_uses != 0 && available_amount($item[Backup Camera]).to_boolean()){
   }
 }
 
-// TODO Witchess
+// TODO Witchess + Burning Leaves
 
 if(get_property("_shortOrderCookCharge").to_int() >= 9 || (get_property("camelSpit").to_int() > 94 && get_property("camelSpit").to_int() < 100)){
   foreach num in $strings[8, 22]{
@@ -1368,7 +1374,7 @@ if(have_familiar($familiar[Trick-or-Treating Tot]) && have_skill($skill[Map the 
   visit_url("adventure.php?snarfblat=138");
     if (handling_choice() && last_choice() == 1435){
       run_choice(1, false, `heyscriptswhatsupwinkwink={$monster[Amateur ninja].to_int()}`);
-      run_combat("if hasskill chest x-ray; skill chest x-ray; endif; if hasskill shattering punch; skill shattering punch; endif; if hasskill gingerbread mob hit; skill gingerbread mob hit; endif; if hasskill shocking lick; skill shocking lick; endif; if hascombatitem groveling gravel; use groveling gravel; endif; abort;");
+      run_combat(COMBAT_freefight);
       
     } else { abort("We couldn't map properly...?"); }
 
@@ -1478,8 +1484,38 @@ if(get_property("lcs_seventy").to_boolean() && get_property("_locketMonstersFoug
 
 
 
-// TODO OnlyFax a Pterodactyl 
 
+if(get_property("lcs_seventy") == "true" && !get_property("_photocopyUsed").to_boolean() && available_amount($item[photocopied monster]) == 0){
+  print("Now faxing a Pterodactyl!", "teal");
+
+  if(is_online("OnlyFax")){
+    chat_private("OnlyFax", "Pterodactyl");
+  } else { 
+    chat_private("EasyFax", "Pterodactyl");
+  }
+
+
+  for i from 1 to 3 {
+    wait(6);
+    cli_execute("fax receive");
+    if (get_property("photocopyMonster") != "Pterodactyl") {
+      cli_execute("fax send");
+    } else {
+      break;
+    }
+  }
+    
+  
+
+  if (available_amount($item[photocopied monster]) == 0 && (get_property("photocopyMonster") != "Pterodactyl")){
+    print(`Failed to fax a Pterodactyl!`, "red");
+  } else {
+    visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=4873`);
+    run_combat(`if hasskill feel envy; skill feel envy; endif; ` + COMBAT_freefight);
+  }
+
+  get_effect($effect[Over-Familiar With Dactyls]);
+}
 
 
 foreach it in $effects[Leash of Linguini, Blood Bond, Empathy, Ode to Booze, Loyal as a Rock]{
