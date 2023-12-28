@@ -1909,7 +1909,7 @@ if(my_adventures() < 2){
 }
 
 //TODO iterate over all of these and not use simmer if the sum of all of them is > 100% spell damage
-if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) && have_effect($effect[Spit upon]) != 1 && get_property("lcs_use_simmer") != "No"){
+if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) && have_effect($effect[Spit upon]) != 1 && get_property("lcs_use_simmer") != "No" && get_property("lcs_seventy") != "true"){
   use_skill(1, $skill[Simmer]);
 }
 
