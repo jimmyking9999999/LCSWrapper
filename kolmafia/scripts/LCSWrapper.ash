@@ -1041,7 +1041,7 @@ if(get_property("snojoAvailable").to_boolean()){
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
   while(get_property("_snojoFreeFights").to_int() < 10){
     use_current_best_fam();
-    adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill micrometeorite; skill micrometeorite; endif; if hasskill Surprisingly Sweet Slash; skill Surprisingly Sweet Slash; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if haskill Surprisingly Sweet Stab; skill Surprisingly Sweet Stab; endif; skill saucegeyser; skill saucegeyser; attack;");
+    adv1($location[The X-32-F Combat Training Snowman], -1, "if hasskill micrometeorite; skill micrometeorite; endif; if hasskill Surprisingly Sweet Slash; skill Surprisingly Sweet Slash; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; if hasskill sing along; skill sing along; endif; if hasskill Surprisingly Sweet Stab; skill Surprisingly Sweet Stab; endif; skill saucegeyser; skill saucegeyser; attack;");
   }
 }
 
@@ -2070,6 +2070,7 @@ string[string] script_preferences = {
 
   // Removing automatic HP restores
   "hpAutoRecovery":"-0.05",
+  "autoAbortThreshold":"0.0",
   "manaBurningThreshold":"-0.05",
   "mpAutoRecovery":"-0.05",
 
@@ -2089,6 +2090,10 @@ string[string] script_preferences = {
   "choiceAdventure1473":"1",
   "choiceAdventure1474": my_primestat() == $stat[Muscle] ? "3" : "1",
   "choiceAdventure1475":"1" 
+
+  // Autorestore prefs
+  "hpAutoRecoveryItems": "cannelloni cocoon;tongue of the walrus;lasagna bandages;doc galaktik's homeopathic elixir",
+  "mpAutoRecoveryItems": "doc galaktik's invigorating tonic;soda water;",
 };
 
 
