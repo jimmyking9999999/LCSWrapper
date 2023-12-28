@@ -2089,11 +2089,11 @@ string[string] script_preferences = {
   "choiceAdventure1472":"1",
   "choiceAdventure1473":"1",
   "choiceAdventure1474": my_primestat() == $stat[Muscle] ? "3" : "1",
-  "choiceAdventure1475":"1" 
+  "choiceAdventure1475":"1",
 
   // Autorestore prefs
-  "hpAutoRecoveryItems": "cannelloni cocoon;tongue of the walrus;lasagna bandages;doc galaktik's homeopathic elixir",
-  "mpAutoRecoveryItems": "doc galaktik's invigorating tonic;soda water;",
+  "hpAutoRecoveryItems":"cannelloni cocoon;tongue of the walrus;lasagna bandages;doc galaktik's homeopathic elixir",
+  "mpAutoRecoveryItems":"doc galaktik's invigorating tonic;soda water;",
 };
 
 
