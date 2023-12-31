@@ -1,7 +1,7 @@
 
 script "LCSWrapperCombat.ash";
-
-// LCSWrapperCombat - Uh, wanderer fix?
+import <LCSWrapperResources.ash>
+// LCSWrapperCombat - Uh, combat?
 
 string delevel(monster mon){
     buffer delevel_macro = "";
@@ -11,11 +11,15 @@ string delevel(monster mon){
         delevel_macro.append("skill curse of weaksauce;");
     }
 
+    if(have_skill($skill[Surprisingly Sweet Slash])){
+        delevel_macro.append("skill surprisingly sweet slash;");
+    }
+
     if(have_skill($skill[Micrometeorite])){
         delevel_macro.append("skill micrometeorite;");
     }
     // after deleveling
-    boolean safe_encounter = expected_damage(mon) <= 0.1 * my_hp() ? true : false;
+    boolean safe_encounter = expected_damage(mon) <= 0.1 * my_hp();
 
     if(safe_encounter){
 
@@ -35,6 +39,49 @@ string delevel(monster mon){
 
     return delevel_macro.to_string();
 }
+
+string auto_attack(){
+    buffer auto_attack_macro = "";
+
+    if(have_skill($skill[Surprisingly Sweet Stab])){
+        auto_attack_macro.append("skill Surprisingly Sweet Stab;");
+    }
+
+    if(have_skill($skill[Cincho: Projectile Piñata]) && get_property("lcs_seventy") == "true"){
+        auto_attack_macro.append("sub PP; if hasskill Cincho: Projectile Piñata; skill Cincho: Projectile Piñata; endif; endsub; call PP; repeat !pastround 15;");
+    }
+
+    return auto_attack_macro.to_string() + "attack; repeat !pastround 25; abort;";
+}
+
+
+
+
+string freekill(){
+
+    if(have_skill($skill[Chest x-ray])){
+        return "skill Chest x-ray;";
+    }
+
+    if(have_skill($skill[Shattering Punch])){
+        return "skill Shattering Punch;";
+    }
+
+    if(have_skill($skill[Gingerbread Mob Hit])){
+        return "skill Gingerbread Mob Hit;";
+    }
+
+    if(have_skill($skill[Shocking lick])){
+        return "skill Shocking lick;";
+    }
+
+    if(item_amount($item[Groveling Gravel])){
+        return "use Groveling Gravel;";
+    }
+
+    return "abort \"No freekills left!\";";
+}
+
 
 string freerun(){
     if((my_familiar() == $familiar[Pair of Stomping Boots] || (my_familiar() == $familiar[Frumious Bandersnatch] && have_effect($effect[Ode to Booze]).to_boolean())) && (get_property("_banderRunaways").to_int() + 1) * 5 >= numeric_modifier("Familiar Weight")){
@@ -61,16 +108,19 @@ string freerun(){
         return "skill feel hatred";
     }
 
-    return(`abort \"Ran out of freeruns!\"`);
+    return `abort \"Ran out of freeruns!\"`;
 }
 
 
 string main(int round, monster encounter, string page) {
 
 location loc = my_location();
-int safe_rounds = my_familiar() == $familiar[Left-hand Man] ? (ceil(encounter.monster_hp() /  numeric_modifier("Familiar Weight") * 1.5)) : 31;
+int safe_rounds = my_familiar() == $familiar[Left-hand Man] || my_familiar() == $familiar[Stomping Boots] ? (ceil(encounter.monster_hp() /  numeric_modifier("Familiar Weight") * 1.5)) : 31;
         
 switch (encounter) {
+
+    case $monster[Piranha plant]:
+        encounter.delevel() + autoattack();
 
     case $monster[novelty tropical skeleton]:
         return "skill spit jurassic acid";
@@ -88,7 +138,7 @@ switch (encounter) {
             return "skill snokebomb";
         }
 
-        abort("Encountered mother slime with no way to retain inner elf. Please DM Jimmyking.");
+        abort("Encountered mother slime with no way to retain inner elf!");
 
 
     case $monster[candied yam golem]:
@@ -107,9 +157,8 @@ switch (encounter) {
 
     case $monster[Witchess Knight]:
     case $monster[Witchess Bishop]:
-        encounter.delevel();
-        return "attack; repeat";
-
+        encounter.delevel() + autoattack();
+        
 
 
 
