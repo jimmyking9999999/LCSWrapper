@@ -590,6 +590,18 @@ boolean witchess_fight(monster piece, string combat_filter){
 	return true;
 }
 
+//--cincho
+int get_cincho_total(){
+    int [int] cinchLevels = {30, 30, 30, 30, 30, 25, 20, 15, 10, 5};
+
+	int total_cinch_level;	
+
+    for(int i = get_property("timesRested").to_int(); i < total_free_rests(); i++) {
+        total_cinch_level += (i >= count(cinchLevels)) ? 5 : cinchLevels[i];
+    }
+
+	return total_cinch_level;
+}
 
 /// /// /// /// ///
 string is_an(string it){
@@ -933,6 +945,7 @@ string[int] mus_effects = {
     9: "Phorcefullness",
 	10: "Lack of Body-Building",	
     11: "The Power of LOV",
+	12: "In the Depths",
 };
 
 string[int] hp_effects = {
@@ -1028,6 +1041,7 @@ string[int] weapon_damage_effects = {
     750: "Engorged weapon", // 750
     758: "Pronounced Potency", // 758
     1136: "Ham-fisted", // 1136
+    1136: "Wasabi With You", // 1136
     1750: "Faboooo", // 1750
     1726: "Billiards Belligerence", // 1726
     2500: "The Power of LOV", // 2500
@@ -1137,7 +1151,15 @@ string [int] effects;
 			i++;
 
 			if(effects.count() == i){
-				abort(`We couldn't reach your turn treshold with all your resources. ({scrape_test_turns(test)} turns left)`);
+				print(`We couldn't reach your turn treshold with all your resources. ({scrape_test_turns(test)} turns left)`, "red");
+				// TODO lol
+				if(get_property("lcs_seventy") == "true"){
+					print("But we're attempting a 1/70 run. Time to burn wishes now!", "teal");
+					print(`Sorry, not implemented yet >.<`);
+				}
+
+				abort();
+
 			}
 		}
 
