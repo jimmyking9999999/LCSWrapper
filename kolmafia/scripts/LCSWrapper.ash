@@ -185,8 +185,8 @@ set_auto_attack(0);
 
 cli_execute("try; backupcamera reverser on");
 
-if(!visit_url("campground.php").contains_text("mushroom")){
-  cli_execute("garden pick");
+if(get_campground()[$item[Packet of mushroom spores]] == 0){
+  cli_execute("try; garden pick");
 }
 
 
@@ -658,7 +658,7 @@ if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombat
 
       case "El Dia de Los Muertos Borrachos":
       case "Feast of Boris":
-        print(`It's {holiday()}! Let's get rid of the starting wanderer now, and hope another one doesn't come~`, "teal");
+        print(`It's {holiday()}! Let's get rid of the starting wanderer now, and hope another one doesn't come`, "teal");
         
         visit_url("adventure.php?snarfblat=528");
         run_combat(freerun);
@@ -703,8 +703,14 @@ if(get_property("lcs_get_warbear_potion") == "Yes"){
   } 
 }
 
+// Early Witch-breaded wish to also help with powerleveling 
 if(get_property("lcs_seventy").to_boolean()){
   wish_effect("Witch Breaded");
+}
+
+// Similar idea, but I'm not too sure
+if(my_id() == 3272033){
+  wish_effect("Nigh-invincible");
 }
 
 
@@ -900,6 +906,8 @@ foreach x, eff in stat_powerlevel_effects {
   get_effect(eff.to_effect()); 
 }
 
+// TODO: Dramatic Range for reagent buffs currently fails (sometimes)
+
 
 if(get_property("lcs_use_birds") == "Before Powerleveling"){
   use_skill(1, $skill[Visit your Favorite Bird]);
@@ -1036,6 +1044,10 @@ if(((get_property("_godLobsterFights")) < 3) && have_familiar($familiar[God Lobs
   use_familiar(prev_fam);
 }
 
+
+/*                                                                  [    TOTAL       ]      [NEP]  [Freekills]    [Save in case]  */
+int pinata_uses = get_property("lcs_seventy").to_boolean() ? get_cincho_total() / 5 - 10 - get_all_freekills() - 2 : 0; 
+
 if(get_property("snojoAvailable").to_boolean()){
   visit_url("place.php?whichplace=snojo&action=snojo_controller");
   visit_url("choice.php?pwd&whichchoice=1118&option=3");
@@ -1045,7 +1057,6 @@ if(get_property("snojoAvailable").to_boolean()){
   }
 }
 
-// TODO: Use june cleaver and have it autoadv in noob cave when ready
 if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[closed-circuit pay phone]).to_boolean()))){
   string shadow_rift_combat = "if !haseffect 2698; if hasskill 7407 && !haseffect 2698; skill 7407; endif; endif; if hasskill 7297; skill 7297; endif; if hasskill curse of weaksauce; skill curse of weaksauce; endif; call sa; repeat !times 6; attack; repeat !times 10; sub sa; if !mpbelow 30; skill saucegeyser; endif; endsub; abort";
 
@@ -1061,7 +1072,7 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
     boolean break_flag;
 
     use_current_best_fam();
-    adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, shadow_rift_combat);
+    adv1($location[Shadow Rift (The Right Side of the Tracks)], -1, pinata_uses-- > 0 ? "if hasskill 7442; skill 7442; endif;" + shadow_rift_combat : shadow_rift_combat);
 
     if(handling_choice()){
       run_choice(-1);
@@ -1074,6 +1085,9 @@ if((!have_effect($effect[Shadow Waters]).to_boolean() && (item_amount($item[clos
   }
 }
 
+if(get_campground()[$item[Packet of mushroom spores]] == 1){
+  cli_execute("try; garden pick");
+}
 
 if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !available_amount($item[battle broom]).to_boolean()){
   print("Recalling that one time when you were reincarnated as a witchess witch.","teal");
@@ -1127,7 +1141,9 @@ string nep_powerlevel_freekills = "if hasskill sing along; skill sing along; end
 
 set_property("choiceAdventure1324", 5);
 while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
-  adv1($location[The Neverending Party], -1, nep_powerlevel);
+
+  // what the heck is this god I need to make a combat script already
+  adv1($location[The Neverending Party], -1, pinata_uses-- > 0 ? "if hasskill 7442; skill 7442; endif;" + nep_powerlevel : nep_powerlevel);
 
   if((!have_effect($effect[\[1701\]Hip to the Jive]).to_boolean()) && (my_meat() >= 5000) && get_property("lcs_speakeasy_drinks").contains_text("Hot Socks")){
     cli_execute("drink 1 hot socks");
@@ -1146,14 +1162,12 @@ while(get_property("_neverendingPartyFreeTurns").to_int() <= 9){
   }
 
 
-  if(visit_url("place.php?whichplace=chateau").contains_text(`Rest in Bed (free)`) && get_property("_cinchUsed") <= 70){
-    visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
-  }
 
   if(my_hp() * 3 < my_maxhp()){
     restore_hp(my_maxhp());
   }
 
+  // TODO Remove this
   if(have_effect($effect[Beaten Up]).to_boolean()){
     string [int] cleaverQueue = get_property("juneCleaverQueue").split_string(","); 
 
@@ -1498,7 +1512,7 @@ if(get_property("lcs_seventy") == "true" && !get_property("_photocopyUsed").to_b
   for i from 1 to 3 {
     wait(6);
     cli_execute("fax receive");
-    if (get_property("photocopyMonster") != "Pterodactyl") {
+    if (get_property("photocopyMonster") != "pterodactyl") {
       cli_execute("fax send");
     } else {
       break;
@@ -1507,7 +1521,7 @@ if(get_property("lcs_seventy") == "true" && !get_property("_photocopyUsed").to_b
     
   
 
-  if (available_amount($item[photocopied monster]) == 0 && (get_property("photocopyMonster") != "Pterodactyl")){
+  if (available_amount($item[photocopied monster]) == 0 && (get_property("photocopyMonster") != "pterodactyl")){
     print(`Failed to fax a Pterodactyl!`, "red");
   } else {
     visit_url(`inv_use.php?pwd={my_hash()}&which=3&whichitem=4873`);
@@ -1722,6 +1736,7 @@ if(have_familiar($familiar[Ghost of Crimbo Carols]) && !have_effect($effect[Do Y
   if(have_effect($effect[Feeling Lost]).to_boolean()){
     abort("We have feeling lost... Maybe fax a sausage goblin?");
   } 
+  // TODO Kramco Counter, Fight in the Haunted Kitchen after X turns spent since first Sausage Goblin
 
   adv1($location[The Outskirts of Cobb's Knob], -1, `if monsterid 2104; skill saucegeyser; endif; {freerun}; abort;`);
 
@@ -2063,7 +2078,7 @@ write_ccs(ccs, "lcswrapper_combat_script");
 
 boolean prefs_changed = false;
 string[string] script_preferences = { 
-  // Buying Borrowed time from the Mall/other pulls
+  // Buying borrowed time and other pulls from the mall
   "autoSatisfyWithNPCs":"true",
   "autoSatisfyWithCoinmasters":"true",
   "autoSatisfyWithMall":"true",
@@ -2078,7 +2093,7 @@ string[string] script_preferences = {
   "currentMood":"apathetic",
   "customCombatScript":"lcswrapper_combat_script",
   "betweenBattleScript":"",
-  "afterAdventureScript":"",
+  "afterAdventureScript":"LCSWrapperPostAdv.ash",
 
   // June cleaver preferences
   "choiceAdventure1467":"3",
@@ -2094,6 +2109,9 @@ string[string] script_preferences = {
   // Autorestore prefs
   "hpAutoRecoveryItems":"cannelloni cocoon;tongue of the walrus;lasagna bandages;doc galaktik's homeopathic elixir",
   "mpAutoRecoveryItems":"doc galaktik's invigorating tonic;soda water;",
+
+  // Misc. prefs
+  
 };
 
 
@@ -2366,6 +2384,7 @@ try {
     case "non combat":
     case "non_combat":
     case "non-combat":
+    case "noncombat":
     case "-combat":
       if (!contains_text(get_property("csServicesPerformed"), "Be a Living Statue")){
         test("non_combat");
@@ -2404,8 +2423,8 @@ try {
 
     case "spell damage":
     case "spell_damage":
-    case "spl_damage":
-    case "spl damage":
+    case "spell_dmg":
+    case "spell dmg":
       if (!contains_text(get_property("csServicesPerformed"), "Make Sausage")){
         test("spell_damage");
       }
@@ -2434,9 +2453,7 @@ try {
   newline();
   print("Summary:", "green");
   summary(false);
-}
-
-finally {
+} finally {
   print(get_property("csServicesPerformed").split_string(",").count() == 11 || !prefs_changed ? "" : "Early abort! Uh-oh.", "red");
 
   if(prefs_changed) {
