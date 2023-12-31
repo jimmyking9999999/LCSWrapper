@@ -26,7 +26,7 @@ string [int] preferences = {
     "lcs_speakeasy_drinks | Would you like the script to drink anything from the speakeasy? | None/Bee's Knees Only/Sockdollager Only/Hot Socks Only/Bee's Knees and Sockdollager/Bee's Knees and Hot Socks/Sockdollager and Hot Socks/Bee's Knees, Sockdollager, and Hot Socks",
     "lcs_get_warbear_potion | Would you like the script to obtain (wish or pull) new and improved or experimental G-9 before powerleveling? | Yes/No",
     "lcs_get_a_contender | What about the 'A Contender' buff? | Yes/No",
-    `lcs_wish_mainstat_percent | Would you like to wish for a 50 {my_primestat()} experience percent buff? | Yes/No`,
+    `lcs_wish_mainstat_percent | Would you like to wish for a 50 mainstat experience percent buff? | Yes/No`,
     "lcs_vip_fortune_buff | Which fortune teller buff would you like to obtain? | Mys/Mus/Mox/Familiar/Item/None",
     "lcs_make_camel_equip | Would you like to use a clip art cast for your melodramedary's familiar equipment? | Yes/No | (have_familiar($familiar[Melodramedary]) && have_skill($skill[Summon Clip Art]))",
     "lcs_use_nellyville | Would you like the script to use a Charter: Nellyville for extra help during powerleveling? | Yes/No | item_amount($item[2002 Mr. Store Catalog])",
@@ -48,13 +48,14 @@ string [int] preferences = {
 // Manual/automatic prefrences to set with `set x = y`, mainly for debugging
 string [int] manual_preferences = {
     "lcs_excluded_buffs | Names of buffs to be excluded from get_effect(), seperated by comma ",
-    "lcs_get_yoked | Acquire holiday yoked from NEP? Automatically set to false if needed.",
+    "lcs_get_yoked | Acquire holiday yoked from NEP monsters? Automatically set to false if needed.",
     "lcs_start | Script version!",
     "lcs_time_at_start | Time of script start. Requires at least 30 minutes of downtime to update",
     "lcs_autopull_at_start | Names of items to be automatically pulled at the start, seperated by comma",
     "lcs_break_prism | Avoids breaking the prism when set to 'false', for PVP or trophy reasons",
-    "lcs_wish_limit | Wish limit",
+    "lcs_wish_limit | Wish limit!",
     "lcs_test_order_override | Test order override, seperated by comma. E.g 'mys, mox, mus, hp, hot res, non combat, item, fam weight, weapon damage, spell damage'", 
+    "lcs_seventy | Disregard resources in order to get a 1/70 CS run when set to 'true'"
     
 };
 
