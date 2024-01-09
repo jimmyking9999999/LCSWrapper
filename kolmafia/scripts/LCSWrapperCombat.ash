@@ -120,7 +120,7 @@ int safe_rounds = my_familiar() == $familiar[Left-hand Man] || my_familiar() == 
 switch (encounter) {
 
     case $monster[Piranha plant]:
-        encounter.delevel() + autoattack();
+        encounter.delevel() + auto_attack();
 
     case $monster[novelty tropical skeleton]:
         return "skill spit jurassic acid";
@@ -157,7 +157,7 @@ switch (encounter) {
 
     case $monster[Witchess Knight]:
     case $monster[Witchess Bishop]:
-        encounter.delevel() + autoattack();
+        encounter.delevel() + auto_attack();
         
 
 
