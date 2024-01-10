@@ -15,7 +15,7 @@ script "LCSWrapperResources.ash";
 --camel
 --melf
 --witchess
-
+--barrelgod
 Note: Not all iotms supported are in this file. Currently in-process of transferring everything over =)
 */
 
@@ -338,13 +338,13 @@ boolean wish_effect(string eff){
 }
 
 // --alicearmy
-boolean alice_army_snack(effect soda){
-	item snack = substring(soda.default, 6).to_item();
+boolean alice_army_snack(effect soda, item snack){
 
 	if(!get_property("grimoire3Summons").to_boolean() && have_skill($skill[Summon Alice's Army Cards])){
 		use_skill(1, $skill[Summon Alice's Army Cards]);
 		buy($coinmaster[Game Shoppe Snacks], 1, snack);
 	}
+
 	if(item_amount(snack).to_boolean()){
 		use(1, snack);
 	}
@@ -602,6 +602,15 @@ int get_cincho_total(){
 
 	return total_cinch_level;
 }
+
+//-barrelgod
+void barrelgod(string type) { 
+	if(get_property("barrelShrineUnlocked") == "false" || get_property("_barrelPrayer") == "true") {
+		return;
+	}
+	cli_execute(`try; barrelprayer {type}`);// Amazing.
+}
+
 
 /// /// /// /// ///
 string is_an(string it){
@@ -995,6 +1004,7 @@ string[int] fam_weight_effects = {
     0: "Empathy", // 0
     1: "Leash of Linguini", // 0
     2: "Blood Bond", // 0
+	660: "Do I Know You From Somewhere?", //
     1525: "Robot Friends", // 1525
     2200: "Heart of Green", 
     1726: "Billiards Belligerence", // 1726
@@ -1055,6 +1065,7 @@ string[int] spell_damage_effects = {
     2: "Carol of the Hells", // 0
     3: "Spirit of Peppermint", // 0
     4: "Song of Sauce", // 0
+	5: "In the 'zone zone!", // 0
     69: "Cowrruption", // 69. nice.
     500: "Paging Betty", // @9k in the mall, but I don't think these sell. TODO use coldfront mall data?
     300: "Imported Strength", // 300
