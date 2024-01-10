@@ -218,6 +218,7 @@ if(!have_effect($effect[Inscrutable Gaze]).to_boolean() && have_skill($skill[Ins
   use_skill(1, to_skill($effect[Inscrutable Gaze]));
 }
 
+
 if ((get_property("voteAlways").to_boolean()) && !(get_property("_voteToday").to_boolean())){
   visit_url('place.php?whichplace=town_right&action=townright_vote');
   waitq(1);
@@ -589,6 +590,7 @@ if(get_property("lcs_deck_usage").contains_text("Green") && available_amount($it
   }
 }
 
+
 if(have_equipped($item[Kramco Sausage-o-Matic&trade;])){
   equip($slot[Off-hand], $item[none]);
 }
@@ -709,7 +711,7 @@ if(get_property("lcs_seventy").to_boolean()){
 }
 
 // Similar idea, but I'm not too sure
-if(my_id() == 3272033){
+if(my_id() == 3272033 && get_property("lcs_seventy").to_boolean()){
   wish_effect("Nigh-invincible");
 }
 
@@ -720,6 +722,10 @@ if(available_amount($item[Eight Days a Week Pill Keeper]).to_boolean() && have_f
 
 if(!have_effect($effect[A Contender]).to_boolean() && get_property("lcs_get_a_contender") == "Yes"){
   wish_effect("A contender");
+}
+
+if(item_amount($item[The Inquisitor's unidentifiable object]).to_boolean()){
+  chew(1, $item[The inquisitor's unidentifiable object]);
 }
 
 effect mainstat_experience_effect = my_primestat() == $stat[Mysticality] ? $effect[Different Way Of Seeing Things] : my_primestat() == $stat[Moxie] ? $effect[Thou Shant Not Sing] : $effect[HGH-charged];
@@ -863,7 +869,7 @@ if(available_amount($item[beach comb]).to_boolean()) {
     break;
 
     case $stat[Mysticality]:
-    	get_effect($effect[Do I know you from somewhere?]);
+    	get_effect($effect[We're All Made of Starfish]);
     break;
 
     case $stat[Moxie]:
@@ -1368,6 +1374,11 @@ if (item_amount($item[mumming trunk]) > 0) {
 	cli_execute('try; mummery item');
 }
 
+
+if(my_class() == $class[Pastamancer]){
+  barrelgod("buff");
+}
+
 if(!have_effect($effect[One Very Clear Eye]).to_boolean() && get_property("lcs_get_cyclops_eyedrops") == "yes"){
   print("Getting eyedrops!", "teal");
   retrieve_item($item[11-Leaf Clover]);
@@ -1401,8 +1412,6 @@ if(get_property("sourceTerminalEducateKnown") != ""){
   cli_execute("try; terminal enhance items.enh");
 }
 
-maximize(`item, booze drop, -equip broken champagne bottle, {(have_familiar($familiar[Trick-or-Treating Tot]) && available_amount($item[li'l ninja costume]).to_boolean()) ? "switch Trick-or-Treating Tot" : "switch left-hand man"}`, false); 
-
 if((my_inebriety() < 7) && (item_amount($item[Sacramento Wine]) > 0)){
   use_skill(1, $skill[The Ode to Booze]);
 
@@ -1419,6 +1428,7 @@ if((my_inebriety() < 7) && (item_amount($item[Sacramento Wine]) > 0)){
 
 
 refresh();
+maximize(`item, booze drop, -equip broken champagne bottle, {(have_familiar($familiar[Trick-or-Treating Tot]) && available_amount($item[li'l ninja costume]).to_boolean()) ? "switch Trick-or-Treating Tot" : "switch left-hand man"}`, false); 
 
 cs_test(9);
 
@@ -1720,6 +1730,11 @@ if(get_property("_snokebombUsed").to_int() <= 2){
 
 camel_spit();
 
+
+if(my_class() == $class[Seal Clubber]){
+  barrelgod("buff");
+}
+
 if(have_effect($effect[Holiday Yoked]).to_boolean()){
   set_property("lcs_skip_yoked", "true");
 }
@@ -1899,6 +1914,8 @@ if(get_property("lcs_use_birds") == "During Weapon or Spell Damage Test"){
   }
 }
 
+
+
 if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" && !available_amount($item[battle broom]).to_boolean()){
   print("Recalling that one time when you were reincarnated as a witchess witch.","teal");
 
@@ -1909,7 +1926,13 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" &&
   maximize("10 weapon damage, -1 moxie, -1 muscle, -10 ml, 1000 bonus fourth of may cosplay saber, -equip combat lover's locket", false);
   refresh();
 
-  string combat_filter = "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+  if(have_familiar($familiar[Nanorhino]) && get_property("_nanorhinoCharge") == "100"){
+    use_familiar($familiar[Nanorhino]);
+  }
+
+  string combat_filter = have_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+
+
   if(!witchess_fight($monster[Witchess Witch], combat_filter)){
     visit_url("inventory.php?reminisce=1", false);
     visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1941");
@@ -1926,6 +1949,10 @@ if(my_adventures() < 2){
 //TODO iterate over all of these and not use simmer if the sum of all of them is > 100% spell damage
 if(!have_effect($effect[Simmering]).to_boolean() && have_skill($skill[Simmer]) && have_effect($effect[Spit upon]) != 1 && get_property("lcs_use_simmer") != "No" && get_property("lcs_seventy") != "true"){
   use_skill(1, $skill[Simmer]);
+}
+
+if(my_class() == $class[Sauceror]){
+  barrelgod("buff");
 }
 
 if((have_skill($skill[Deep Dark Visions])) && (!have_effect($effect[Visions of the Deep Dark Deeps]).to_boolean())){
@@ -1963,14 +1990,14 @@ if(!have_effect($effect[Mental A-cue-ity]).to_boolean()){
   cli_execute("pool 2");
 }
 
-if(pulls_remaining() > 0 && !alice_army_snack($effect[Pisces in the Skyces])){
+if(pulls_remaining() > 0 && !alice_army_snack($effect[Pisces in the Skyces], $item[Tobiko marble soda])){
 
   pull_item($item[Tobiko marble soda]);
   use(1, $item[Tobiko marble soda]);
 }
 
 // TODO: Preference for paw/wish uses
-if(my_id() == "3272033"){
+if(my_id() == "3272033" && get_property("lcs_seventy").to_boolean()){
   foreach eff in $strings[Sparkly!, Witch Breaded, Pisces in the Skyces, Celestial Mind]{
     if(get_property("_monkeyPawWishesUsed") < 4 && get_property("_monkeyPawWishesUsed") != 0){
       wish_effect(eff);
@@ -1987,7 +2014,9 @@ if(pulls_remaining() > 0){ // TODO: Priority for spell damage stuff if pulls are
 
 maximize(`Spell damage, spell damage percent, switch left-hand man, {(my_basestat($stat[muscle]) >= 150) ? "" : "-equip stick-knife of loathing"}`, false);
 
-
+if(item_amount($item[Sugar Sheet]) >= 1 && available_amount($item[Sugar Chapeau]) == 0){
+  create(1, $item[Sugar chapeau]);
+}
 
 equip_stick_knife();
 cs_test(7);
