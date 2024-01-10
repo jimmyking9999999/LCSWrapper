@@ -48,7 +48,7 @@ string [int] preferences = {
 // Manual/automatic prefrences to set with `set x = y`, mainly for debugging
 string [int] manual_preferences = {
     "lcs_excluded_buffs | Names of buffs to be excluded from get_effect(), seperated by comma ",
-    "lcs_get_yoked | Acquire holiday yoked from NEP monsters? Automatically set to false if needed.",
+    "lcs_skip_yoked | Acquire holiday yoked from NEP monsters? Automatically set to false if needed.",
     "lcs_start | Script version!",
     "lcs_time_at_start | Time of script start. Requires at least 30 minutes of downtime to update",
     "lcs_autopull_at_start | Names of items to be automatically pulled at the start, seperated by comma",
