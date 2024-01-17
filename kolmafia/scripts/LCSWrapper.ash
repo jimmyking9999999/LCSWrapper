@@ -1124,7 +1124,12 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !av
   maximize("100 weapon damage, mys, -1 moxie, -1 muscle, -10 ml, 1000 bonus fourth of may cosplay saber, -equip combat lover's locket", false);
   refresh();
 
-  string combat_filter = "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 20; attack; repeat !times 9";
+  if(have_familiar($familiar[Nanorhino]) && get_property("_nanorhinoCharge") == "100"){
+    use_familiar($familiar[Nanorhino]);
+  }
+
+  string combat_filter = have_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+
   if(!witchess_fight($monster[Witchess Witch], combat_filter)){
     visit_url("inventory.php?reminisce=1", false);
     visit_url("choice.php?whichchoice=1463&pwd&option=1&mid=1941");
