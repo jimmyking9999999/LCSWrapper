@@ -288,7 +288,7 @@ if(get_property("_clanFortuneConsultUses").to_int() != 3){
       chatbot = "averagechat";
     break;
 
-    case "Bonus Adventures From Hell":
+    case "Bonus Adventures from Hell":
       chatbot = "onlyfax";
     break;
 
