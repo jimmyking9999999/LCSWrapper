@@ -926,35 +926,33 @@ string[int] mys_effects = {
 };
 
 string[int] mox_effects = {
-    0: "Expert Oiliness",
-    1: "Song of bravado",
-    2: "Blubbered up",
-    3: "Disco state of mind",
-    4: "Mariachi mood",
-    5: "Butt-rock hair",
-    6: "Unrunnable face",
-    7: "Feeling Excited",
-    8: "Quiet Desperation",
-    9: "Stevedave's Shanty of Superiority",
-    10: "The Moxious Madrigal",
-    11: "aMAZing",
+    0: "Song of bravado",
+    1: "Blubbered up",
+    2: "Disco state of mind",
+    3: "Mariachi mood",
+    4: "Butt-rock hair",
+    5: "Unrunnable face",
+    6: "Feeling Excited",
+    7: "Quiet Desperation",
+    8: "Stevedave's Shanty of Superiority",
+    9: "The Moxious Madrigal",
+    10: "aMAZing",
     
 };
 
 string[int] mus_effects = {
-    0: "Expert Oiliness",
-    1: "Go get 'em, tiger!",
-    2: "Seal clubbing frenzy",
-    3: "Rage of the reindeer",
-    4: "Patience of the tortoise",
-    5: "Disdain of the war snapper",
-    6: "Song of bravado",
-    7: "Quiet determination",
-    8: "Feeling excited",
-    9: "Phorcefullness",
-	10: "Lack of Body-Building",	
-    11: "The Power of LOV",
-	12: "In the Depths",
+    0: "Go get 'em, tiger!",
+    1: "Seal clubbing frenzy",
+    2: "Rage of the reindeer",
+    3: "Patience of the tortoise",
+    4: "Disdain of the war snapper",
+    5: "Song of bravado",
+    6: "Quiet determination",
+    7: "Feeling excited",
+    8: "Phorcefullness",
+	9: "Lack of Body-Building",	
+    10: "The Power of LOV",
+	11: "In the Depths",
 };
 
 string[int] hp_effects = {
