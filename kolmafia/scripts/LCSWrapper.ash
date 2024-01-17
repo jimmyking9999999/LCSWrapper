@@ -1996,6 +1996,18 @@ if((my_meat() > 1000) && !(get_property("_madTeaParty")).to_boolean() && get_pro
   cli_execute("hatter 11");
 }
 
+if(have_familiar($familiar[Grim Brother])){
+  cli_execute("grim damage");
+}
+
+if(get_property("_grimoireConfiscatorSummons").to_int() == 0){
+  cli_execute("cast summon confiscated things");
+}
+
+if(item_amount($item[confiscated cell phone])>0) {
+  cli_execute("use confiscated cell phone");
+}
+
 meteor_shower();
 
 foreach it in $effects[AAA-Charged, Carol of the Hells, Spirit of Peppermint, Song of Sauce]{
