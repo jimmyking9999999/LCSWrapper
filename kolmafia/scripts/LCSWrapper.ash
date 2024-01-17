@@ -141,7 +141,17 @@ if(familiar_equipped_equipment(my_familiar()) != $item[Tiny Stillsuit] && famili
 }
 
 if(item_amount($item[mumming trunk]) > 0) {
-	cli_execute(`try; mummery {my_primestat()}`);
+    switch (my_primestat()) {
+      case $stat[Muscle]:
+	cli_execute(`try; mummery muscle`);
+      break;
+      case $stat[Mysticality]:
+	cli_execute(`try; mummery myst`);
+      break;
+      case $stat[Moxie]:
+	cli_execute(`try; mummery moxie`);
+      break;    
+    }
 }
 
 if(get_property("frAlways").to_boolean() && available_amount($item[Fantasyrealm g. e. m.]) == 0) {
