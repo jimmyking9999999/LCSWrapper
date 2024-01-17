@@ -1423,7 +1423,7 @@ if(have_familiar($familiar[Trick-or-Treating Tot]) && have_skill($skill[Map the 
 
 
 
-if(get_property("sourceTerminalEducateKnown") != ""){
+if((get_property("sourceTerminalEducateKnown") != "") && (get_property("lcs_skip_source_terminal") != "Yes")){
   cli_execute("try; terminal enhance items.enh");
 }
 

@@ -42,7 +42,7 @@ string [int] preferences = {
     "lcs_deck_usage | What do you want to cheat with your deck? | Green Mana/Rope/Mickey Mantle/Green Mana + Rope/Mickey Mantle + Rope/Mickey Mantle + Green Mana/None | available_amount($item[Deck of Every Card])",
 
     "lcs_skip_borrowed_time | Would you like to have the script skip pulling/creating borrowed time? (Will pull your mainstat CBB legend dish or make a perfect drink!) Only enable this if you have >4 freeruns! | Yes/No",
-    
+    "lcs_skip_source_terminal | Would you like to skip getting items.enh from your source terminal? | Yes/No",
 };
 
 // Manual/automatic prefrences to set with `set x = y`, mainly for debugging
