@@ -786,7 +786,7 @@ if(!get_property("lyleFavored").to_boolean()){
 }
 
 if(!get_property("_aprilShower").to_boolean()){
-  cli_execute(my_primestat() == $stat[Mysticality] ? "shower lukewarm" : my_primestat() == $stat[Moxie] ? "shower cool" : "shower hot");
+  cli_execute(my_primestat() == $stat[Mysticality] ? "shower lukewarm" : my_primestat() == $stat[Moxie] ? "shower cool" : "shower warm");
 }
 
 if (get_property("daycareOpen").to_boolean() && !get_property("_daycareSpa").to_boolean()){
