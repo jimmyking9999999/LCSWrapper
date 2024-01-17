@@ -816,6 +816,11 @@ if((available_amount($item[Bastille Battalion control rig]).to_boolean()) && (!g
   cli_execute("bastille mainstat brutalist");
 }
 
+// Possible to get here if pizza is specified in pull list & don't have trainset to hit level 5 before wire test
+if((item_amount(mainstat_pizza) > 0) && (my_level() >= 5)){
+  eat(1, mainstat_pizza);
+}
+
 string mainstat_pizza_eaten = (mainstat_pizza == $item[Deep Dish of Legend]) ? "deepDishOfLegendEaten" : (mainstat_pizza == $item[Calzone Of Legend]) ? "calzoneOfLegendEaten" : "pizzaOfLegendEaten";
 
 if(storage_amount(mainstat_pizza).to_int() == 0 && !get_property(mainstat_pizza_eaten).to_boolean() && !in_hardcore()){
