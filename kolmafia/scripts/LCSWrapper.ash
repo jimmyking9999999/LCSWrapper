@@ -1128,7 +1128,7 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before Powerleveling)" && !av
     use_familiar($familiar[Nanorhino]);
   }
 
-  string combat_filter = have_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+  string combat_filter = my_effective_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
 
   if(!witchess_fight($monster[Witchess Witch], combat_filter)){
     visit_url("inventory.php?reminisce=1", false);
@@ -1950,7 +1950,7 @@ if(get_property("lcs_rem_witchess_witch") == "Yes (Before spell damage test)" &&
     use_familiar($familiar[Nanorhino]);
   }
 
-  string combat_filter = have_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
+  string combat_filter = my_effective_familiar($familiar[Nanorhino]) ? `{have_skill($skill[Spaghetti Spear]) ? "skill Spaghetti Spear;" : ""} {!have_skill($skill[Spaghetti Spear]) && have_skill($skill[Salsaball]) ? "skill Salsaball;" : ""} sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9` : "sub LTS; if hasskill Lunging Thrust-Smack; skill Lunging Thrust-Smack; endif; endsub; call LTS; repeat !times 9; attack; repeat !times 9";
 
 
   if(!witchess_fight($monster[Witchess Witch], combat_filter)){
