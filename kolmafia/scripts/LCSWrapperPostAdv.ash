@@ -1,6 +1,6 @@
 
 // Cincho
-if(get_property("timesRested").to_int() < total_free_rests() && get_property("_cinchUsed") > 30) {
+if((get_property("timesRested").to_int() < total_free_rests()) && (get_property("_cinchUsed").to_int() > 30)) {
     if(get_property("chateauAvailable").to_boolean()) {
         visit_url("place.php?whichplace=chateau&action=chateau_restlabelfree");
     } else if (get_property("getawayCampsiteUnlocked").to_boolean()) {
