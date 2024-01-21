@@ -1731,6 +1731,10 @@ if(get_property("lcs_seventy").to_boolean()){
   get_effect($effect[Party Soundtrack]);
 }
 
+if (get_property("_horsery") != "dark horse"){
+  cli_execute('horsery meat');
+}
+
 get_shadow_waters();
 
 if(have_familiar($familiar[Disgeist])){
