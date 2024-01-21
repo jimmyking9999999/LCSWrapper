@@ -909,6 +909,7 @@ string [int] powerlevel_mus_effects = {
 	"Patience of the Tortoise",
 	"Disdain of the War Snapper",
 	"Go Get 'Em, Tiger!",
+	"Rage of the Reindeer",
 	"Carol of the Bulls",
 	"Phorcefullness",
 };
