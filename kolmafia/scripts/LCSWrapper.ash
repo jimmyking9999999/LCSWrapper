@@ -678,11 +678,22 @@ if ((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombat
     }
   }
 
+  // getting mainstat 20% exp buff from NEP
   visit_url("adventure.php?snarfblat=528");
   if(current_round() == 1){
     run_combat(freerun);
   }
-  run_choice(1); run_choice(2);
+  switch(my_primestat()){
+    case $stat[Mysticality]:
+      run_choice(1); run_choice(2);
+    break;
+    case $stat[Moxie]:
+      run_choice(4); run_choice(2);
+    break;
+    case $stat[Muscle]:
+      run_choice(2); run_choice(2);
+    break;
+  }
 }
 
 if(get_property("lcs_august_scepter") == "Offhand Remarkable Before Powerleveling"){
@@ -866,9 +877,20 @@ if(available_amount($item[Magical sausage casing]) > 0 && get_property("_sausage
   cli_execute("eat 1 magical sausage");
 }
 
-if((have_effect($effect[Tomes of Opportunity]) == 0) && get_property("noncombatForcerActive").to_boolean()){
+// getting mainstat 20% exp buff from NEP (in case we missed it before?)
+if((have_effect($effect[Tomes of Opportunity]) == 0) && (have_effect($effect[The Best Hair You've Ever Had]) == 0) && (have_effect($effect[Spiced Up]) == 0) && get_property("noncombatForcerActive").to_boolean()){
   visit_url("adventure.php?snarfblat=528");
-  run_choice(1); run_choice(2);
+  switch(my_primestat()){
+    case $stat[Mysticality]:
+      run_choice(1); run_choice(2);
+    break;
+    case $stat[Moxie]:
+      run_choice(4); run_choice(2);
+    break;
+    case $stat[Muscle]:
+      run_choice(2); run_choice(2);
+    break;
+  }
 }
 
 if(item_amount($item[Powerful Glove]).to_boolean()){
