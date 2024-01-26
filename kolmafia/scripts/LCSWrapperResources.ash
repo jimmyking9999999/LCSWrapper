@@ -822,7 +822,8 @@ boolean use_current_best_fam(){
 		return true;
 	}
 
-	if(have_familiar($familiar[Garbage Fire]) && (!available_amount($item[burning paper crane]).to_boolean() || item_amount($item[burning newspaper]).to_boolean())){
+
+	if(have_familiar($familiar[Garbage Fire]) && !available_amount($item[burning paper crane]).to_boolean() && !item_amount($item[burning newspaper]).to_boolean()){
 		use_familiar($familiar[Garbage Fire]);
 		return true;
 	}
