@@ -1,7 +1,7 @@
 
-// I hate css
+// I still hate css
 
-import <lcswrappermenu.ash>;
+import <LCSWrapperMenu.ash>;
 buffer page;
 boolean[string] all_pref_availability;
 
@@ -35,7 +35,7 @@ void display_pref_as_selector(string preference){
                     string [int] choices = split_string(preference_details[2], "\\/");
 
                     if(choices.count() == 1){
-                        page.append(`<input type="text" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);
+                        page.append(`<input type="text" placeholder="" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);
                     } else { 
 
                         page.append(`<select name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);  
@@ -56,16 +56,21 @@ void display_pref_as_selector(string preference){
 
 }
 
-void display_experimental_prefs(string preference){
-    string [int] preference_details = split_string(preference, "\\ \\|\\ ");
-    page.append('</tr>');
-    page.append('<tr>');
-    page.append(`<td>{preference_details[0]}</td>`);
-    page.append(`<td>{preference_details[1]}</td>`);
-    page.append('<td>');
-    page.append(`<input type="text" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);        
-    page.append('</select>');
-  
+void display_experimental_prefs() {
+
+    string[int] placeholder_text = {"Feeling Lost, Glowing Hands", "true", "Staff of the Roaring Hearth, Lens of Hatred", "false", "1", "mys, mox, mus, hp, hot res, non combat, item, fam weight, weapon damage, spell damage", "false", "false"};
+
+    foreach value, preference in manual_preferences {
+        string [int] preference_details = split_string(preference, "\\ \\|\\ ");
+        page.append('</tr>');
+        page.append('<tr>');
+        page.append(`<td>{preference_details[0]}</td>`);
+        page.append(`<td>{preference_details[1]}</td>`);
+        page.append('<td>');
+        page.append(`<input type="text" placeholder="{placeholder_text[value]}" name="{preference_details[0]}" value="{entity_encode(get_property(preference_details[0]))}" />`);        
+        page.append('</select>');
+    
+    }
 }
 
 void main() {
@@ -197,15 +202,17 @@ page.append('</td> </tr> </table>');
 
 
 page.append('<p><b><center>Experimental Settings:</center></p></b>');
+page.append('<p><center>Greyed out placeholder text is an input example</center></p>');
+
     page.append('<table> <tr>');
 
     page.append('<th>Preference</th>');
     page.append('<th>Info</th>');
     page.append('<th>Selection</th>');
 
-    foreach x, pref in manual_preferences {
-        display_experimental_prefs(pref);    
-    }
+    
+    display_experimental_prefs();    
+    
 
 page.append('</td> </tr> </table>');
 
