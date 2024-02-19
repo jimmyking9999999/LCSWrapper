@@ -42,20 +42,19 @@ string [int] preferences = {
     "lcs_deck_usage | What do you want to cheat with your deck? | Green Mana/Rope/Mickey Mantle/Green Mana + Rope/Mickey Mantle + Rope/Mickey Mantle + Green Mana/None | available_amount($item[Deck of Every Card])",
 
     "lcs_skip_borrowed_time | Would you like to have the script skip pulling/creating borrowed time? (Will pull your mainstat CBB legend dish or make a perfect drink!) Only enable this if you have >4 freeruns! | Yes/No",
-    
+    "lcs_turn_save_voa | Value of your adventure; How much meat you would spend to save a turn. | USER", 
 };
 
 // Manual/automatic prefrences to set with `set x = y`, mainly for debugging
 string [int] manual_preferences = {
     "lcs_excluded_buffs | Names of buffs to be excluded from get_effect(), seperated by comma ",
     "lcs_skip_yoked | Acquire holiday yoked from NEP monsters? Automatically set to false if needed.",
-    "lcs_start | Script version!",
-    "lcs_time_at_start | Time of script start. Requires at least 30 minutes of downtime to update",
     "lcs_autopull_at_start | Names of items to be automatically pulled at the start, seperated by comma",
     "lcs_break_prism | Avoids breaking the prism when set to 'false', for PVP or trophy reasons",
     "lcs_wish_limit | Wish limit!",
-    "lcs_test_order_override | Test order override, seperated by comma. E.g 'mys, mox, mus, hp, hot res, non combat, item, fam weight, weapon damage, spell damage'", 
-    "lcs_seventy | Disregard resources in order to get a 1/70 CS run when set to 'true'"
+    "lcs_test_order_override | Test order override, seperated by comma. Valid test names are: 'mys, mox, mus, hp, hot res, non combat, item, fam weight, weapon damage, spell damage'", 
+    "lcs_seventy | Disregard resources in order to get a 1/70 CS run when set to 'true'",
+    "lcs_skip_thresholds | Skip turn test thresholds after all options lower or equal to your lcs_turn_save_voa have been used.",
     
 };
 
@@ -81,13 +80,30 @@ boolean change_pref(int which_preference){
         break;
 
         default:
-            string[string] choiceDictionary;
+            string[string] choice_dict;
             for (int i = 0; i < min(choices.count(), 11); i++) {
-                choiceDictionary[choices[i]] = choices[i];
+                choice_dict[choices[i]] = choices[i];
             }
-            user_choice = user_prompt(preference_details[1], choiceDictionary).to_string();
+            user_choice = user_prompt(preference_details[1], choice_dict).to_string();
         break;
     }
+
+    if(user_choice == "" && get_property(preference_details[0]) != ""){
+        print(`Skipping! (Your last selection was '{get_property(preference_details[0])}')`, "teal");
+        return false;
+      } else {
+        print(`Setting perference '{preference_details[0]}' to '{user_choice}'!`, "teal");
+        set_property(preference_details[0], user_choice);
+        return true;
+      }
+}
+
+
+boolean change_pref_experimental(int which_preference){
+    /* preference_details: 0 => Mafia pref, 1 => Description, */
+    string [int] preference_details = split_string(manual_preferences[which_preference], "\\ \\|\\ ");
+
+    string user_choice = user_prompt(preference_details[1]).to_string();
 
     if(user_choice == "" && get_property(preference_details[0]) != ""){
         print(`Skipping! (Your last selection was '{get_property(preference_details[0])}')`, "teal");
@@ -116,6 +132,13 @@ void script_setup(){
     if(user_confirm("Would you like to set this script's other settings?")){
         for i from 10 to (count(preferences) - 1) {
             change_pref(i);
+        }
+
+    }
+
+    if(user_confirm("Would you like to set this script's experimental settings?")){
+        for i from 0 to (count(manual_preferences) - 1) {
+            change_pref_experimental(i);
         }
 
     }
