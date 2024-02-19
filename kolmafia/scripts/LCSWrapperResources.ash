@@ -33,6 +33,7 @@ location scaler_zone =
 
 // Freerun macro to call back on in other macros
 string freerun = "if hasskill feel hatred; skill feel hatred; endif; if hasskill snokebomb; skill snokebomb; endif; if hasskill reflex hammer; skill reflex hammer; endif; if hasskill 7301; skill 7301; endif";
+boolean options_exhausted;
 
 void refresh() {
   visit_url("main.php");
@@ -186,20 +187,16 @@ void meteor_shower(){
     }
   } else {
 
-    if(can_adventure($location[thugnderdome]) && (item_amount($item[Bitchin' Meatcar]).to_boolean() || item_amount($item[Desert Bus Pass]).to_boolean())){
-      visit_url("adventure.php?snarfblat=46");
-      refresh();
-      run_combat(meteorsaber);
-      run_choice(3);
-      
-    } else {
-      // Noob cave
-      visit_url("adventure.php?snarfblat=240");
-      refresh();
-      run_combat(meteorsaber);
-      run_choice(3);
+    if(get_property("horseryAvailable") == "true") {
+		visit_url(`{scaler_zone.to_url()}`);
+	} else {
+    	visit_url("adventure.php?snarfblat=240");
+	}
 
-    }
+      refresh();
+      run_combat(meteorsaber);
+      run_choice(3);
+    
   }
 
   	use_familiar(pre_shower_fam);
@@ -211,6 +208,7 @@ void meteor_shower(){
       abort("Acquiring meteor showered took a turn, which isn't supposed to happen. Please DM Jimmyking with a log <3");
     }
   }
+  
 }
 
 void newline() {
@@ -585,7 +583,11 @@ boolean witchess_fight(monster piece, string combat_filter){
 	run_choice(1);
 
 	visit_url(`choice.php?option=1&pwd={my_hash()}&whichchoice=1182&piece={piece.to_int()}`, false, false);
-	run_combat(combat_filter);
+	if(combat_filter != ""){
+		run_combat(combat_filter);
+	} else { 
+		run_combat();
+	}
 
 	return true;
 }
@@ -602,6 +604,50 @@ int get_cincho_total(){
 
 	return total_cinch_level;
 }
+
+boolean can_cast_libram(skill libram_skill){
+	return my_mp() > mp_cost(libram_skill);
+}
+
+//--candyhearts, --resolutions
+boolean libram_fish(item libram_item){
+	
+	switch(libram_item){
+		case $item[resolution: be happier]: // 15% item
+		case $item[resolution: be feistier]: // 20 weapon/spell damage
+		case $item[resolution: be kinder]: // 5 famwt
+		while(can_cast_libram($skill[Summon Resolutions]) && !item_amount(libram_item).to_boolean()){
+			use_skill($skill[Summon Resolutions]);
+		}
+		break;
+
+
+		case $item[love song of icy revenge]: // 2.5 famwt per use (rounded up), limit of +10
+		case $item[love song of disturbing obsession]:// 5% item per use, limit of 20%
+		while(can_cast_libram($skill[Summon Love Song])){
+			use_skill($skill[Summon Love Song]);
+		}
+		break;
+
+		case $item[green candy heart]: // 3 famwt
+		case $item[lavender candy heart]: // 10% item
+		while(can_cast_libram($skill[Summon Candy Heart]) !item_amount(libram_item).to_boolean()){
+			use_skill($skill[Summon Candy Heart]);
+		}
+		break;
+
+	}
+
+	boolean successfully_cast = item_amount(libram_item).to_int() > 0;
+
+	if(successfully_cast){
+		use(item_amount(libram_item), libram_item);
+	}
+
+	return successfully_cast;
+
+}
+
 
 //-barrelgod
 void barrelgod(string type) { 
@@ -768,31 +814,96 @@ int scrape_test_turns(int whichtest) {
     advstr = replace_string(advstr, " ", ""); //removes whitespace, if the test is < 10 adv
     return to_int(advstr);
   } else {
-    abort(`We didn't find specified test on the council page! (Test {test_number_to_name(whichtest)})`);
+    print(`We didn't find specified test on the council page! (Test {test_number_to_name(whichtest)})`, "red");
+	abort(`If you think this is a mistake, adjust your 'csServicesPerformed' preference to include the test name to bypass this error.`);
 	return -1;
   }
 }
 
 
+void drink_or_eat() {
+	// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
+
+	get_effect($effect[Ode to Booze]);
+	
+	
+	if(item_amount($item[Astral Pilsner]).to_boolean() && my_level() >= 9){
+		drink(1, $item[Astral Pilsner]);
+		return;
+	}
+
+	if(have_skill($skill[Perfect Freeze])){
+		use_skill(1, $skill[Perfect Freeze]);
+	}
+
+	if(item_amount($item[Perfect Ice Cube]).to_boolean() && my_level() >= 5){
+		int i = 0;
+
+		foreach it in $strings[bottle of vodka, bottle of whiskey, bottle of rum, bottle of tequila, boxed wine, bottle of gin]{
+			
+			if(item_amount(it.to_item()) > 0){
+				craft("cocktail", 1, it.to_item(), $item[Perfect Ice Cube]);
+				
+				string[int] perfect_booze = {"Perfect cosmopolitan", "Perfect old-fashioned", "Perfect mimosa", "Perfect dark and stormy", "Perfect paloma", "Perfect negroni"};
+				drink(1, perfect_booze[i].to_item());
+
+				return;
+			}
+
+			i++;
+		}
+	}
+
+
+	if(have_skill($skill[Calculate the Universe])){
+		try {
+			if(cli_execute("numberology 69")){
+				return;
+			}
+
+		} finally {}
+	}
+
+	if(item_amount($item[Meteoreo]) > 0){
+		eat(1, $item[Meteoreo]);
+		return;
+	}
+
+	if(item_amount($item[Meadeorite]) > 0){
+		drink(1, $item[Meadeorite]);
+		return;
+	}
+
+	if(item_amount($item[Glass of Raw Eggs]) > 0){
+		eat(1, $item[Glass of Raw Eggs]);
+		return;
+	}
+
+	if(item_amount($item[punch-drunk punch]) > 0){
+		drink(1, $item[punch-drunk punch]);
+		return;
+	}
+
+
+	abort("We have no more quality food/booze to gain adventures. Rerun after gaining adventures! (Clover the sleazy back alley for booze if needed)");
+
+ // TODO VIP, Smith, Borrowed Time, Clover drink?
+
+
+
+}
 
 boolean gain_adventures(int advs_to_gain){
-	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards TODO
-		// Sources of advs: Smith's tome food, Perfect Drinks, Astral Pilsners, Numberology, Borrowed Time, CBB food (t1/2s), Meteoreo, Meadeorite VIP Hot Dogs and Booze, Boxing Daycare
-		if(!have_effect($effect[Ode to Booze]).to_boolean()){
-			use_skill($skill[The Ode to Booze]);
-		}
-		
-		if(item_amount($item[Astral Pilsner]).to_boolean()){
-			drink(1, $item[Astral Pilsner]);
-			// drink(min(ceil(advs_to_gain / 11.0).to_int(), item_amount($item[Astral Pilsner])), $item[Astral Pilsner]);
-		}
 
-
-
+	while(my_adventures() < (advs_to_gain + 1)){ // +1 for combo/any advs afterwards, or just adventuring.
+		drink_or_eat();
 	}
 
 	return my_adventures() > advs_to_gain;
 }
+
+
+
 
 // TODO synthesis oh no
 boolean synthesis_effect(effect eff){
@@ -822,7 +933,7 @@ boolean use_current_best_fam(){
 		return true;
 	}
 
-	if(have_familiar($familiar[Garbage Fire]) && (!available_amount($item[burning paper crane]).to_boolean() || item_amount($item[burning newspaper]).to_boolean())){
+	if(have_familiar($familiar[Garbage Fire]) && (!available_amount($item[burning paper crane]).to_boolean() && !item_amount($item[burning newspaper]).to_boolean())){
 		use_familiar($familiar[Garbage Fire]);
 		return true;
 	}
@@ -909,6 +1020,7 @@ string [int] powerlevel_mus_effects = {
 	"Patience of the Tortoise",
 	"Disdain of the War Snapper",
 	"Go Get 'Em, Tiger!",
+	"Rage of the Reindeer",
 	"Carol of the Bulls",
 	"Phorcefullness",
 };
@@ -937,8 +1049,7 @@ string[int] mox_effects = {
     8: "Quiet Desperation",
     9: "Stevedave's Shanty of Superiority",
     10: "The Moxious Madrigal",
-    11: "aMAZing",
-    
+    11: "aMAZing",    
 };
 
 string[int] mus_effects = {
@@ -983,6 +1094,7 @@ string[int] item_effects = {
     8958: "El Aroma de Salsa", // 8958
     8980: "Glowing Hands", // 8980
     15000: "Incredibly Well Lit", // 15000
+	15013: "items.enh", // 15000
     18000: "Feeling Lost", // Potentially 2-4 * voa
     13750: "Lantern-Charged", // 13750
 };
@@ -993,10 +1105,12 @@ string[int] hot_res_effects = {
     1: "Astral Shell", // 0
     2: "Leash of Linguini", // 0
     3: "Empathy", // 0
-    4: "Amazing",
-    5: "Feeling Peaceful", // 0
-    6: "Hot-headed",
-    7: "Rainbow Vaccine", // 0
+    4: "Feeling Peaceful", // 0
+    5: "Rainbow Vaccine", // 0
+    660: "Hot-headed",
+    1624: "Amazing",
+    5555: "FUNC wish_effect / Fireproof Lips",
+	
 };
 
 
@@ -1066,8 +1180,9 @@ string[int] spell_damage_effects = {
     3: "Spirit of Peppermint", // 0
     4: "Song of Sauce", // 0
 	5: "In the 'zone zone!", // 0
+	6: "Grumpy and Ornery", // 0, grim brother
     69: "Cowrruption", // 69. nice.
-    500: "Paging Betty", // @9k in the mall, but I don't think these sell. TODO use coldfront mall data?
+    500: "Paging Betty", // ~9k in the mall, but I don't think these sell
     300: "Imported Strength", // 300
     700: "We're all made of starfish", // ~700
     850: "Concentration", // 850
@@ -1128,14 +1243,15 @@ string [int] effects;
 		
 	}
 
-	// effects[eff] == value. If it's 0, it's unlimited and/or free! -1 means used. Otherwise, it's cost in meat per turn saved.
-	// TODO: Re-entry via preference?
+	// effects: value = meat cost/turn, eff = name of effect. We switch the name to '-1' after we attempt to use the effect, thus no longer trying again when we loop over it. 
 	int i;
 
 	foreach value, eff in effects{
 		
 		if(eff != -1){
-			effects[value] = -1;
+  	  	effects[value] = -1; 	
+
+				
 
 			if(eff.substring(0,4) == "FUNC"){
 				string[int] func_effect = split_string(eff, " \\/ ");
@@ -1149,15 +1265,21 @@ string [int] effects;
 			} 
 
 			effect effe = eff.to_effect();
+			boolean worth_getting_effect = get_property("lcs_turn_save_voa") == "" ? true : (get_property("lcs_turn_save_voa").to_int() >= value.to_int());
 
-			if(!have_effect(effe).to_boolean()){
+			if(have_effect(effe) == 0 && worth_getting_effect){
 
 				if(get_effect(effe)){
 					print(`Successfully obtained effect {effe}, ~{test_turns(test)} turns left to save!`, "lime");
 					break;
 				} 
 
-			} 
+			} else if(!worth_getting_effect){
+				print(`Skipping effect '{effe}', as your turnsave VoA is too low to use this!`, "teal");
+			}
+
+
+
 		} else {
 			i++;
 
@@ -1167,6 +1289,13 @@ string [int] effects;
 				if(get_property("lcs_seventy") == "true"){
 					print("But we're attempting a 1/70 run. Time to burn wishes now!", "teal");
 					print(`Sorry, not implemented yet >.<`);
+				}
+
+				if(get_property("lcs_skip_thresholds") == "true" && get_property("lcs_turn_save_voa") != ""){
+					print(`That's everything valued below {get_property("lcs_turn_save_voa")} meat/turn used up! Finishing up the council quest now.`, "teal");
+					options_exhausted = true;
+					waitq(1);
+					break;
 				}
 
 				abort();
@@ -1381,7 +1510,9 @@ string [int] item_modifiers = {
 
 void cs_test(int testnum){
 
-	while(scrape_test_turns(testnum) > get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+	options_exhausted = false;
+
+	while(scrape_test_turns(testnum) > get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int() && options_exhausted == false){
   		buff_up(testnum);
 	} 
 
@@ -1414,6 +1545,10 @@ void cs_test(int testnum){
 			get_modtrace(spell_modifiers);
 		break;
 
+		case 8:
+			get_modtrace("Combat Rate");
+		break;
+
 		case 9:
 			get_modtrace(item_modifiers);
 		break;
@@ -1437,7 +1572,7 @@ void cs_test(int testnum){
 	}
 
 	visit_url("council.php");	
-	if(scrape_test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int()){
+	if(scrape_test_turns(testnum) <= get_property(`lcs_turn_threshold_{test_number_to_name(testnum)}`).to_int() || options_exhausted == true){
 		gain_adventures(scrape_test_turns(testnum));
 		visit_url(`choice.php?whichchoice=1089&option={testnum}&pwd`);
 	} else {
