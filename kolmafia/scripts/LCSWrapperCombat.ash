@@ -75,7 +75,7 @@ string freekill(){
         return "skill Shocking lick;";
     }
 
-    if(item_amount($item[Groveling Gravel])){
+    if(item_amount($item[Groveling Gravel]) > 0){
         return "use Groveling Gravel;";
     }
 
@@ -120,7 +120,7 @@ int safe_rounds = my_familiar() == $familiar[Left-hand Man] || my_familiar() == 
 switch (encounter) {
 
     case $monster[Piranha plant]:
-        encounter.delevel() + auto_attack();
+        return encounter.delevel() + auto_attack();
 
     case $monster[novelty tropical skeleton]:
         return "skill spit jurassic acid";
@@ -152,12 +152,12 @@ switch (encounter) {
     case $monster[migratory pirate]:
     case $monster[peripatetic pirate]:
     case $monster[ambulatory pirate]:
-        freerun();
+        freerun(); break;
 
 
     case $monster[Witchess Knight]:
     case $monster[Witchess Bishop]:
-        encounter.delevel() + auto_attack();
+        return encounter.delevel() + auto_attack(); break;
         
 
 
